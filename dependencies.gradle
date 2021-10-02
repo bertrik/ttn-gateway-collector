@@ -1,0 +1,36 @@
+/*
+ * Contains all external references and version used in the project. 
+ * It is not advised to use direct references in each sub-project buildscript for maintenance purposes. 
+ * Keeping the versions here allows us to control them for the entire solution
+ */
+
+ext {
+    libraries = [:]
+}
+
+libraries.slf4j = 'org.slf4j:slf4j-api:1.7.26'
+libraries.slf4jlog4j = 'org.slf4j:slf4j-log4j12:1.7.26'
+
+libraries.jackson = [
+    'com.fasterxml.jackson.core:jackson-databind:2.13.0',
+    'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.0'
+]
+
+libraries.okhttp = [
+    'com.squareup.okhttp3:okhttp:3.14.9'
+]
+
+libraries.retrofit = [
+    'com.squareup.retrofit2:retrofit:2.9.0',
+    'com.squareup.retrofit2:converter-jackson:2.9.0',
+    'com.squareup.retrofit2:converter-scalars:2.9.0'
+]
+libraries.retrofit_mock = 'com.squareup.retrofit2:retrofit-mock:2.9.0'
+
+// test libraries
+libraries.junit = 'junit:junit:4.13.2'
+libraries.mockito = 'org.mockito:mockito-core:3.12.4'
+
+// check libraries
+libraries.spotbugs_annotations = 'com.github.spotbugs:spotbugs-annotations:4.4.1'
+

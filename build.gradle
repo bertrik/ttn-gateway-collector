@@ -1,0 +1,49 @@
+plugins {
+  id 'com.github.spotbugs' version '4.7.3'
+  id 'com.github.ben-manes.versions' version '0.39.0'
+}
+
+version = '0.1'
+
+//allprojects { group = 'nl.sikken.bertrik' }
+
+allprojects {
+    repositories {
+        maven { url 'https://mvnrepository.com/' }
+    }
+}
+
+// Define all library dependencies in one file for clarity
+apply from:'dependencies.gradle'
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "eclipse"
+    apply plugin: "com.github.spotbugs"
+    apply plugin: 'com.github.ben-manes.versions'    
+    
+    sourceCompatibility = 1.11
+    targetCompatibility = 1.11
+
+    repositories {
+        mavenCentral()
+    }
+
+    spotbugsMain {
+        reports {
+            html {
+                enabled = true
+            }
+        }
+    }
+
+    // Standard libraries added to all projects
+    dependencies {
+        testImplementation libraries.junit
+	    testImplementation libraries.mockito
+
+	    implementation libraries.slf4jlog4j
+        implementation libraries.slf4j
+    }
+
+}

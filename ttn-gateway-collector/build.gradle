@@ -1,0 +1,33 @@
+apply plugin: "application"
+
+mainClassName = 'nl.bertriksikken.ttngatewaycollector.TTNGatewayCollector'
+
+dependencies {
+    implementation libraries.slf4jlog4j
+    
+    implementation libraries.jackson
+    implementation libraries.retrofit
+    implementation libraries.okhttp
+    
+    compileOnly libraries.spotbugs_annotations
+    
+    testImplementation libraries.retrofit_mock
+}
+
+// fix scripts executable bit and line endings
+import org.apache.tools.ant.filters.FixCrLfFilter
+
+distributions {
+    main {
+        contents {
+            filesMatching("**/*.sh") {
+                mode = 0755
+                filter(FixCrLfFilter,
+                    eol: FixCrLfFilter.CrLf.newInstance('lf'),
+                    tab: FixCrLfFilter.AddAsisRemove.newInstance('asis'),
+                    eof: FixCrLfFilter.AddAsisRemove.newInstance('remove'),
+                    fixlast: true)
+            }
+        } 
+    }
+}

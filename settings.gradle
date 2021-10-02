@@ -1,0 +1,4 @@
+include 'ttn-gateway-collector'
+
+// Here we set the overall project name. All other projects are seen as 'sub project' of this root project.
+rootProject.name = 'ttn-gateway-collector'
