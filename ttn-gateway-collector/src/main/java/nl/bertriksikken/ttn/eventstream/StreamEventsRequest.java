@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * See https://www.thethingsindustries.com/docs/reference/api/events/#message:StreamEventsRequest
  */
@@ -27,14 +29,15 @@ public final class StreamEventsRequest {
      */
     private static final class EntityIdentifiers {
         @JsonProperty("gateway_ids")
-        GatewayIdentifiers gatewayIds = new GatewayIdentifiers();
+        private GatewayIdentifiers gatewayIds = new GatewayIdentifiers();
     }
     
     /**
      * See https://www.thethingsindustries.com/docs/reference/api/events/#message:GatewayIdentifiers
      */
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
     private static final class GatewayIdentifiers {
         @JsonProperty("gateway_id")
-        String gatewayId;
+        private String gatewayId;
     }
 }
