@@ -2,6 +2,8 @@ package nl.bertriksikken.ttngatewaycollector;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,21 +31,24 @@ public final class StreamEventsReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(StreamEventsReceiver.class);
 
+    private static final MediaType MEDIATYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     private static final Duration PING_INTERVAL = Duration.ofSeconds(60);
 
-    // we share one object mapper between all receivers
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private final ObjectMapper MAPPER = new ObjectMapper();
+    private final RequestCallback requestCallback = new RequestCallback();
 
-    private static final MediaType MEDIATYPE_JSON = MediaType.parse("application/json; charset=utf-8");
-
+    private final String url;
     private final IEventStreamCallback callback;
-    private final Call call;
+    private final List<Call> calls = new ArrayList<>();
 
     private volatile boolean canceled = false;
 
-    public StreamEventsReceiver(String url, StreamEventsRequest request, String apiKey, IEventStreamCallback callback)
-            throws JsonProcessingException {
-        // create call
+    public StreamEventsReceiver(String url, IEventStreamCallback callback) {
+        this.url = url;
+        this.callback = callback;
+    }
+
+    public void subscribe(StreamEventsRequest request, String apiKey) throws JsonProcessingException {
         OkHttpClient httpClient = new OkHttpClient().newBuilder()
                 .retryOnConnectionFailure(true)
                 .pingInterval(PING_INTERVAL)
@@ -55,21 +60,21 @@ public final class StreamEventsReceiver {
                 .url(url)
                 .header("Accept", "text/event-stream")
                 .header("Authorization", "Bearer " + apiKey).build();
-        call = httpClient.newCall(httpRequest);
-
-        this.callback = callback;
+        calls.add(httpClient.newCall(httpRequest));
     }
-
+    
     public void start() {
-        Callback callback = new MyCallback();
-        call.enqueue(callback);
+        LOG.info("Starting");
+        calls.forEach(c -> c.enqueue(requestCallback));
     }
 
     public void stop() {
+        LOG.info("Stopping");
         canceled = true;
+        calls.forEach(c -> c.cancel());
     }
 
-    private final class MyCallback implements Callback {
+    private final class RequestCallback implements Callback {
 
         @Override
         public void onFailure(Call call, IOException e) {
@@ -77,12 +82,14 @@ public final class StreamEventsReceiver {
         }
 
         @Override
-        public void onResponse(Call call, Response response) {
-            LOG.info("onResponse: call={}, response={}", call, response);
+        public void onResponse(Call call, Response response) throws IOException {
             try (ResponseBody body = response.body()) {
+                LOG.info("Stream started: {}", response);
                 while (!canceled) {
                     processResponse(body.source());
                 }
+            } finally {
+                LOG.info("Stream stopped");
             }
         }
         
@@ -91,8 +98,8 @@ public final class StreamEventsReceiver {
             String line = "";
             try {
                 line = source.readUtf8Line();
-            } catch (IOException e1) {
-                LOG.warn("Error reading line from response");
+            } catch (IOException e) {
+                LOG.warn("Error reading line from response: {}", e.getMessage());
                 return;
             }
 
@@ -103,7 +110,7 @@ public final class StreamEventsReceiver {
                     callback.eventReceived(result.getEvent());
                 }
             } catch (IOException e) {
-                LOG.warn("Error decoding line: {}", line);
+                LOG.warn("Error decoding line '{}': {}", line, e.getMessage());
             }
         }
     }

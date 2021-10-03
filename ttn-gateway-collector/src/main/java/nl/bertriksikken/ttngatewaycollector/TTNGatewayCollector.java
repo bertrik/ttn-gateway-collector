@@ -22,9 +22,11 @@ public final class TTNGatewayCollector {
     private static final Logger LOG = LoggerFactory.getLogger(TTNGatewayCollector.class);
 
     private final TTNGatewayCollectorConfig config;
+    private final StreamEventsReceiver receiver;
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
+        this.receiver = new StreamEventsReceiver(config.url, this::eventReceived);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -33,16 +35,24 @@ public final class TTNGatewayCollector {
         TTNGatewayCollectorConfig config = readConfig(new File("ttngatewaycollector.yaml"));
         TTNGatewayCollector collector = new TTNGatewayCollector(config);
         collector.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(collector::stop));
     }
 
     private void start() throws JsonProcessingException {
         LOG.info("Starting");
         for (GatewayReceiverConfig receiverConfig : config.receivers) {
+            LOG.info("Adding receiver for '{}'", receiverConfig.gatewayId);
             StreamEventsRequest request = new StreamEventsRequest(receiverConfig.gatewayId);
-            StreamEventsReceiver receiver = new StreamEventsReceiver(config.url, request, receiverConfig.apiKey,
-                    this::eventReceived);
-            receiver.start();
+            receiver.subscribe(request, receiverConfig.apiKey);
         }
+        receiver.start();
+        LOG.info("Started");
+    }
+    
+    private void stop() {
+        LOG.info("Stopping");
+        receiver.stop();
+        LOG.info("Stopped");
     }
     
     private void eventReceived(Event event) {
