@@ -3,14 +3,10 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
-version = '0.1'
-
-//allprojects { group = 'nl.sikken.bertrik' }
-
-allprojects {
-    repositories {
-        maven { url 'https://mvnrepository.com/' }
-    }
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
 }
 
 // Define all library dependencies in one file for clarity
@@ -34,6 +30,13 @@ subprojects {
             html {
                 enabled = true
             }
+        }
+    }
+
+    // Reject all non stable versions
+    tasks.named("dependencyUpdates").configure {
+        rejectVersionIf {
+            isNonStable(it.candidate.version)
         }
     }
 
