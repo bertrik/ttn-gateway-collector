@@ -12,7 +12,7 @@ public final class GatewayReceiverConfig {
 
     // jackson constructor
     GatewayReceiverConfig() {
-        this("appId", "gatewayId");
+        this("gatewayId", "apiKey");
     }
     
     GatewayReceiverConfig(String gatewayId, String apiKey) {
