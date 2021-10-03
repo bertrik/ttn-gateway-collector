@@ -14,6 +14,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import nl.bertriksikken.ttn.eventstream.Event;
+import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
+
 public final class TTNGatewayCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(TTNGatewayCollector.class);
@@ -35,8 +38,17 @@ public final class TTNGatewayCollector {
     private void start() throws JsonProcessingException {
         LOG.info("Starting");
         for (GatewayReceiverConfig receiverConfig : config.receivers) {
-            GatewayReceiver receiver = new GatewayReceiver(config.url, receiverConfig);
+            StreamEventsRequest request = new StreamEventsRequest(receiverConfig.gatewayId);
+            StreamEventsReceiver receiver = new StreamEventsReceiver(config.url, request, receiverConfig.apiKey,
+                    this::eventReceived);
             receiver.start();
+        }
+    }
+    
+    private void eventReceived(Event event) {
+        // only interested in gateway uplink events
+        if (event.getName().equals("gs.up.receive")) {
+            LOG.info("Gateway uplink received: {}", event.getData());
         }
     }
     
