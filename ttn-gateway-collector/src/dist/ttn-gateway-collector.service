@@ -1,0 +1,21 @@
+# copy this to /etc/systemd/system
+# then sudo systemctl daemon-reload
+# and enable with sudo systemctl enable --now ttn-gateway-collector
+
+[Unit]
+Description=ttn-gateway-collector
+After=network.target
+
+[Service]
+WorkingDirectory=/home/bertrik/ttn-gateway-collector
+ExecStart=/home/bertrik/ttn-gateway-collector/bin/ttn-gateway-collector
+Type=simple
+KillMode=process
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=15s
+User=bertrik
+Environment="TTN_GATEWAY_COLLECTOR_OPTS=-Xmx64M"
+
+[Install]
+WantedBy=multi-user.target
