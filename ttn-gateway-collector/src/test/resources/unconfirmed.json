@@ -1,0 +1,59 @@
+{
+      "@type": "type.googleapis.com/ttn.lorawan.v3.UplinkMessage",
+      "raw_payload": "QCMuASaAXlYCBkcfTyXJXa8E",
+      "payload": {
+        "m_hdr": {
+          "m_type": "UNCONFIRMED_UP"
+        },
+        "mic": "yV2vBA==",
+        "mac_payload": {
+          "f_hdr": {
+            "dev_addr": "26012E23",
+            "f_ctrl": {
+              "adr": true
+            },
+            "f_cnt": 22110
+          },
+          "f_port": 2,
+          "frm_payload": "BkcfTyU="
+        }
+      },
+      "settings": {
+        "data_rate": {
+          "lora": {
+            "bandwidth": 125000,
+            "spreading_factor": 12
+          }
+        },
+        "coding_rate": "4/5",
+        "frequency": "868500000",
+        "timestamp": 3119016580,
+        "time": "2021-10-08T18:31:04.264803Z"
+      },
+      "rx_metadata": [
+        {
+          "gateway_ids": {
+            "gateway_id": "technolution-gouda",
+            "eui": "008000000000B8B6"
+          },
+          "time": "2021-10-08T18:31:04.264803Z",
+          "timestamp": 3119016580,
+          "rssi": -117,
+          "channel_rssi": -117,
+          "snr": -11.8,
+          "location": {
+            "latitude": 52.01811525353214,
+            "longitude": 4.708444422836441,
+            "altitude": 25,
+            "source": "SOURCE_REGISTRY"
+          },
+          "uplink_token": "CiAKHgoSdGVjaG5vbHV0aW9uLWdvdWRhEggAgAAAAAC4thCE1aHPCxoMCOicgosGEIHp64IBIKCngJ/j5FA=",
+          "channel_index": 2
+        }
+      ],
+      "received_at": "2021-10-08T18:31:04.274396289Z",
+      "correlation_ids": [
+        "gs:conn:01FH60HGY7TZPZG8JH5GJ90Z3P",
+        "gs:uplink:01FHGJRHTJTVZT9MDHGAED1GH9"
+      ]
+}
