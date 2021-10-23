@@ -9,7 +9,7 @@ import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
 /**
  * Represents one line in the export.
  */
-@JsonPropertyOrder({ "gateway", "time", "raw_payload", "sf", "frequency", "snr", "rssi", "type", "dev_addr", "port",
+@JsonPropertyOrder({ "gateway", "time", "frequency", "sf", "snr", "rssi", "raw_payload", "type", "dev_addr", "port",
     "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce"})
 public final class ExportEvent {
 
@@ -18,18 +18,18 @@ public final class ExportEvent {
     @JsonProperty("time")
     final String time;
 
-    @JsonProperty("raw_payload")
-    final byte[] rawPayload;
-
     // radio settings
-    @JsonProperty("sf")
-    final int sf;
     @JsonProperty("frequency")
     final int frequency;
+    @JsonProperty("sf")
+    final int sf;
     @JsonProperty("snr")
     final double snr;
     @JsonProperty("rssi")
     final int rssi;
+
+    @JsonProperty("raw_payload")
+    final byte[] rawPayload;
 
     @JsonProperty("type")
     String packetType;

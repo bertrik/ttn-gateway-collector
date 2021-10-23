@@ -42,6 +42,7 @@ public final class UplinkMessage {
             return String.format(Locale.ROOT, "{mhdr=%s,mac=%s}", mhdr, macPayload);
         }
 
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class MHdr {
             @JsonProperty("m_type")
             public String mtype = "";
@@ -64,6 +65,7 @@ public final class UplinkMessage {
                 return String.format(Locale.ROOT, "{fhdr=%s,fport=%d}", fhdr, fport);
             }
 
+            @JsonIgnoreProperties(ignoreUnknown = true)
             public static class FHdr {
                 @JsonProperty("dev_addr")
                 public String devAddr = "";
@@ -115,15 +117,17 @@ public final class UplinkMessage {
             return String.format(Locale.ROOT, "{datarate=%s,frequency=%d,time=%s}", dataRate, frequency, time);
         }
 
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class DataRate {
             @JsonProperty("lora")
-            public Lora lora;
+            public Lora lora = new Lora();
 
             @Override
             public String toString() {
                 return String.format(Locale.ROOT, "{lora=%s}", lora);
             }
 
+            @JsonIgnoreProperties(ignoreUnknown = true)
             public static class Lora {
                 @JsonProperty("spreading_factor")
                 public int spreadingFactor;

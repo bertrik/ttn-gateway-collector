@@ -93,24 +93,15 @@ public final class StreamEventsReceiver {
             }
         }
         
-        private void processResponse(BufferedSource source) {
+        private void processResponse(BufferedSource source) throws IOException {
             // read line
             String line = "";
-            try {
-                line = source.readUtf8Line();
-            } catch (IOException e) {
-                LOG.warn("Error reading line from response: {}", e.getMessage());
-                return;
-            }
+            line = source.readUtf8Line();
 
             // process line
-            try {
-                if (!line.isEmpty()) {
-                    EventResult result = MAPPER.readValue(line, EventResult.class);
-                    callback.eventReceived(result.getEvent());
-                }
-            } catch (IOException e) {
-                LOG.warn("Error decoding line '{}': {}", line, e.getMessage());
+            if (!line.isEmpty()) {
+                EventResult result = MAPPER.readValue(line, EventResult.class);
+                callback.eventReceived(result.getEvent());
             }
         }
     }
