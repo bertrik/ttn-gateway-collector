@@ -16,6 +16,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
+import nl.bertriksikken.ttn.message.UplinkMessage;
+import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
 
 public final class TTNGatewayCollector {
 
@@ -23,10 +25,13 @@ public final class TTNGatewayCollector {
 
     private final TTNGatewayCollectorConfig config;
     private final StreamEventsReceiver receiver;
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final ExportEventWriter eventWriter;
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
         this.receiver = new StreamEventsReceiver(config.url, this::eventReceived);
+        this.eventWriter = new ExportEventWriter(new File(config.logFileName));
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -48,17 +53,26 @@ public final class TTNGatewayCollector {
         receiver.start();
         LOG.info("Started");
     }
-    
+
     private void stop() {
         LOG.info("Stopping");
         receiver.stop();
         LOG.info("Stopped");
     }
-    
-    private void eventReceived(Event event) {
-        // only interested in gateway uplink events
-        if (event.getName().equals("gs.up.receive")) {
-            LOG.info("Gateway uplink received: {}", event.getData());
+
+    // package-private for testing
+    void eventReceived(Event event) {
+        try {
+            // only interested in gateway uplink events
+            if (event.getName().equals("gs.up.receive")) {
+                LOG.info("Gateway uplink received: {}", event.getData());
+                // parse as uplink and log
+                String gateway = event.getIdentifiers().at("/0/gateway_ids/gateway_id").asText("unknown");
+                UplinkMessage uplinkMessage = mapper.treeToValue(event.getData(), UplinkMessage.class);
+                eventWriter.write(gateway, uplinkMessage);
+            }
+        } catch (IOException e) {
+            LOG.warn("Exception processing event", e);
         }
     }
     

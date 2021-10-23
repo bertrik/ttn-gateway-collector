@@ -14,13 +14,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class UplinkMessage {
 
     @JsonProperty("raw_payload")
-    byte[] rawPayload = new byte[0];
+    public byte[] rawPayload = new byte[0];
     @JsonProperty("payload")
-    Payload payload = new Payload();
+    public Payload payload = new Payload();
     @JsonProperty("settings")
-    Settings settings = new Settings();
+    public Settings settings = new Settings();
     @JsonProperty("rx_metadata")
-    List<RxMetadata> rxMetadata = Arrays.asList(new RxMetadata());
+    public List<RxMetadata> rxMetadata = Arrays.asList(new RxMetadata());
 
     @Override
     public String toString() {
@@ -29,20 +29,22 @@ public final class UplinkMessage {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class Payload {
+    public static class Payload {
         @JsonProperty("m_hdr")
-        MHdr mhdr = new MHdr();
+        public MHdr mhdr = new MHdr();
         @JsonProperty("mac_payload")
-        MacPayload macPayload = new MacPayload();
+        public MacPayload macPayload = new MacPayload();
+        @JsonProperty("join_request_payload")
+        public JoinRequestPayload joinRequestPayload; // can be null if absent
 
         @Override
         public String toString() {
             return String.format(Locale.ROOT, "{mhdr=%s,mac=%s}", mhdr, macPayload);
         }
 
-        static class MHdr {
+        public static class MHdr {
             @JsonProperty("m_type")
-            EMType mtype = EMType.UNDETERMINED;
+            public String mtype = "";
 
             @Override
             public String toString() {
@@ -51,33 +53,34 @@ public final class UplinkMessage {
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        static class MacPayload {
+        public static class MacPayload {
             @JsonProperty("f_hdr")
-            FHdr fhdr = new FHdr();
+            public FHdr fhdr = new FHdr();
             @JsonProperty("f_port")
-            int fport;
+            public int fport;
 
             @Override
             public String toString() {
                 return String.format(Locale.ROOT, "{fhdr=%s,fport=%d}", fhdr, fport);
             }
 
-            static class FHdr {
+            public static class FHdr {
                 @JsonProperty("dev_addr")
-                String devAddr = "";
+                public String devAddr = "";
                 @JsonProperty("f_ctrl")
-                FCtrl fctrl = new FCtrl();
+                public FCtrl fctrl = new FCtrl();
                 @JsonProperty("f_cnt")
-                int fcnt = 0;
+                public int fcnt = 0;
 
                 @Override
                 public String toString() {
                     return String.format(Locale.ROOT, "{devAddr=%s,fctrl=%s,fcnt=%d}", devAddr, fctrl, fcnt);
                 }
 
-                static class FCtrl {
+                @JsonIgnoreProperties(ignoreUnknown = true)
+                public static class FCtrl {
                     @JsonProperty("adr")
-                    boolean adr = false;
+                    public boolean adr = false;
 
                     @Override
                     public String toString() {
@@ -86,67 +89,68 @@ public final class UplinkMessage {
                 }
             }
         }
+
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class JoinRequestPayload {
+            @JsonProperty("join_eui")
+            public String joinEui = "";
+            @JsonProperty("dev_eui")
+            public String devEui = "";
+            @JsonProperty("dev_nonce")
+            public String devNonce = "";
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class Settings {
+    public static class Settings {
         @JsonProperty("data_rate")
-        DataRate dataRate = new DataRate();
+        public DataRate dataRate = new DataRate();
         @JsonProperty("frequency")
-        int frequency;
-        @JsonProperty("timestamp")
-        long timeStamp;
+        public int frequency;
         @JsonProperty("time")
-        String time = "";
+        public String time = "";
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT, "{datarate=%s,frequency=%d,timestamp=%d,time=%s}", dataRate, frequency,
-                timeStamp, time);
+            return String.format(Locale.ROOT, "{datarate=%s,frequency=%d,time=%s}", dataRate, frequency, time);
         }
 
-        static class DataRate {
+        public static class DataRate {
             @JsonProperty("lora")
-            Lora lora;
+            public Lora lora;
 
             @Override
             public String toString() {
                 return String.format(Locale.ROOT, "{lora=%s}", lora);
             }
 
-            static class Lora {
-                @JsonProperty("bandwidth")
-                int bandWidth;
+            public static class Lora {
                 @JsonProperty("spreading_factor")
-                int spreadingFactor;
+                public int spreadingFactor;
 
                 @Override
                 public String toString() {
-                    return String.format(Locale.ROOT, "{bandWidth=%s,spreadingFactor=%d}", bandWidth, spreadingFactor);
+                    return String.format(Locale.ROOT, "{spreadingFactor=%d}", spreadingFactor);
                 }
             }
         }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class RxMetadata {
+    public static class RxMetadata {
         @JsonProperty("rssi")
-        int rssi;
+        public int rssi;
 
         @JsonProperty("snr")
-        double snr;
+        public double snr;
 
         @JsonProperty("channel_index")
-        int channel;
+        public int channelIndex;
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT, "{rssi=%s,snr=%.1f,channel=%s}", rssi, snr, channel);
+            return String.format(Locale.ROOT, "{rssi=%s,snr=%.1f,channel=%s}", rssi, snr, channelIndex);
         }
-    }
-
-    enum EMType {
-        UNDETERMINED, UNCONFIRMED_UP, CONFIRMED_UP
     }
 
 }

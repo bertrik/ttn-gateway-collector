@@ -13,6 +13,9 @@ public final class TTNGatewayCollectorConfig {
     @JsonProperty("gateways")
     List<GatewayReceiverConfig> receivers = new ArrayList<>();
     
+    @JsonProperty("logfile")
+    String logFileName = "gateway.csv";
+    
     TTNGatewayCollectorConfig() {
         // add one example receiver
         receivers.add(new GatewayReceiverConfig());

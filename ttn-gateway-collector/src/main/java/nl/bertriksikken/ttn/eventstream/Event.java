@@ -20,7 +20,7 @@ public final class Event {
     String time = "";
     
     @JsonProperty("identifiers")
-    JsonNode identifiers = new TextNode("");
+    JsonNode identifiers;
     
     @JsonProperty("data")
     JsonNode data = new TextNode("");
@@ -33,6 +33,7 @@ public final class Event {
         return Instant.parse(time);
     }
 
+//    public List<JsonNode> getIdentifiers() {
     public JsonNode getIdentifiers() {
         return identifiers;
     }
