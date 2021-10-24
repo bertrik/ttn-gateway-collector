@@ -1,5 +1,7 @@
 package nl.bertriksikken.ttngatewaycollector.export;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -10,7 +12,7 @@ import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
  * Represents one line in the export.
  */
 @JsonPropertyOrder({ "gateway", "time", "frequency", "sf", "snr", "rssi", "raw_payload", "type", "dev_addr", "port",
-    "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce"})
+    "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
 public final class ExportEvent {
 
     @JsonProperty("gateway")
@@ -89,6 +91,12 @@ public final class ExportEvent {
         event.fcnt = message.payload.macPayload.fhdr.fcnt;
         event.adr = message.payload.macPayload.fhdr.fctrl.adr;
         return event;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.ROOT, "{%s,%s,%d,%d,%f,%d,%d,%s,%s,%d,%d,%s,%s,%s,%s}", gateway, time, frequency,
+            sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
     }
 
 }
