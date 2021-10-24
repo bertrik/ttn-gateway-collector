@@ -11,14 +11,14 @@ import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
 /**
  * Represents one line in the export.
  */
-@JsonPropertyOrder({ "gateway", "time", "frequency", "sf", "snr", "rssi", "raw_payload", "type", "dev_addr", "port",
+@JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "raw_payload", "type", "dev_addr", "port",
     "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
 public final class ExportEvent {
 
-    @JsonProperty("gateway")
-    final String gateway;
     @JsonProperty("time")
     final String time;
+    @JsonProperty("gateway")
+    final String gateway;
 
     // radio settings
     @JsonProperty("frequency")
@@ -56,10 +56,10 @@ public final class ExportEvent {
         JOIN_REQUEST, UNCONFIRMED_UPLINK, CONFIRMED_UPLINK
     }
 
-    private ExportEvent(String gateway, String time, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
+    private ExportEvent(String time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
         int rssi) {
-        this.gateway = gateway;
         this.time = time;
+        this.gateway = gateway;
         this.rawPayload = rawPayload;
         this.sf = spreadingFactor;
         this.frequency = frequency;
@@ -74,7 +74,7 @@ public final class ExportEvent {
         int frequency = message.settings.frequency;
         double snr = message.rxMetadata.get(0).snr;
         int rssi = message.rxMetadata.get(0).rssi;
-        ExportEvent event = new ExportEvent(gateway, time, rawPayload, spreadingFactor, frequency, snr, rssi);
+        ExportEvent event = new ExportEvent(time, gateway, rawPayload, spreadingFactor, frequency, snr, rssi);
 
         JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {
