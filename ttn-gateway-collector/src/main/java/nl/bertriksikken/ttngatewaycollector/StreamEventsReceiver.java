@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,52 +38,59 @@ public final class StreamEventsReceiver {
 
     private static final MediaType MEDIATYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     private static final Duration PING_INTERVAL = Duration.ofSeconds(60);
+    private static final Duration RETRY_INTERVAL = Duration.ofSeconds(60);
 
     private final ObjectMapper MAPPER = new ObjectMapper();
     private final RequestCallback requestCallback = new RequestCallback();
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private final String url;
     private final IEventStreamCallback callback;
-    private final List<Call> calls = new ArrayList<>();
+    private final OkHttpClient httpClient;
+    private final List<Request> requests = new ArrayList<>();
+    private final Map<Request, Call> requestMap = new ConcurrentHashMap<>();
 
     private volatile boolean canceled = false;
 
     public StreamEventsReceiver(String url, IEventStreamCallback callback) {
         this.url = url;
         this.callback = callback;
+        httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(true).pingInterval(PING_INTERVAL)
+            .readTimeout(Duration.ZERO).build();
     }
 
-    public void subscribe(StreamEventsRequest request, String apiKey) throws JsonProcessingException {
-        OkHttpClient httpClient = new OkHttpClient().newBuilder()
-                .retryOnConnectionFailure(true)
-                .pingInterval(PING_INTERVAL)
-                .readTimeout(Duration.ZERO).build();
+    public void addSubscription(StreamEventsRequest request, String apiKey) throws JsonProcessingException {
         String requestJson = MAPPER.writeValueAsString(request);
         RequestBody body = RequestBody.create(MEDIATYPE_JSON, requestJson);
-        Request httpRequest = new Request.Builder()
-                .post(body)
-                .url(url)
-                .header("Accept", "text/event-stream")
-                .header("Authorization", "Bearer " + apiKey).build();
-        calls.add(httpClient.newCall(httpRequest));
+        Request httpRequest = new Request.Builder().post(body).url(url).header("Accept", "text/event-stream")
+            .header("Authorization", "Bearer " + apiKey).build();
+        requests.add(httpRequest);
     }
-    
+
     public void start() {
         LOG.info("Starting");
-        calls.forEach(c -> c.enqueue(requestCallback));
+        requests.forEach(request -> connect(request));
     }
 
     public void stop() {
         LOG.info("Stopping");
         canceled = true;
-        calls.forEach(c -> c.cancel());
+        executor.shutdownNow();
+        requestMap.values().forEach(call -> call.cancel());
+    }
+
+    private void connect(Request request) {
+        LOG.info("Starting request {}", request);
+        Call call = httpClient.newCall(request);
+        requestMap.put(request, call);
+        call.enqueue(requestCallback);
     }
 
     private final class RequestCallback implements Callback {
 
         @Override
         public void onFailure(Call call, IOException e) {
-            LOG.info("onFailure: call={}, exception={}", call, e);
+            LOG.warn("onFailure: call={}, exception={}", call, e);
         }
 
         @Override
@@ -88,22 +100,23 @@ public final class StreamEventsReceiver {
                 while (!canceled) {
                     processResponse(body.source());
                 }
+            } catch (IOException e) {
+                if (!canceled) {
+                    LOG.warn("Scheduling reconnect in {} ...", RETRY_INTERVAL);
+                    executor.schedule(() -> connect(call.request()), RETRY_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
+                }
             } finally {
                 LOG.info("Stream stopped");
             }
         }
-        
-        private void processResponse(BufferedSource source) throws IOException {
-            // read line
-            String line = "";
-            line = source.readUtf8Line();
 
-            // process line
+        private void processResponse(BufferedSource source) throws IOException {
+            String line = source.readUtf8Line();
             if (!line.isEmpty()) {
                 EventResult result = MAPPER.readValue(line, EventResult.class);
                 callback.eventReceived(result.getEvent());
             }
         }
     }
-    
+
 }

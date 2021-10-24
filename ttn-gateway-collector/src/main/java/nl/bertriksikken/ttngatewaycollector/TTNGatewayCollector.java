@@ -48,7 +48,7 @@ public final class TTNGatewayCollector {
         for (GatewayReceiverConfig receiverConfig : config.receivers) {
             LOG.info("Adding receiver for '{}'", receiverConfig.gatewayId);
             StreamEventsRequest request = new StreamEventsRequest(receiverConfig.gatewayId);
-            receiver.subscribe(request, receiverConfig.apiKey);
+            receiver.addSubscription(request, receiverConfig.apiKey);
         }
         receiver.start();
         LOG.info("Started");
