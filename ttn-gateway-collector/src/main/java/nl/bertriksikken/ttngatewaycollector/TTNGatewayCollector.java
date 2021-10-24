@@ -1,7 +1,6 @@
 package nl.bertriksikken.ttngatewaycollector;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -75,12 +74,12 @@ public final class TTNGatewayCollector {
             LOG.warn("Exception processing event", e);
         }
     }
-    
+
     private static TTNGatewayCollectorConfig readConfig(File file) throws IOException {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-        try (FileInputStream fis = new FileInputStream(file)) {
-            return mapper.readValue(fis, TTNGatewayCollectorConfig.class);
+        try {
+            return mapper.readValue(file, TTNGatewayCollectorConfig.class);
         } catch (IOException e) {
             LOG.warn("Failed to load config {}, writing defaults", file.getAbsoluteFile());
             TTNGatewayCollectorConfig config = new TTNGatewayCollectorConfig();
