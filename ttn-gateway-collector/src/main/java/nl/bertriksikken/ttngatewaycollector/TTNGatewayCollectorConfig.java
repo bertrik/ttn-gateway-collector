@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import nl.bertriksikken.udp.UdpProtocolConfig;
+
 public final class TTNGatewayCollectorConfig {
     
     @JsonProperty("url")
@@ -15,6 +17,9 @@ public final class TTNGatewayCollectorConfig {
     
     @JsonProperty("logfile")
     String logFileName = "gateway.csv";
+    
+    @JsonProperty("udp")
+    UdpProtocolConfig udpProtocolConfig = new UdpProtocolConfig();
     
     TTNGatewayCollectorConfig() {
         // add one example receiver

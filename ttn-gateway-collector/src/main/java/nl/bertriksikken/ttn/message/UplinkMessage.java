@@ -107,6 +107,8 @@ public final class UplinkMessage {
     public static class Settings {
         @JsonProperty("data_rate")
         public DataRate dataRate = new DataRate();
+        @JsonProperty("coding_rate")
+        public String codingRate;
         @JsonProperty("frequency")
         public int frequency;
         @JsonProperty("time")
@@ -131,10 +133,12 @@ public final class UplinkMessage {
             public static class Lora {
                 @JsonProperty("spreading_factor")
                 public int spreadingFactor;
+                @JsonProperty("bandwidth")
+                public int bandWidth;
 
                 @Override
                 public String toString() {
-                    return String.format(Locale.ROOT, "{spreadingFactor=%d}", spreadingFactor);
+                    return String.format(Locale.ROOT, "{SF=%d,BW=%d}", spreadingFactor, bandWidth);
                 }
             }
         }
@@ -142,6 +146,9 @@ public final class UplinkMessage {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RxMetadata {
+        @JsonProperty("time")
+        public String time;
+        
         @JsonProperty("rssi")
         public int rssi;
 

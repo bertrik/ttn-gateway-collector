@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
@@ -17,6 +16,7 @@ import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
+import nl.bertriksikken.udp.UdpProtocolSender;
 
 public final class TTNGatewayCollector {
 
@@ -26,11 +26,13 @@ public final class TTNGatewayCollector {
     private final StreamEventsReceiver receiver;
     private final ObjectMapper mapper = new ObjectMapper();
     private final ExportEventWriter eventWriter;
+    private final UdpProtocolSender udpSender;
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
         this.receiver = new StreamEventsReceiver(config.url, this::eventReceived);
         this.eventWriter = new ExportEventWriter(new File(config.logFileName));
+        this.udpSender = new UdpProtocolSender(config.udpProtocolConfig);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -42,8 +44,9 @@ public final class TTNGatewayCollector {
         Runtime.getRuntime().addShutdownHook(new Thread(collector::stop));
     }
 
-    private void start() throws JsonProcessingException {
+    private void start() throws IOException {
         LOG.info("Starting");
+        udpSender.start();
         for (GatewayReceiverConfig receiverConfig : config.receivers) {
             LOG.info("Adding receiver for '{}'", receiverConfig.gatewayId);
             StreamEventsRequest request = new StreamEventsRequest(receiverConfig.gatewayId);
@@ -56,6 +59,7 @@ public final class TTNGatewayCollector {
     private void stop() {
         LOG.info("Stopping");
         receiver.stop();
+        udpSender.stop();
         LOG.info("Stopped");
     }
 
@@ -65,10 +69,16 @@ public final class TTNGatewayCollector {
             // only interested in gateway uplink events
             if (event.getName().equals("gs.up.receive")) {
                 LOG.info("Gateway uplink received: {}", event.getData());
-                // parse as uplink and log
-                String gateway = event.getIdentifiers().at("/0/gateway_ids/gateway_id").asText("unknown");
+                // parse as uplink message
                 UplinkMessage uplinkMessage = mapper.treeToValue(event.getData(), UplinkMessage.class);
-                eventWriter.write(gateway, uplinkMessage);
+                
+                // send to logger
+                String gatewayId = event.getIdentifiers().at("/0/gateway_ids/gateway_id").asText("unknown");
+                eventWriter.write(gatewayId, uplinkMessage);
+
+                // send to UDP sender
+                String gatewayEui = event.getIdentifiers().at("/0/gateway_ids/eui").asText("");
+                udpSender.send(gatewayEui, uplinkMessage);
             }
         } catch (IOException e) {
             LOG.warn("Exception processing event", e);
