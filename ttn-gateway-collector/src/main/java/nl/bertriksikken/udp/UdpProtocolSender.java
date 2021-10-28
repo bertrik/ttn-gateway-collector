@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ public final class UdpProtocolSender {
 
     private InetAddress udpAddress;
     private DatagramSocket udpSocket;
+    
+    private AtomicInteger token = new AtomicInteger(0);
 
     public UdpProtocolSender(UdpProtocolConfig config) {
         this.config = config;
@@ -49,7 +52,7 @@ public final class UdpProtocolSender {
         byte[] eui = parseHex(euiString);
 
         // build packet
-        UdpPushData pushData = new UdpPushData(eui);
+        UdpPushData pushData = new UdpPushData(eui, token.incrementAndGet());
         RxMetadata rxMetadata = uplink.rxMetadata.get(0);
         Instant time = Instant.parse(rxMetadata.time);
         double frequency = uplink.settings.frequency / 1E6;

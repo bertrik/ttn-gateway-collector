@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Random;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,13 +12,13 @@ public final class UdpPushData {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final byte PROTOCOL_VERSION = 2;
-
-    private final Random random;
+    
+    private final int token;
     private final byte[] eui;
     private final UdpPushDataJson json;
 
-    public UdpPushData(byte[] eui) {
-        this.random = new Random(Instant.now().toEpochMilli());
+    public UdpPushData(byte[] eui, int token) {
+        this.token = token;
         this.eui = eui.clone();
         this.json = new UdpPushDataJson();
     }
@@ -33,12 +32,10 @@ public final class UdpPushData {
         // encode packet as JSON
         String jsonData = MAPPER.writeValueAsString(json);
 
-        int token = random.nextInt();
-
         // build packet
         ByteBuffer bb = ByteBuffer.allocate(1500);
         bb.put(PROTOCOL_VERSION);
-        bb.putShort((short) token);
+        bb.putShort((short) (token & 0xFFFF));
         bb.put((byte) 0);
         bb.put(eui);
         bb.put(jsonData.getBytes(StandardCharsets.US_ASCII));

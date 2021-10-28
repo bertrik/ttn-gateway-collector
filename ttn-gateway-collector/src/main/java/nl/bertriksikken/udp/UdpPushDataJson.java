@@ -3,6 +3,7 @@ package nl.bertriksikken.udp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -66,6 +67,12 @@ public final class UdpPushDataJson {
             this.snr = snr;
             this.size = data.length;
             this.data = data.clone();
+        }
+
+        @Override
+        public String toString() {
+            return String.format(Locale.ROOT, "{%s,%f,%s,%s,%d,%.1f,%d,%s,%d,%s}", time, frequency, crc, modulation,
+                dataRate, codingRate, rssi, snr, size, data);
         }
     }
 }
