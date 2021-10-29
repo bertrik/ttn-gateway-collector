@@ -2,6 +2,9 @@ package nl.bertriksikken.ttngatewaycollector;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
@@ -27,6 +30,7 @@ public final class TTNGatewayCollector {
     private final ObjectMapper mapper = new ObjectMapper();
     private final ExportEventWriter eventWriter;
     private final UdpProtocolSender udpSender;
+    private final Map<String, byte[]> lastPacket = new HashMap<>();
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
@@ -71,13 +75,19 @@ public final class TTNGatewayCollector {
                 LOG.info("Gateway uplink received: {}", event.getData());
                 // parse as uplink message
                 UplinkMessage uplinkMessage = mapper.treeToValue(event.getData(), UplinkMessage.class);
+                String gatewayEui = event.getIdentifiers().at("/0/gateway_ids/eui").asText("");
+                
+                // detect and ignore duplicates
+                byte[] lastData = lastPacket.put(gatewayEui, uplinkMessage.rawPayload);
+                if (Arrays.equals(lastData, uplinkMessage.rawPayload)) {
+                    return;
+                }
                 
                 // send to logger
                 String gatewayId = event.getIdentifiers().at("/0/gateway_ids/gateway_id").asText("unknown");
                 eventWriter.write(gatewayId, uplinkMessage);
 
                 // send to UDP sender
-                String gatewayEui = event.getIdentifiers().at("/0/gateway_ids/eui").asText("");
                 udpSender.send(gatewayEui, uplinkMessage);
             }
         } catch (IOException e) {
