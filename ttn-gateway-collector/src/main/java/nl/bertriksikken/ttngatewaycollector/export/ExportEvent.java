@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
+import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 
 /**
  * Represents one line in the export.
@@ -68,12 +69,14 @@ public final class ExportEvent {
     }
 
     public static ExportEvent fromUplinkMessage(String gateway, UplinkMessage message) {
-        String time = message.settings.time;
         byte[] rawPayload = message.rawPayload;
         int spreadingFactor = message.settings.dataRate.lora.spreadingFactor;
         int frequency = message.settings.frequency;
-        double snr = message.rxMetadata.get(0).snr;
-        int rssi = message.rxMetadata.get(0).rssi;
+        
+        RxMetadata rxMetadata = message.rxMetadata.get(0);
+        String time = rxMetadata.time;
+        double snr = rxMetadata.snr;
+        int rssi = rxMetadata.rssi;
         ExportEvent event = new ExportEvent(time, gateway, rawPayload, spreadingFactor, frequency, snr, rssi);
 
         JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;

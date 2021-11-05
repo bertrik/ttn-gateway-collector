@@ -111,12 +111,10 @@ public final class UplinkMessage {
         public String codingRate;
         @JsonProperty("frequency")
         public int frequency;
-        @JsonProperty("time")
-        public String time = "";
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT, "{datarate=%s,frequency=%d,time=%s}", dataRate, frequency, time);
+            return String.format(Locale.ROOT, "{datarate=%s,frequency=%d}", dataRate, frequency);
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -147,7 +145,7 @@ public final class UplinkMessage {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RxMetadata {
         @JsonProperty("time")
-        public String time;
+        public String time = "";
         
         @JsonProperty("rssi")
         public int rssi;
