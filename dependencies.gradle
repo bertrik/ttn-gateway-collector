@@ -32,8 +32,8 @@ libraries.retrofit_mock = 'com.squareup.retrofit2:retrofit-mock:2.9.0'
 
 // test libraries
 libraries.junit = 'junit:junit:4.13.2'
-libraries.mockito = 'org.mockito:mockito-core:3.12.4'
+libraries.mockito = 'org.mockito:mockito-core:4.0.0'
 
 // check libraries
-libraries.spotbugs_annotations = 'com.github.spotbugs:spotbugs-annotations:4.4.1'
+libraries.spotbugs_annotations = 'com.github.spotbugs:spotbugs-annotations:4.5.0'
 
