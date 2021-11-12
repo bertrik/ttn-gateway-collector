@@ -30,7 +30,7 @@ public final class TTNGatewayCollector {
     private final ObjectMapper mapper = new ObjectMapper();
     private final ExportEventWriter eventWriter;
     private final UdpProtocolSender udpSender;
-    private final Map<String, byte[]> lastPacket = new HashMap<>();
+    private final Map<GatewayFrequencyKey, byte[]> lastPacket = new HashMap<>();
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
@@ -78,7 +78,8 @@ public final class TTNGatewayCollector {
                 String gatewayEui = event.getIdentifiers().at("/0/gateway_ids/eui").asText("");
                 
                 // detect and ignore duplicates
-                byte[] lastData = lastPacket.put(gatewayEui, uplinkMessage.rawPayload);
+                GatewayFrequencyKey key = new GatewayFrequencyKey(gatewayEui, uplinkMessage.settings.frequency);
+                byte[] lastData = lastPacket.put(key, uplinkMessage.rawPayload);
                 if (Arrays.equals(lastData, uplinkMessage.rawPayload)) {
                     return;
                 }
