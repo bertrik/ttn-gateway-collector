@@ -15,6 +15,7 @@ libraries.guava = 'com.google.guava:guava:23.0'
 
 libraries.jackson = [
     'com.fasterxml.jackson.core:jackson-databind:2.13.0',
+    'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0',
     'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.0',
     'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.13.0'
 ]

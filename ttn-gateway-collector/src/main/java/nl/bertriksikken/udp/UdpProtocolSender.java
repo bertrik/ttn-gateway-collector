@@ -54,7 +54,7 @@ public final class UdpProtocolSender {
         // build packet
         UdpPushData pushData = new UdpPushData(eui, token.incrementAndGet());
         RxMetadata rxMetadata = uplink.rxMetadata.get(0);
-        Instant time = Instant.parse(rxMetadata.time);
+        Instant time = rxMetadata.time;
         double frequency = uplink.settings.frequency / 1E6;
         String dataRate = String.format(Locale.ROOT, "SF%dBW%d", uplink.settings.dataRate.lora.spreadingFactor,
             uplink.settings.dataRate.lora.bandWidth / 1000);

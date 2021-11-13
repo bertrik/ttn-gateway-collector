@@ -74,7 +74,7 @@ public final class ExportEvent {
         int frequency = message.settings.frequency;
         
         RxMetadata rxMetadata = message.rxMetadata.get(0);
-        String time = rxMetadata.time;
+        String time = rxMetadata.time.toString();
         double snr = rxMetadata.snr;
         int rssi = rxMetadata.rssi;
         ExportEvent event = new ExportEvent(time, gateway, rawPayload, spreadingFactor, frequency, snr, rssi);

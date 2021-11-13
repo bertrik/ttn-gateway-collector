@@ -40,7 +40,7 @@ public final class StreamEventsReceiver {
     private static final Duration PING_INTERVAL = Duration.ofSeconds(60);
     private static final Duration RETRY_INTERVAL = Duration.ofSeconds(60);
 
-    private final ObjectMapper MAPPER = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private final RequestCallback requestCallback = new RequestCallback();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -57,10 +57,11 @@ public final class StreamEventsReceiver {
         this.callback = callback;
         httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(true).pingInterval(PING_INTERVAL)
             .readTimeout(Duration.ZERO).build();
+        mapper.findAndRegisterModules();
     }
 
     public void addSubscription(StreamEventsRequest request, String apiKey) throws JsonProcessingException {
-        String requestJson = MAPPER.writeValueAsString(request);
+        String requestJson = mapper.writeValueAsString(request);
         RequestBody body = RequestBody.create(MEDIATYPE_JSON, requestJson);
         Request httpRequest = new Request.Builder().post(body).url(url).header("Accept", "text/event-stream")
             .header("Authorization", "Bearer " + apiKey).build();
@@ -102,7 +103,7 @@ public final class StreamEventsReceiver {
                 }
             } catch (IOException e) {
                 if (!canceled) {
-                    LOG.warn("Scheduling reconnect in {} ...", RETRY_INTERVAL);
+                    LOG.warn("Scheduling reconnect in {} ...", RETRY_INTERVAL, e);
                     executor.schedule(() -> connect(call.request()), RETRY_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
                 }
             } finally {
@@ -113,7 +114,7 @@ public final class StreamEventsReceiver {
         private void processResponse(BufferedSource source) throws IOException {
             String line = source.readUtf8Line();
             if (!line.isEmpty()) {
-                EventResult result = MAPPER.readValue(line, EventResult.class);
+                EventResult result = mapper.readValue(line, EventResult.class);
                 callback.eventReceived(result.getEvent());
             }
         }

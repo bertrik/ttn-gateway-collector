@@ -1,5 +1,6 @@
 package nl.bertriksikken.ttn.message;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -145,7 +146,7 @@ public final class UplinkMessage {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RxMetadata {
         @JsonProperty("time")
-        public String time = "";
+        public Instant time = Instant.now();
         
         @JsonProperty("rssi")
         public int rssi;

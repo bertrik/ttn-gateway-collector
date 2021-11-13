@@ -37,6 +37,8 @@ public final class TTNGatewayCollector {
         this.receiver = new StreamEventsReceiver(config.url, this::eventReceived);
         this.eventWriter = new ExportEventWriter(new File(config.logFileName));
         this.udpSender = new UdpProtocolSender(config.udpProtocolConfig);
+
+        mapper.findAndRegisterModules();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -76,14 +78,14 @@ public final class TTNGatewayCollector {
                 // parse as uplink message
                 UplinkMessage uplinkMessage = mapper.treeToValue(event.getData(), UplinkMessage.class);
                 String gatewayEui = event.getIdentifiers().at("/0/gateway_ids/eui").asText("");
-                
+
                 // detect and ignore duplicates
                 GatewayFrequencyKey key = new GatewayFrequencyKey(gatewayEui, uplinkMessage.settings.frequency);
                 byte[] lastData = lastPacket.put(key, uplinkMessage.rawPayload);
                 if (Arrays.equals(lastData, uplinkMessage.rawPayload)) {
                     return;
                 }
-                
+
                 // send to logger
                 String gatewayId = event.getIdentifiers().at("/0/gateway_ids/gateway_id").asText("unknown");
                 eventWriter.write(gatewayId, uplinkMessage);
