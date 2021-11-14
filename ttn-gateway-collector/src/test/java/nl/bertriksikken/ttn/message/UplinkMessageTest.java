@@ -10,11 +10,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class UplinkMessageTest {
 
+    private final ObjectMapper mapper = new ObjectMapper();
+    
+    public UplinkMessageTest() {
+        mapper.findAndRegisterModules();
+    }
+    
     @Test
     public void testUnconfirmed() throws IOException, URISyntaxException {
         URL url = getClass().getResource("/unconfirmed.json");
         
-        ObjectMapper mapper = new ObjectMapper();
         UplinkMessage uplink = mapper.readValue(url, UplinkMessage.class);
         System.out.println(uplink);
     }
@@ -23,7 +28,6 @@ public final class UplinkMessageTest {
     public void testJoin() throws IOException, URISyntaxException {
         URL url = getClass().getResource("/join.json");
         
-        ObjectMapper mapper = new ObjectMapper();
         UplinkMessage uplink = mapper.readValue(url, UplinkMessage.class);
         System.out.println(uplink);
     }

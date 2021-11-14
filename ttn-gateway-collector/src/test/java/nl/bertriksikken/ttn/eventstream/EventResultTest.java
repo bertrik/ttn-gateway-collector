@@ -13,6 +13,10 @@ import nl.bertriksikken.ttn.message.UplinkMessage;
 public final class EventResultTest {
     
     private final ObjectMapper mapper = new ObjectMapper();
+    
+    public EventResultTest() {
+        mapper.findAndRegisterModules();
+    }
 
     @Test
     public void testDecodeEvent() throws IOException {
