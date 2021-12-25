@@ -27,25 +27,25 @@ public final class UdpPushDataJson {
         @JsonProperty("tmms")
         final long tmms;
         @JsonProperty("tmst")
-        final long gpsTime;
+        final long tmst;
         @JsonProperty("chan")
-        final int channel;
+        final int chan;
         @JsonProperty("rfch")
         final int chain;
         @JsonProperty("freq")
-        double frequency;
+        double freq;
         @JsonProperty("stat")
-        int crc;
+        int stat;
         @JsonProperty("modu")
-        String modulation;
+        String modu;
         @JsonProperty("datr")
-        String dataRate;
+        String datr;
         @JsonProperty("codr")
-        String codingRate;
+        String codr;
         @JsonProperty("rssi")
         int rssi;
         @JsonProperty("lsnr")
-        double snr;
+        double lsnr;
         @JsonProperty("size")
         int size;
         @JsonProperty("data")
@@ -55,24 +55,24 @@ public final class UdpPushDataJson {
             byte[] data) {
             this.time = time.toString();
             this.tmms = 0;
-            this.gpsTime = 0;
-            this.channel = 0;
+            this.tmst = 0;
+            this.chan = 0;
             this.chain = 0;
-            this.frequency = frequency;
-            this.crc = 1;
-            this.modulation = "LORA";
-            this.dataRate = dataRate;
-            this.codingRate = codingRate;
+            this.freq = frequency;
+            this.stat = 1;
+            this.modu = "LORA";
+            this.datr = dataRate;
+            this.codr = codingRate;
             this.rssi = rssi;
-            this.snr = snr;
+            this.lsnr = snr;
             this.size = data.length;
             this.data = data.clone();
         }
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT, "{%s,%f,%s,%s,%d,%.1f,%d,%s,%d,%s}", time, frequency, crc, modulation,
-                dataRate, codingRate, rssi, snr, size, data);
+            return String.format(Locale.ROOT, "{%s,%f,%s,%s,%d,%.1f,%d,%s,%d,%s}", time, freq, stat, modu,
+                datr, codr, rssi, lsnr, size, data);
         }
     }
 }

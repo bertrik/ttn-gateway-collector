@@ -8,6 +8,10 @@ import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Semtech UDP protocol PUSH DATA packet, see
+ * https://github.com/Lora-net/packet_forwarder/blob/master/PROTOCOL.TXT#L92
+ */
 public final class UdpPushData {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
