@@ -13,12 +13,12 @@ import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 /**
  * Represents one line in the export.
  */
-@JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr", "port",
-    "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
+@JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr",
+        "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
 public final class ExportEvent {
 
-	private static final AirTimeCalculator airTimeCalculator = AirTimeCalculator.LORAWAN;
-	
+    private static final AirTimeCalculator airTimeCalculator = AirTimeCalculator.LORAWAN;
+
     @JsonProperty("time")
     final String time;
     @JsonProperty("gateway")
@@ -63,7 +63,7 @@ public final class ExportEvent {
     }
 
     private ExportEvent(String time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
-        int rssi, double airtime) {
+            int rssi, double airtime) {
         this.time = time;
         this.gateway = gateway;
         this.rawPayload = rawPayload;
@@ -78,7 +78,7 @@ public final class ExportEvent {
         byte[] rawPayload = message.rawPayload;
         int spreadingFactor = message.settings.dataRate.lora.spreadingFactor;
         int frequency = message.settings.frequency;
-        
+
         RxMetadata rxMetadata = message.rxMetadata.get(0);
         String time = rxMetadata.time.toString();
         double snr = rxMetadata.snr;
@@ -106,7 +106,7 @@ public final class ExportEvent {
     @Override
     public String toString() {
         return String.format(Locale.ROOT, "{%s,%s,%d,%d,%f,%d,%d,%s,%s,%d,%d,%s,%s,%s,%s}", gateway, time, frequency,
-            sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
+                sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
     }
 
 }
