@@ -6,7 +6,7 @@ package nl.bertriksikken.lorawan;
 public final class AirTimeCalculator {
 	
 	// air time calculator for typical settings used in LoRaWAN
-	public static AirTimeCalculator LORAWAN = new AirTimeCalculator(8, true, 125_000, 1);
+	public static final AirTimeCalculator LORAWAN = new AirTimeCalculator(8, true, 125_000, 1);
 	
 	private int bw;
 	private int preamble;
