@@ -5,6 +5,7 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import nl.bertriksikken.lorawan.AirTimeCalculator;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
@@ -12,10 +13,12 @@ import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 /**
  * Represents one line in the export.
  */
-@JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "raw_payload", "type", "dev_addr", "port",
+@JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr", "port",
     "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
 public final class ExportEvent {
 
+	private static final AirTimeCalculator airTimeCalculator = AirTimeCalculator.LORAWAN;
+	
     @JsonProperty("time")
     final String time;
     @JsonProperty("gateway")
@@ -30,6 +33,8 @@ public final class ExportEvent {
     final double snr;
     @JsonProperty("rssi")
     final int rssi;
+    @JsonProperty("airtime")
+    final double airtime;
 
     @JsonProperty("raw_payload")
     final byte[] rawPayload;
@@ -58,7 +63,7 @@ public final class ExportEvent {
     }
 
     private ExportEvent(String time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
-        int rssi) {
+        int rssi, double airtime) {
         this.time = time;
         this.gateway = gateway;
         this.rawPayload = rawPayload;
@@ -66,6 +71,7 @@ public final class ExportEvent {
         this.frequency = frequency;
         this.snr = snr;
         this.rssi = rssi;
+        this.airtime = airtime;
     }
 
     public static ExportEvent fromUplinkMessage(String gateway, UplinkMessage message) {
@@ -77,7 +83,8 @@ public final class ExportEvent {
         String time = rxMetadata.time.toString();
         double snr = rxMetadata.snr;
         int rssi = rxMetadata.rssi;
-        ExportEvent event = new ExportEvent(time, gateway, rawPayload, spreadingFactor, frequency, snr, rssi);
+        double airtime = airTimeCalculator.calculate(spreadingFactor, message.rawPayload.length);
+        ExportEvent event = new ExportEvent(time, gateway, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
 
         JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {
