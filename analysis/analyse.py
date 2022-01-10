@@ -16,12 +16,20 @@ netids = {  0x00 : 'Experimental',
             0x62 : 'Operator_62'}
 
 def get_operator(dev_addr):
-    """takes a devaddr in hex and return the operator it belongs to """
+    """ takes a devaddr in hex and returns the operator it belongs to """
     netid = int(dev_addr, 16) >> 25
-    return netids.get(netid, 'Other');
+    return netids.get(netid, 'Other')
 
-def analyse(filename):
-    """ Analyses a CSV file with the specified file name and prints the resuls to stdout """
+def read_csv(filename):
+    """ reads a CSV file, returns a list of dicts, one for each packet """
+    file = []
+    with open(filename, encoding="utf-8") as csvfile:
+        for row in csv.DictReader(csvfile, delimiter=',', quotechar='"'):
+            file.append(row)
+    return file
+
+def analyse(packets):
+    """ Analyses packets and prints the resuls to stdout """
 
     # group airtime and total packets by operator
     timedict = {}
@@ -30,20 +38,18 @@ def analyse(filename):
     time_dev_total = 0
     pkts_dev_total = 0
     pkts_total = 0
-    with open(filename, encoding="utf-8") as csvfile:
-        reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
-        for row in reader:
-            dev_addr = row['dev_addr']
-            if dev_addr:
-                operator = get_operator(dev_addr)
-                airtime = float(row['airtime'])
-                timedict[operator] = timedict.get(operator, 0.0) + airtime
-                pktsdict[operator] = pktsdict.get(operator, 0) + 1
-                time_dev_total += airtime
-                pkts_dev_total += 1
-            pkt_type = row['type']
-            pkttypes[pkt_type] = pkttypes.get(pkt_type, 0) + 1
-            pkts_total += 1
+    for row in packets:
+        dev_addr = row['dev_addr']
+        if dev_addr:
+            operator = get_operator(dev_addr)
+            airtime = float(row['airtime'])
+            timedict[operator] = timedict.get(operator, 0.0) + airtime
+            pktsdict[operator] = pktsdict.get(operator, 0) + 1
+            time_dev_total += airtime
+            pkts_dev_total += 1
+        pkt_type = row['type']
+        pkttypes[pkt_type] = pkttypes.get(pkt_type, 0) + 1
+        pkts_total += 1
 
     print(f'\nPacket types: ({pkts_total} total)')
     for pkt_type,value in sorted(pkttypes.items(), key=lambda item: item[1], reverse=True):
@@ -63,7 +69,9 @@ def main():
     parser.add_argument("-f", "--filename", help="The name of the CSV file to analyse",
                         default="gateway.csv")
     args = parser.parse_args()
-    analyse(args.filename)
+
+    packets = read_csv(args.filename)
+    analyse(packets)
 
 if __name__ == "__main__":
     main()
