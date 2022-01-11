@@ -6,6 +6,7 @@
 
 import argparse
 import csv
+from dateutil import parser as dateparser
 
 # the net ids of the major operators, others will be counted as 'Other'
 netids = {  0x00 : 'Experimental',
@@ -27,6 +28,23 @@ def read_csv(filename):
         for row in csv.DictReader(csvfile, delimiter=',', quotechar='"'):
             file.append(row)
     return file
+
+def get_datetime(row):
+    """ extracts the time as a datetime """
+    timestr = row['time']
+    return dateparser.parse(timestr)
+
+def analyse_frequency_use(packets):
+    """ analyses the relative use of frequencies """
+    timespan = (get_datetime(packets[-1]) - get_datetime(packets[0])).total_seconds()
+    time_by_freq = {}
+    for row in packets:
+        airtime = float(row['airtime'])
+        frequency = int(row['frequency'])
+        time_by_freq[frequency] = time_by_freq.get(frequency, 0.0) + airtime
+    print(f'\nAirtime by frequency: ({timespan:.3f} seconds total)')
+    for freq,value in sorted(time_by_freq.items(), key=lambda item: item[0]):
+        print(f'{freq:>12} Hz: {value / timespan:>5.1%} = {value:8.3f} sec')
 
 def analyse(packets):
     """ Analyses packets and prints the resuls to stdout """
@@ -71,6 +89,8 @@ def main():
     args = parser.parse_args()
 
     packets = read_csv(args.filename)
+
+    analyse_frequency_use(packets)
     analyse(packets)
 
 if __name__ == "__main__":
