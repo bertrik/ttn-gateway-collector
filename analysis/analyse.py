@@ -49,6 +49,27 @@ def analyse_frequency_use(packets):
     for freq,value in sorted(time_by_freq.items(), key=lambda item: item[0]):
         print(f'{freq:>12} Hz: {value / timespan:>5.1%} = {value:8.3f} sec')
 
+def analyse_packet_types(packets):
+    """ Analyses packets by type """
+
+    # group airtime and total packets by operator
+    count_by_type = {}
+    time_by_type = {}
+    count_total = 0
+    time_total = 0
+    for row in packets:
+        pkt_type = row['type']
+        count_by_type[pkt_type] = count_by_type.get(pkt_type, 0) + 1
+        count_total += 1
+        airtime = float(row['airtime'])
+        time_by_type[pkt_type] = time_by_type.get(pkt_type, 0.0) + airtime
+        time_total += airtime
+
+    print(f'\nPacket types: ({count_total} packets total, {time_total:.3f} seconds total)')
+    for pkt_type,count in sorted(count_by_type.items(), key=lambda item: item[1], reverse=True):
+        airtime = time_by_type[pkt_type]
+        print(f'{pkt_type:>20}: {count:>5d} ({count / count_total:5.1%} pkts, {airtime / time_total:5.1%} time)')
+
 def analyse_unique_devices(packets):
     """ determines unique devices by operator """
     # create sets of unique devices, per operator
@@ -62,7 +83,7 @@ def analyse_unique_devices(packets):
             dev_by_operator[operator] = myset
     # convert set to count, per operator
     num_by_operator = {}
-    num_total = 0;
+    num_total = 0
     for operator,deviceset in dev_by_operator.items():
         num_by_operator[operator] = len(deviceset)
         num_total += len(deviceset)
@@ -76,10 +97,8 @@ def analyse(packets):
     # group airtime and total packets by operator
     timedict = {}
     pktsdict = {}
-    pkttypes = {}
     time_dev_total = 0
     pkts_dev_total = 0
-    pkts_total = 0
     for row in packets:
         operator = get_operator(row)
         if operator:
@@ -88,13 +107,6 @@ def analyse(packets):
             pktsdict[operator] = pktsdict.get(operator, 0) + 1
             time_dev_total += airtime
             pkts_dev_total += 1
-        pkt_type = row['type']
-        pkttypes[pkt_type] = pkttypes.get(pkt_type, 0) + 1
-        pkts_total += 1
-
-    print(f'\nPacket types: ({pkts_total} total)')
-    for pkt_type,value in sorted(pkttypes.items(), key=lambda item: item[1], reverse=True):
-        print(f'{pkt_type:>20}: {value / pkts_total:>5.1%} = {value}')
 
     print(f'\nAirtime by operator: ({time_dev_total:.3f} total)')
     for operator,value in sorted(timedict.items(), key=lambda item: item[1], reverse=True):
@@ -113,6 +125,7 @@ def main():
 
     packets = read_csv(args.filename)
 
+    analyse_packet_types(packets)
     analyse_frequency_use(packets)
     analyse_unique_devices(packets)
     analyse(packets)
