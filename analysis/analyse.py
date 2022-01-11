@@ -16,8 +16,11 @@ netids = {  0x00 : 'Experimental',
             0x24 : 'Helium',
             0x62 : 'Operator_62'}
 
-def get_operator(dev_addr):
+def get_operator(row):
     """ takes a devaddr in hex and returns the operator it belongs to """
+    dev_addr = row['dev_addr']
+    if not dev_addr:
+        return None
     netid = int(dev_addr, 16) >> 25
     return netids.get(netid, 'Other')
 
@@ -57,9 +60,8 @@ def analyse(packets):
     pkts_dev_total = 0
     pkts_total = 0
     for row in packets:
-        dev_addr = row['dev_addr']
-        if dev_addr:
-            operator = get_operator(dev_addr)
+        operator = get_operator(row)
+        if operator:
             airtime = float(row['airtime'])
             timedict[operator] = timedict.get(operator, 0.0) + airtime
             pktsdict[operator] = pktsdict.get(operator, 0) + 1
