@@ -49,6 +49,27 @@ def analyse_frequency_use(packets):
     for freq,value in sorted(time_by_freq.items(), key=lambda item: item[0]):
         print(f'{freq:>12} Hz: {value / timespan:>5.1%} = {value:8.3f} sec')
 
+def analyse_unique_devices(packets):
+    """ determines unique devices by operator """
+    # create sets of unique devices, per operator
+    dev_by_operator = {}
+    for row in packets:
+        operator = get_operator(row)
+        if operator:
+            devaddr = row['dev_addr']
+            myset = dev_by_operator.get(operator, set())
+            myset.add(devaddr)
+            dev_by_operator[operator] = myset
+    # convert set to count, per operator
+    num_by_operator = {}
+    num_total = 0;
+    for operator,deviceset in dev_by_operator.items():
+        num_by_operator[operator] = len(deviceset)
+        num_total += len(deviceset)
+    print(f'\nUnique devices by operator: ({num_total} devices total)')
+    for operator,num in sorted(num_by_operator.items(), key=lambda item: item[1], reverse=True):
+        print(f'{operator:>20} : {num:>5}')
+
 def analyse(packets):
     """ Analyses packets and prints the resuls to stdout """
 
@@ -93,6 +114,7 @@ def main():
     packets = read_csv(args.filename)
 
     analyse_frequency_use(packets)
+    analyse_unique_devices(packets)
     analyse(packets)
 
 if __name__ == "__main__":
