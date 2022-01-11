@@ -45,7 +45,7 @@ def analyse_frequency_use(packets):
         airtime = float(row['airtime'])
         frequency = int(row['frequency'])
         time_by_freq[frequency] = time_by_freq.get(frequency, 0.0) + airtime
-    print(f'\nAirtime by frequency: ({timespan:.3f} seconds total)')
+    print(f'\nAirtime by frequency: ({timespan:.0f} seconds total)')
     for freq,value in sorted(time_by_freq.items(), key=lambda item: item[0]):
         print(f'{freq:>12} Hz: {value / timespan:>5.1%} = {value:8.3f} sec')
 
@@ -89,7 +89,7 @@ def analyse_unique_devices(packets):
         num_total += len(deviceset)
     print(f'\nUnique devices by operator: ({num_total} devices total)')
     for operator,num in sorted(num_by_operator.items(), key=lambda item: item[1], reverse=True):
-        print(f'{operator:>20} : {num:>5}')
+        print(f'{operator:>20}: {num:>5}')
 
 def analyse(packets):
     """ Analyses packets and prints the resuls to stdout """
