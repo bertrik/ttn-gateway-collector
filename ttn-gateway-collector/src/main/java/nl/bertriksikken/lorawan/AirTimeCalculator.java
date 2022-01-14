@@ -21,6 +21,10 @@ public final class AirTimeCalculator {
     }
 
     public double calculate(int sf, int pl) {
+        if ((sf < 6) || (sf > 12)) {
+            // cannot calculate, avoid returning completely wrong value
+            return 0.0;
+        }
         double tsym = Math.pow(2, sf) / bw;
         double tpreamble = tsym * (preamble + 4.25);
         boolean de = (sf >= 11);

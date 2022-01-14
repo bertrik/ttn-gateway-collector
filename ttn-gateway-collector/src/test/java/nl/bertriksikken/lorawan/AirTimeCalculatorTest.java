@@ -1,5 +1,7 @@
 package nl.bertriksikken.lorawan;
 
+import java.util.Base64;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,6 +22,15 @@ public final class AirTimeCalculatorTest {
         assertAirTime(452.6, 10, 20);
         assertAirTime(987.1, 11, 20);
         assertAirTime(1810.4, 12, 20);
+    }
+
+    /**
+     * Verifies that air time calculation with FSK doesn't result in a negative
+     * value.
+     */
+    @Test
+    public void testFsk() {
+        assertAirTime(0.0, 0, 20);
     }
 
     private void assertAirTime(double expected, int sf, int n) {

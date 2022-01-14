@@ -37,12 +37,17 @@ def get_datetime(row):
     timestr = row['time']
     return dateparser.parse(timestr)
 
+def get_airtime(row):
+    """ extract the airtime (seconds) """
+    airtime = float(row['airtime'])
+    return 0.0 if airtime < 0.0 else airtime
+
 def analyse_frequency_use(packets):
     """ analyses the relative use of frequencies """
     timespan = (get_datetime(packets[-1]) - get_datetime(packets[0])).total_seconds()
     time_by_freq = {}
     for row in packets:
-        airtime = float(row['airtime'])
+        airtime = get_airtime(row)
         frequency = int(row['frequency'])
         time_by_freq[frequency] = time_by_freq.get(frequency, 0.0) + airtime
     print(f'\nAirtime by frequency: ({timespan:.0f} seconds total)')
@@ -61,7 +66,7 @@ def analyse_packet_types(packets):
         pkt_type = row['type']
         count_by_type[pkt_type] = count_by_type.get(pkt_type, 0) + 1
         count_total += 1
-        airtime = float(row['airtime'])
+        airtime = get_airtime(row)
         time_by_type[pkt_type] = time_by_type.get(pkt_type, 0.0) + airtime
         time_total += airtime
 
@@ -102,7 +107,7 @@ def analyse(packets):
     for row in packets:
         operator = get_operator(row)
         if operator:
-            airtime = float(row['airtime'])
+            airtime = get_airtime(row)
             timedict[operator] = timedict.get(operator, 0.0) + airtime
             pktsdict[operator] = pktsdict.get(operator, 0) + 1
             time_dev_total += airtime
