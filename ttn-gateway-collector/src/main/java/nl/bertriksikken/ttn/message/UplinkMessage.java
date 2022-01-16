@@ -128,7 +128,7 @@ public final class UplinkMessage {
 
             @Override
             public String toString() {
-                return String.format(Locale.ROOT, "{lora=%s}", lora);
+                return String.format(Locale.ROOT, "{lora=%s,fsk=%s}", lora, fsk);
             }
 
             @JsonIgnoreProperties(ignoreUnknown = true)
