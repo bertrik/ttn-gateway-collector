@@ -122,6 +122,9 @@ public final class UplinkMessage {
         public static class DataRate {
             @JsonProperty("lora")
             public Lora lora = new Lora();
+            
+            @JsonProperty("fsk")
+            public Fsk fsk = new Fsk();
 
             @Override
             public String toString() {
@@ -140,6 +143,18 @@ public final class UplinkMessage {
                     return String.format(Locale.ROOT, "{SF=%d,BW=%d}", spreadingFactor, bandWidth);
                 }
             }
+
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            public static class Fsk {
+                @JsonProperty("bit_rate")
+                public int bitRate;
+
+                @Override
+                public String toString() {
+                    return String.format(Locale.ROOT, "{bitrate=%d}", bitRate);
+                }
+            }
+
         }
     }
 
