@@ -15,11 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
-import nl.bertriksikken.ttngatewaycollector.StreamEventsReceiver;
 
 public final class UdpProtocolSender {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StreamEventsReceiver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UdpProtocolSender.class);
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final UdpProtocolConfig config;
