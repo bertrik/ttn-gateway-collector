@@ -1,9 +1,9 @@
 package nl.bertriksikken.lorawan;
 
-import java.util.Base64;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import nl.bertriksikken.ttn.message.UplinkMessage;
 
 public final class AirTimeCalculatorTest {
 
@@ -15,7 +15,7 @@ public final class AirTimeCalculatorTest {
      * The link above already takes into account the lorawan overhead (12 bytes).
      */
     @Test
-    public void testHappyFlow() {
+    public void testLoRa() {
         assertAirTime(77.1, 7, 20);
         assertAirTime(133.6, 8, 20);
         assertAirTime(246.8, 9, 20);
@@ -24,17 +24,27 @@ public final class AirTimeCalculatorTest {
         assertAirTime(1810.4, 12, 20);
     }
 
+    private void assertAirTime(double expected, int sf, int n) {
+        UplinkMessage uplink = new UplinkMessage();
+        uplink.rawPayload = new byte[12 + n];
+        uplink.settings.dataRate.lora.spreadingFactor = sf;
+        double ms = calculator.calculate(uplink) / 0.001;
+        Assert.assertEquals(expected, ms, 0.1);
+    }
+
     /**
-     * Verifies that air time calculation with FSK doesn't result in a negative
-     * value.
+     * Verifies FSK air time calculation, don't actually know the reference value.
      */
     @Test
     public void testFsk() {
-        assertAirTime(0.0, 0, 20);
+        assertFskAirTime(6.88, 50_000, 20);
     }
 
-    private void assertAirTime(double expected, int sf, int n) {
-        double ms = calculator.calculate(sf, 12 + n) / 0.001;
+    private void assertFskAirTime(double expected, int bitRate, int n) {
+        UplinkMessage uplink = new UplinkMessage();
+        uplink.rawPayload = new byte[12 + n];
+        uplink.settings.dataRate.fsk.bitRate = bitRate;
+        double ms = calculator.calculate(uplink) / 0.001;
         Assert.assertEquals(expected, ms, 0.1);
     }
 

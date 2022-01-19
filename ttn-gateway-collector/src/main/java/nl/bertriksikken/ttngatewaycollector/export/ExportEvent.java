@@ -83,7 +83,7 @@ public final class ExportEvent {
         String time = rxMetadata.time.toString();
         double snr = rxMetadata.snr;
         int rssi = rxMetadata.rssi;
-        double airtime = airTimeCalculator.calculate(spreadingFactor, message.rawPayload.length);
+        double airtime = airTimeCalculator.calculate(message);
         ExportEvent event = new ExportEvent(time, gateway, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
 
         JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
