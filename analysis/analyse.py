@@ -13,8 +13,7 @@ netids = {  0x00 : 'Experimental',
             0x03 : 'Proximus',
             0x0A : 'KPN',
             0x13 : 'TheThingsNetwork',
-            0x24 : 'Helium',
-            0x62 : 'Operator_62'}
+            0x24 : 'Helium'}
 
 def get_operator(row):
     """ takes a devaddr in hex and returns the operator it belongs to """
