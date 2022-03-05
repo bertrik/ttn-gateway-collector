@@ -76,7 +76,7 @@ def analyse_packet_types(packets):
 
 def analyse_unique_devices(packets):
     """ determines unique devices by operator """
-    # create sets of unique devices, per operator
+    # create sets of unique device addresses, per operator
     dev_by_operator = {}
     for row in packets:
         operator = get_operator(row)
