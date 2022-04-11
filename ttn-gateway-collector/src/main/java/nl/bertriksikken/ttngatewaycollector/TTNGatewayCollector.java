@@ -44,7 +44,7 @@ public final class TTNGatewayCollector {
     public static void main(String[] args) throws IOException, InterruptedException {
         PropertyConfigurator.configure("log4j.properties");
 
-        TTNGatewayCollectorConfig config = readConfig(new File("ttngatewaycollector.yaml"));
+        TTNGatewayCollectorConfig config = readConfig(new File("ttn-gateway-collector.yaml"));
         TTNGatewayCollector collector = new TTNGatewayCollector(config);
         collector.start();
         Runtime.getRuntime().addShutdownHook(new Thread(collector::stop));
