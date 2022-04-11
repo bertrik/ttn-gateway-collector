@@ -1,0 +1,9 @@
+---
+url: "https://eu1.cloud.thethings.network/api/v3/events"
+gateways:
+- gatewayId: "gatewayId"
+  apiKey: "apiKey"
+logfile: "gateway.csv"
+udp:
+  host: ""
+  port: 1700

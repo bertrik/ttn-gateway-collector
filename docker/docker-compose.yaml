@@ -1,0 +1,11 @@
+version: "3"
+services:
+  java:
+    build: ..
+    image: ghcr.io/bertrik/ttn-gateway-collector
+    restart: always
+    volumes:
+      - "./ttn-gateway-collector.yaml:/opt/ttn-gateway-collector/ttn-gateway-collector.yaml:ro"
+      - "./log4j.properties:/opt/ttn-gateway-collector/log4j.properties:ro"
+      - "./log:/opt/ttn-gateway-collector/log:rw"
+
