@@ -21,15 +21,15 @@ udp:
 To use with Docker:
 * Install docker and docker-compose
 * Pull the code from github:
-  git clone https://github.com/bertrik/ttn-gateway-collector
+  ```git clone https://github.com/bertrik/ttn-gateway-collector```
 * Enter the docker directory and pull the image from the github container registry:
-  cd ttn-gateway-collector
-  cd docker
-  docker-compose pull
+  ```cd ttn-gateway-collector```
+  ```cd docker```
+  ```docker-compose pull```
 * Edit the settings file with your own settings, e.g.:
-  vi ttn-gateway-collector.yaml
+  ```vi ttn-gateway-collector.yaml```
 * Run the container:
-  docker-compose up
+  ```docker-compose up```
 
 Application logs with be available in director log/
 
