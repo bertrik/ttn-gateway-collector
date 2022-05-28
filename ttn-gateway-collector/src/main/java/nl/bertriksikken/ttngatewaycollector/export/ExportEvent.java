@@ -1,5 +1,7 @@
 package nl.bertriksikken.ttngatewaycollector.export;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,7 +36,7 @@ public final class ExportEvent {
     @JsonProperty("rssi")
     final int rssi;
     @JsonProperty("airtime")
-    final double airtime;
+    final BigDecimal airtime;
 
     @JsonProperty("raw_payload")
     final byte[] rawPayload;
@@ -71,7 +73,7 @@ public final class ExportEvent {
         this.frequency = frequency;
         this.snr = snr;
         this.rssi = rssi;
-        this.airtime = airtime;
+        this.airtime = BigDecimal.valueOf(airtime).setScale(6, RoundingMode.HALF_UP);
     }
 
     public static ExportEvent fromUplinkMessage(UplinkMessage message) {
