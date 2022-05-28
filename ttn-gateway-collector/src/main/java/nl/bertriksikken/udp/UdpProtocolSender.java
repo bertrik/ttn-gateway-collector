@@ -46,13 +46,14 @@ public final class UdpProtocolSender {
         executor.shutdownNow();
     }
 
-    public void send(String euiString, UplinkMessage uplink) {
+    public void send(UplinkMessage uplink) {
         // decode EUI
-        byte[] eui = parseHex(euiString);
+        RxMetadata rxMetadata = uplink.rxMetadata.get(0);
+        byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
 
         // build packet
         UdpPushData pushData = new UdpPushData(eui, token.incrementAndGet());
-        RxMetadata rxMetadata = uplink.rxMetadata.get(0);
+
         Instant time = rxMetadata.time;
         double frequency = uplink.settings.frequency / 1E6;
         String dataRate = String.format(Locale.ROOT, "SF%dBW%d", uplink.settings.dataRate.lora.spreadingFactor,

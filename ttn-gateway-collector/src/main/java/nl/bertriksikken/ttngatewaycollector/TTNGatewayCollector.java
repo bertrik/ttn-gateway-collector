@@ -18,6 +18,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
 import nl.bertriksikken.ttn.message.UplinkMessage;
+import nl.bertriksikken.ttn.message.GsUpReceiveData;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
 import nl.bertriksikken.udp.UdpProtocolSender;
 
@@ -75,23 +76,22 @@ public final class TTNGatewayCollector {
             // only interested in gateway uplink events
             if (event.getName().equals("gs.up.receive")) {
                 LOG.info("Gateway uplink received: {}", event.getData());
-                // parse as uplink message
-                UplinkMessage uplinkMessage = mapper.treeToValue(event.getData(), UplinkMessage.class);
-                String gatewayEui = event.getIdentifiers().at("/0/gateway_ids/eui").asText("");
+                // parse as gs.up.receive data
+                GsUpReceiveData gsUpReceiveData = mapper.treeToValue(event.getData(), GsUpReceiveData.class);
+                if (gsUpReceiveData.getDataType().equals("type.googleapis.com/ttn.lorawan.v3.GatewayUplinkMessage")) {
+                    // parse as uplink message
+                    UplinkMessage uplinkMessage = mapper.treeToValue(gsUpReceiveData.getMessage(), UplinkMessage.class);
 
-                // detect and ignore duplicates
-                GatewayFrequencyKey key = new GatewayFrequencyKey(gatewayEui, uplinkMessage.settings.frequency);
-                byte[] lastData = lastPacket.put(key, uplinkMessage.rawPayload);
-                if (Arrays.equals(lastData, uplinkMessage.rawPayload)) {
-                    return;
+                    // send to logger
+                    eventWriter.write(uplinkMessage);
+
+                    // send to UDP sender
+                    udpSender.send(uplinkMessage);
+                } else {
+                    LOG.warn("Unhandled gs.up.receive: {}", gsUpReceiveData.getMessage());
                 }
-
-                // send to logger
-                String gatewayId = event.getIdentifiers().at("/0/gateway_ids/gateway_id").asText("unknown");
-                eventWriter.write(gatewayId, uplinkMessage);
-
-                // send to UDP sender
-                udpSender.send(gatewayEui, uplinkMessage);
+            } else {
+                LOG.info("Unhandled event {}: {}", event.getName(), event.getData());
             }
         } catch (IOException e) {
             LOG.warn("Exception processing event", e);

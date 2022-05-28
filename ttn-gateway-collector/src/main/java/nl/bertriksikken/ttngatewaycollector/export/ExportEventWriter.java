@@ -22,9 +22,9 @@ public final class ExportEventWriter {
         csvMapper.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
     }
 
-    public void write(String gateway, UplinkMessage uplinkMessage) throws IOException {
+    public void write(UplinkMessage uplinkMessage) throws IOException {
         // create export event
-        ExportEvent exportEvent = ExportEvent.fromUplinkMessage(gateway, uplinkMessage);
+        ExportEvent exportEvent = ExportEvent.fromUplinkMessage(uplinkMessage);
 
         // log it
         boolean append = logFile.exists();

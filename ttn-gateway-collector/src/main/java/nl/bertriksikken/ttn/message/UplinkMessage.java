@@ -122,7 +122,7 @@ public final class UplinkMessage {
         public static class DataRate {
             @JsonProperty("lora")
             public Lora lora = new Lora();
-            
+
             @JsonProperty("fsk")
             public Fsk fsk = new Fsk();
 
@@ -160,9 +160,12 @@ public final class UplinkMessage {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RxMetadata {
+        @JsonProperty("gateway_ids")
+        public GatewayIds gatewayIds = new GatewayIds();
+
         @JsonProperty("time")
         public Instant time = Instant.now();
-        
+
         @JsonProperty("rssi")
         public int rssi;
 
@@ -176,6 +179,15 @@ public final class UplinkMessage {
         public String toString() {
             return String.format(Locale.ROOT, "{rssi=%s,snr=%.1f,channel=%s}", rssi, snr, channelIndex);
         }
-    }
 
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class GatewayIds {
+            @JsonProperty("gateway_id")
+            public String gatewayId = "";
+
+            @JsonProperty("eui")
+            public String eui = "";
+        }
+
+    }
 }

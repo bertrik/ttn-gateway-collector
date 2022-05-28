@@ -74,17 +74,18 @@ public final class ExportEvent {
         this.airtime = airtime;
     }
 
-    public static ExportEvent fromUplinkMessage(String gateway, UplinkMessage message) {
+    public static ExportEvent fromUplinkMessage(UplinkMessage message) {
         byte[] rawPayload = message.rawPayload;
         int spreadingFactor = message.settings.dataRate.lora.spreadingFactor;
         int frequency = message.settings.frequency;
 
         RxMetadata rxMetadata = message.rxMetadata.get(0);
         String time = rxMetadata.time.toString();
+        String gatewayId = rxMetadata.gatewayIds.gatewayId;
         double snr = rxMetadata.snr;
         int rssi = rxMetadata.rssi;
         double airtime = airTimeCalculator.calculate(message);
-        ExportEvent event = new ExportEvent(time, gateway, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
+        ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
 
         JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {

@@ -10,7 +10,7 @@ public final class ExportEventTest {
     @Test
     public void testToString() {
         UplinkMessage uplink = new UplinkMessage();
-        ExportEvent event = ExportEvent.fromUplinkMessage("gateway", uplink);
+        ExportEvent event = ExportEvent.fromUplinkMessage(uplink);
         Assert.assertNotNull(event.toString());
     }
 }
