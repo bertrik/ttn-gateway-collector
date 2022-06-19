@@ -7,7 +7,7 @@
 ext {
     libraries = [:]
     
-    jacksonVersion = '2.13.2'
+    jacksonVersion = '2.13.3'
     retrofitVersion = '2.9.0'
     slf4jVersion = '1.7.36'
 }
@@ -37,7 +37,7 @@ libraries.retrofit_mock = "com.squareup.retrofit2:retrofit-mock:${retrofitVersio
 
 // test libraries
 libraries.junit = 'junit:junit:4.13.2'
-libraries.mockito = 'org.mockito:mockito-core:4.5.1'
+libraries.mockito = 'org.mockito:mockito-core:4.6.1'
 
 // check libraries
 libraries.spotbugs_annotations = 'com.github.spotbugs:spotbugs-annotations:4.7.0'
