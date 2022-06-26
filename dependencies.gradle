@@ -15,7 +15,7 @@ ext {
 libraries.slf4j = "org.slf4j:slf4j-api:${slf4jVersion}"
 libraries.slf4jlog4j = "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 
-libraries.guava = 'com.google.guava:guava:23.0'
+libraries.guava = 'com.google.guava:guava:31.1-jre'
 
 libraries.jackson = [
     "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}",
