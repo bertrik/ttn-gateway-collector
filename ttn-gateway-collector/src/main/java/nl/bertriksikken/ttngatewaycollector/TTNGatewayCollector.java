@@ -2,9 +2,6 @@ package nl.bertriksikken.ttngatewaycollector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
@@ -17,8 +14,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
-import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.GsUpReceiveData;
+import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
 import nl.bertriksikken.udp.UdpProtocolSender;
 
@@ -31,7 +28,6 @@ public final class TTNGatewayCollector {
     private final ObjectMapper mapper = new ObjectMapper();
     private final ExportEventWriter eventWriter;
     private final UdpProtocolSender udpSender;
-    private final Map<GatewayFrequencyKey, byte[]> lastPacket = new HashMap<>();
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
