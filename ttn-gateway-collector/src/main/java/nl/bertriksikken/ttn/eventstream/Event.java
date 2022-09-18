@@ -39,7 +39,7 @@ public final class Event {
     }
 
     public JsonNode getData() {
-        return data;
+        return data.deepCopy();
     }
     
 }
