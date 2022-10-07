@@ -1,6 +1,7 @@
 plugins {
   id 'com.github.spotbugs' version '5.0.12'
   id 'com.github.ben-manes.versions' version '0.42.0'
+  id 'org.owasp.dependencycheck' version '7.2.1'
 }
 
 def isNonStable = { String version ->
@@ -11,6 +12,10 @@ def isNonStable = { String version ->
 
 // Define all library dependencies in one file for clarity
 apply from:'dependencies.gradle'
+
+dependencyCheck {
+    scanConfigurations = ['runtimeClasspath']
+}
 
 subprojects {
     apply plugin: "java"
