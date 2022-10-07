@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * LoRaWAN uplink message.
+ * <p>
+ * https://www.thethingsindustries.com/docs/reference/data-formats/#uplink-messages
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class UplinkMessage {
@@ -108,8 +110,6 @@ public final class UplinkMessage {
     public static class Settings {
         @JsonProperty("data_rate")
         public DataRate dataRate = new DataRate();
-        @JsonProperty("coding_rate")
-        public String codingRate;
         @JsonProperty("frequency")
         public int frequency;
 
@@ -137,10 +137,12 @@ public final class UplinkMessage {
                 public int spreadingFactor;
                 @JsonProperty("bandwidth")
                 public int bandWidth;
+                @JsonProperty("coding_rate")
+                public String codingRate;
 
                 @Override
                 public String toString() {
-                    return String.format(Locale.ROOT, "{SF=%d,BW=%d}", spreadingFactor, bandWidth);
+                    return String.format(Locale.ROOT, "{SF=%d,BW=%d,CR=%s}", spreadingFactor, bandWidth, codingRate);
                 }
             }
 

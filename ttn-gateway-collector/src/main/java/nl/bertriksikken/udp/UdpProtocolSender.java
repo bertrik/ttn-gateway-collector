@@ -58,7 +58,7 @@ public final class UdpProtocolSender {
         double frequency = uplink.settings.frequency / 1E6;
         String dataRate = String.format(Locale.ROOT, "SF%dBW%d", uplink.settings.dataRate.lora.spreadingFactor,
             uplink.settings.dataRate.lora.bandWidth / 1000);
-        String codingRate = uplink.settings.codingRate;
+        String codingRate = uplink.settings.dataRate.lora.codingRate;
         int rssi = rxMetadata.rssi;
         double snr = rxMetadata.snr;
         byte[] data = uplink.rawPayload;
