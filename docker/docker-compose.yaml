@@ -1,8 +1,8 @@
 version: "3"
 services:
   java:
-    build: ..
     image: ghcr.io/bertrik/ttn-gateway-collector
+    build: ..
     restart: always
     volumes:
       - "./ttn-gateway-collector.yaml:/opt/ttn-gateway-collector/ttn-gateway-collector.yaml:ro"
