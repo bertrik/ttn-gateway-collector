@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
+import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.EventResult;
 import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
 import okhttp3.Call;
@@ -33,7 +34,7 @@ import okio.BufferedSource;
  * Subscribes to the event stream of a gateway.<br>
  * See https://www.thethingsindustries.com/docs/reference/api/events/
  */
-public final class StreamEventsReceiver {
+final class StreamEventsReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(StreamEventsReceiver.class);
 
@@ -53,7 +54,7 @@ public final class StreamEventsReceiver {
 
     private volatile boolean canceled = false;
 
-    public StreamEventsReceiver(String url, IEventStreamCallback callback) {
+    StreamEventsReceiver(String url, IEventStreamCallback callback) {
         this.url = url;
         this.callback = callback;
         httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(true).pingInterval(PING_INTERVAL)
@@ -119,6 +120,14 @@ public final class StreamEventsReceiver {
                 callback.eventReceived(result.getEvent());
             }
         }
+    }
+
+    /**
+     * Callback for events as they are received over the event stream.
+     */
+    public interface IEventStreamCallback {
+        // notifies of a received event
+        public void eventReceived(Event event);
     }
 
 }
