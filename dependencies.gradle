@@ -1,15 +1,9 @@
-/*
- * Contains all external references and version used in the project. 
- * It is not advised to use direct references in each sub-project buildscript for maintenance purposes. 
- * Keeping the versions here allows us to control them for the entire solution
- */
-
 ext {
     libraries = [:]
     
     jacksonVersion = '2.14.2'
     retrofitVersion = '2.9.0'
-    slf4jVersion = '2.0.6'
+    slf4jVersion = '2.0.7'
 }
 
 libraries.slf4j = "org.slf4j:slf4j-api:${slf4jVersion}"
@@ -37,7 +31,7 @@ libraries.retrofit_mock = "com.squareup.retrofit2:retrofit-mock:${retrofitVersio
 
 // test libraries
 libraries.junit = 'junit:junit:4.13.2'
-libraries.mockito = 'org.mockito:mockito-core:5.1.1'
+libraries.mockito = 'org.mockito:mockito-core:5.2.0'
 
 // check libraries
 libraries.spotbugs_annotations = 'com.github.spotbugs:spotbugs-annotations:4.7.3'
