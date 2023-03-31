@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 
 import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.EventResult;
@@ -115,7 +114,7 @@ final class StreamEventsReceiver {
 
         private void processResponse(BufferedSource source) throws IOException {
             String line = source.readUtf8Line();
-            if (!Strings.isNullOrEmpty(line)) {
+            if ((line == null) || line.isEmpty()) {
                 EventResult result = mapper.readValue(line, EventResult.class);
                 callback.eventReceived(result.getEvent());
             }

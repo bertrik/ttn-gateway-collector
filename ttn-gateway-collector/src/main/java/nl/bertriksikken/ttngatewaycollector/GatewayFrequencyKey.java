@@ -1,6 +1,6 @@
 package nl.bertriksikken.ttngatewaycollector;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 /**
  * Key to use for duplication detection.<br>
@@ -28,7 +28,7 @@ public final class GatewayFrequencyKey {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(gatewayId, frequency);
+        return Objects.hash(gatewayId, frequency);
     }
 
 }

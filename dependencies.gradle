@@ -9,8 +9,6 @@ ext {
 libraries.slf4j = "org.slf4j:slf4j-api:${slf4jVersion}"
 libraries.reload4j = "org.slf4j:slf4j-reload4j:${slf4jVersion}"
 
-libraries.guava = 'com.google.guava:guava:31.1-jre'
-
 libraries.jackson = [
     "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}",
     "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}",

@@ -8,7 +8,6 @@ dependencies {
     implementation libraries.jackson
     implementation libraries.retrofit
     implementation libraries.okhttp
-    implementation libraries.guava
     
     compileOnly libraries.spotbugs_annotations
     
