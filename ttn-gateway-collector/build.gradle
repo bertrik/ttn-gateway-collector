@@ -7,7 +7,6 @@ dependencies {
     
     implementation libraries.jackson
     implementation libraries.retrofit
-    implementation libraries.okhttp
     
     compileOnly libraries.spotbugs_annotations
     

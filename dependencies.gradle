@@ -17,10 +17,6 @@ libraries.jackson = [
     "org.yaml:snakeyaml:2.0"
 ]
 
-libraries.okhttp = [
-    'com.squareup.okhttp3:okhttp:3.14.9'
-]
-
 libraries.retrofit = [
     "com.squareup.retrofit2:retrofit:${retrofitVersion}",
     "com.squareup.retrofit2:converter-jackson:${retrofitVersion}",
