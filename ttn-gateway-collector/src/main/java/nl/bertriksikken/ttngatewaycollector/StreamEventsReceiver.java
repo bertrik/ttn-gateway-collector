@@ -71,14 +71,14 @@ final class StreamEventsReceiver {
 
     public void start() {
         LOG.info("Starting");
-        requests.forEach(request -> connect(request));
+        requests.forEach(this::connect);
     }
 
     public void stop() {
         LOG.info("Stopping");
         canceled = true;
         executor.shutdownNow();
-        requestMap.values().forEach(call -> call.cancel());
+        requestMap.values().forEach(Call::cancel);
     }
 
     private void connect(Request request) {
@@ -114,7 +114,7 @@ final class StreamEventsReceiver {
 
         private void processResponse(BufferedSource source) throws IOException {
             String line = source.readUtf8Line();
-            if ((line == null) || line.isEmpty()) {
+            if ((line != null) && !line.isEmpty()) {
                 EventResult result = mapper.readValue(line, EventResult.class);
                 callback.eventReceived(result.getEvent());
             }
