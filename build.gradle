@@ -1,7 +1,7 @@
 plugins {
-  id 'com.github.spotbugs' version '5.0.14'
-  id 'com.github.ben-manes.versions' version '0.46.0'
-  id 'org.owasp.dependencycheck' version '8.2.1'
+    id 'com.github.spotbugs' version '5.0.14'
+    id 'com.github.ben-manes.versions' version '0.46.0'
+    id 'org.owasp.dependencycheck' version '8.2.1'
 }
 
 def isNonStable = { String version ->
@@ -9,9 +9,6 @@ def isNonStable = { String version ->
     def regex = /^[0-9,.v-]+(-r)?$/
     return !stableKeyword && !(version ==~ regex)
 }
-
-// Define all library dependencies in one file for clarity
-apply from:'dependencies.gradle'
 
 dependencyCheck {
     scanConfigurations = ['runtimeClasspath']
@@ -47,11 +44,10 @@ subprojects {
 
     // Standard libraries added to all projects
     dependencies {
-        testImplementation libraries.junit
-	    testImplementation libraries.mockito
-	    testImplementation libraries.reload4j
+        testImplementation libs.junit
+	    testImplementation libs.reload4j
 
-        implementation libraries.slf4j
+        implementation libs.slf4j
     }
 
 }

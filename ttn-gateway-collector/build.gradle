@@ -3,13 +3,13 @@ apply plugin: "application"
 mainClassName = 'nl.bertriksikken.ttngatewaycollector.TTNGatewayCollector'
 
 dependencies {
-    implementation libraries.reload4j
+    implementation libs.reload4j
     
-    implementation libraries.jackson
-    implementation libraries.retrofit
+    implementation libs.bundles.jackson
+    implementation libs.bundles.retrofit
     
-    compileOnly libraries.spotbugs_annotations
+    compileOnly libs.spotbugs.annotations
     
-    testImplementation libraries.retrofit_mock
+    testImplementation libs.retrofit.mock
 }
 
