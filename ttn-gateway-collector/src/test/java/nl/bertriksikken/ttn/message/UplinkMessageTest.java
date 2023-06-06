@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ public final class UplinkMessageTest {
         
         UplinkMessage uplink = mapper.readValue(url, UplinkMessage.class);
         System.out.println(uplink);
+        Assert.assertEquals(3119016580L, uplink.rxMetadata.get(0).timestamp);
     }
     
     @Test

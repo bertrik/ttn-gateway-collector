@@ -16,7 +16,7 @@ public final class UdpPushData {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final byte PROTOCOL_VERSION = 2;
-    
+
     private final int token;
     private final byte[] eui;
     private final UdpPushDataJson json;
@@ -27,9 +27,9 @@ public final class UdpPushData {
         this.json = new UdpPushDataJson();
     }
 
-    public void addPacket(Instant time, double frequency, String dataRate, String codingRate, int rssi, double snr,
-        byte[] data) {
-        json.addReceiveData(time, frequency, dataRate, codingRate, rssi, snr, data);
+    public void addPacket(Instant time, long timestamp, double frequency, String dataRate, String codingRate, int rssi,
+        double snr, byte[] data) {
+        json.addReceiveData(time, timestamp, frequency, dataRate, codingRate, rssi, snr, data);
     }
 
     public byte[] encode() throws IOException {

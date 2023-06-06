@@ -16,9 +16,9 @@ public final class UdpPushDataJson {
     @JsonProperty("rxpk")
     final List<RxPk> packets = new ArrayList<>();
 
-    void addReceiveData(Instant time, double frequency, String dataRate, String codingRate, int rssi, double snr,
-        byte[] data) {
-        packets.add(new RxPk(time, frequency, dataRate, codingRate, rssi, snr, data));
+    void addReceiveData(Instant time, long timestamp, double frequency, String dataRate, String codingRate, int rssi,
+        double snr, byte[] data) {
+        packets.add(new RxPk(time, timestamp, frequency, dataRate, codingRate, rssi, snr, data));
     }
 
     private static final class RxPk {
@@ -51,11 +51,11 @@ public final class UdpPushDataJson {
         @JsonProperty("data")
         byte[] data;
 
-        public RxPk(Instant time, double frequency, String dataRate, String codingRate, int rssi, double snr,
-            byte[] data) {
+        public RxPk(Instant time, long timestamp, double frequency, String dataRate, String codingRate, int rssi,
+            double snr, byte[] data) {
             this.time = time.toString();
             this.tmms = 0;
-            this.tmst = 0;
+            this.tmst = timestamp;
             this.chan = 0;
             this.chain = 0;
             this.freq = frequency;
@@ -71,8 +71,8 @@ public final class UdpPushDataJson {
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT, "{%s,%f,%s,%s,%d,%.1f,%d,%s,%d,%s}", time, freq, stat, modu,
-                datr, codr, rssi, lsnr, size, data);
+            return String.format(Locale.ROOT, "{%s,%f,%s,%s,%d,%.1f,%d,%s,%d,%s}", time, freq, stat, modu, datr, codr,
+                rssi, lsnr, size, data);
         }
     }
 }

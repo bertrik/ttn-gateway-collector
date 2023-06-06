@@ -168,6 +168,9 @@ public final class UplinkMessage {
         @JsonProperty("time")
         public Instant time = Instant.now();
 
+        @JsonProperty("timestamp")
+        public long timestamp;
+
         @JsonProperty("rssi")
         public int rssi;
 

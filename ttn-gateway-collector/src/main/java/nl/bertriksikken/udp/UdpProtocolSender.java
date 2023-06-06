@@ -55,6 +55,7 @@ public final class UdpProtocolSender {
         UdpPushData pushData = new UdpPushData(eui, token.incrementAndGet());
 
         Instant time = rxMetadata.time;
+        long timestamp = rxMetadata.timestamp;
         double frequency = uplink.settings.frequency / 1E6;
         String dataRate = String.format(Locale.ROOT, "SF%dBW%d", uplink.settings.dataRate.lora.spreadingFactor,
             uplink.settings.dataRate.lora.bandWidth / 1000);
@@ -62,7 +63,7 @@ public final class UdpProtocolSender {
         int rssi = rxMetadata.rssi;
         double snr = rxMetadata.snr;
         byte[] data = uplink.rawPayload;
-        pushData.addPacket(time, frequency, dataRate, codingRate, rssi, snr, data);
+        pushData.addPacket(time, timestamp, frequency, dataRate, codingRate, rssi, snr, data);
 
         // schedule for transmission
         if (udpAddress != null) {
