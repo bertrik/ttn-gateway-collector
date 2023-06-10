@@ -25,7 +25,7 @@ jackson = ["jackson-bind", "jackson-yaml", "jackson-csv", "jackson-jsr310"]
 retrofit = ["retrofit", "retrofit-jackson", "retrofit-scalars"]
 
 [plugins]
-versions = "com.github.ben-manes.versions:0.46.0"
+versions = "com.github.ben-manes.versions:0.47.0"
 spotbugs = "com.github.spotbugs:5.0.14"
 dependencycheck = "org.owasp.dependencycheck:8.2.1"
 version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.0"
