@@ -1,6 +1,8 @@
 apply plugin: "application"
 
-mainClassName = 'nl.bertriksikken.ttngatewaycollector.TTNGatewayCollector'
+application {
+    mainClass = 'nl.bertriksikken.ttngatewaycollector.TTNGatewayCollector'
+}
 
 dependencies {
     implementation libs.reload4j
