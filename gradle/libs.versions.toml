@@ -27,6 +27,6 @@ retrofit = ["retrofit", "retrofit-jackson", "retrofit-scalars"]
 [plugins]
 versions = "com.github.ben-manes.versions:0.47.0"
 spotbugs = "com.github.spotbugs:5.0.14"
-dependencycheck = "org.owasp.dependencycheck:8.3.1"
+dependencycheck = "org.owasp.dependencycheck:8.4.0"
 version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.0"
 
