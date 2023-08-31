@@ -1,8 +1,8 @@
 ---
 url: "https://eu1.cloud.thethings.network/api/v3/events"
 gateways:
-- gatewayId: "gatewayId"
-  apiKey: "apiKey"
+- gatewayId: "bertrik-ttig-2"
+  apiKey: "NNSXS.UZHV7MYRN3R74XXY2SM3R67CEPIYX5J3AEIGGMI.2I76JWZUZDVG3C6JISLL3RWCZ6HF6SMAALQA225EFSSEQRRXSRHA"
 logfile: "gateway.csv"
 udp:
   host: ""
