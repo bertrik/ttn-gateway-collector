@@ -1,0 +1,31 @@
+{
+  "@type": "type.googleapis.com/ttn.lorawan.v3.DownlinkMessage",
+  "raw_payload": "YH46CyaDDgACEQhW0E+5",
+  "scheduled": {
+    "data_rate": {
+      "lora": {
+        "bandwidth": 125000,
+        "spreading_factor": 9,
+        "coding_rate": "4/5"
+      }
+    },
+    "frequency": "867900000",
+    "timestamp": 3432044212,
+    "downlink": {
+      "tx_power": 16.15,
+      "invert_polarization": true
+    },
+    "concentrator_timestamp": "282604918452000"
+  },
+  "correlation_ids": [
+    "gs:conn:01H8H424E2Q7T9E8RQ9D1J9J81",
+    "gs:conn:01H8Y9TPWNCGEDYXP1584H3CKE",
+    "gs:up:host:01H8H424E88RBCNXCSFH1XR3ZH",
+    "gs:uplink:01H96Q1PXXYM2N0GGYHACHM9DJ",
+    "ns:downlink:01H96Q1QB3W3VS5APAQS5P50Q2",
+    "ns:transmission:01H96Q1QB39K29QVH6Q2EEK8P0",
+    "ns:uplink:01H96Q1PXY4H2XVX2YC85BSN7X",
+    "rpc:/ttn.lorawan.v3.GsNs/HandleUplink:01H96Q1PXY623KDY7ZESSQYV7E",
+    "rpc:/ttn.lorawan.v3.NsGs/ScheduleDownlink:01H96Q1QB4VC65YCD81VBP7138"
+  ]
+}

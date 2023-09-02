@@ -14,6 +14,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
+import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.GsUpReceiveData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
@@ -70,7 +71,26 @@ public final class TTNGatewayCollector {
     void eventReceived(Event event) {
         try {
             // only interested in gateway uplink events
-            if (event.getName().equals("gs.up.receive")) {
+            switch (event.getName()) {
+            case "events.stream.start":
+                LOG.info("Stream started");
+                break;
+            case "gs.down.schedule.attempt":
+                // ignore
+                break;
+            case "gs.down.send":
+                LOG.info("Downlink: {}", event.getData());
+                GsDownSendData gsDownSendData = mapper.treeToValue(event.getData(), GsDownSendData.class);
+                LOG.info("TODO GsDownSendData: {}", gsDownSendData);
+                break;
+            case "gs.gateway.connection.stats":
+                // ignore
+                break;
+            case "gs.up.drop":
+            case "gs.up.forward":
+                // ignore
+                break;
+            case "gs.up.receive":
                 LOG.info("Gateway uplink received: {}", event.getData());
                 // parse as gs.up.receive data
                 GsUpReceiveData gsUpReceiveData = mapper.treeToValue(event.getData(), GsUpReceiveData.class);
@@ -86,8 +106,10 @@ public final class TTNGatewayCollector {
                 } else {
                     LOG.warn("Unhandled gs.up.receive: {}", gsUpReceiveData.getMessage());
                 }
-            } else {
+                break;
+            default:
                 LOG.info("Unhandled event {}: {}", event.getName(), event.getData());
+                break;
             }
         } catch (IOException e) {
             LOG.warn("Exception processing event", e);

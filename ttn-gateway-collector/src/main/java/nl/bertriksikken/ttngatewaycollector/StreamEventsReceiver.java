@@ -70,7 +70,6 @@ final class StreamEventsReceiver {
     }
 
     public void start() {
-        LOG.info("Starting");
         requests.forEach(this::connect);
     }
 

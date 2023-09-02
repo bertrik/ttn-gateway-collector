@@ -33,8 +33,8 @@ public final class UdpProtocolSender {
     }
 
     public void start() throws IOException {
-        LOG.info("Starting");
         if (!config.host.isEmpty()) {
+            LOG.info("UDP sender configured for {}:{}", config.host, config.port);
             udpAddress = InetAddress.getByName(config.host);
         }
         udpSocket = new DatagramSocket();
