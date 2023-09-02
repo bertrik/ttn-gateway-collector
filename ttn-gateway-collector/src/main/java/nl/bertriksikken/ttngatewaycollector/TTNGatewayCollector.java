@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import nl.bertriksikken.ttn.eventstream.Event;
+import nl.bertriksikken.ttn.eventstream.StreamEventsReceiver;
 import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.GsUpReceiveData;

@@ -1,4 +1,4 @@
-package nl.bertriksikken.ttngatewaycollector;
+package nl.bertriksikken.ttn.eventstream;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.bertriksikken.ttn.eventstream.Event;
-import nl.bertriksikken.ttn.eventstream.EventResult;
-import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -33,7 +30,7 @@ import okio.BufferedSource;
  * Subscribes to the event stream of a gateway.<br>
  * See https://www.thethingsindustries.com/docs/reference/api/events/
  */
-final class StreamEventsReceiver {
+public final class StreamEventsReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(StreamEventsReceiver.class);
 
@@ -53,7 +50,7 @@ final class StreamEventsReceiver {
 
     private volatile boolean canceled = false;
 
-    StreamEventsReceiver(String url, IEventStreamCallback callback) {
+    public StreamEventsReceiver(String url, IEventStreamCallback callback) {
         this.url = url;
         this.callback = callback;
         httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(true).pingInterval(PING_INTERVAL)
