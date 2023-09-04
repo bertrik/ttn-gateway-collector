@@ -17,10 +17,10 @@ public final class GsDownSendData {
     String dataType = "";
 
     @JsonProperty("raw_payload")
-    byte[] rawPayload;
+    public byte[] rawPayload;
 
     @JsonProperty("scheduled")
-    Scheduled scheduled = new Scheduled();
+    public Scheduled scheduled = new Scheduled();
 
     @Override
     public String toString() {
@@ -53,10 +53,10 @@ public final class GsDownSendData {
 
         public static final class Downlink {
             @JsonProperty("tx_power")
-            double txPower;
+            public double txPower;
 
             @JsonProperty("invert_polarization")
-            boolean invertPolarization;
+            public boolean invertPolarization;
 
             @Override
             public String toString() {

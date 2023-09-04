@@ -1,6 +1,7 @@
 package nl.bertriksikken.lorawan;
 
 import nl.bertriksikken.ttn.message.UplinkMessage;
+import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
 
 /**
  * Air time calculation, according to AN1200.13 "LoRa Modem Designer’s Guide"
@@ -22,10 +23,9 @@ public final class AirTimeCalculator {
         this.cr = cr;
     }
 
-    public double calculate(UplinkMessage message) {
-        int pl = message.rawPayload.length;
+    public double calculate(DataRate dataRate, int pl) {
         // LoRa
-        int sf = message.settings.dataRate.lora.spreadingFactor;
+        int sf = dataRate.lora.spreadingFactor;
         if ((sf >= 6) && (sf <= 12)) {
             double tsym = Math.pow(2, sf) / bw;
             double tpreamble = tsym * (preamble + 4.25);
@@ -37,14 +37,20 @@ public final class AirTimeCalculator {
             return tpreamble + tpayload;
         }
         // FSK
-        int br = message.settings.dataRate.fsk.bitRate;
+        int br = dataRate.fsk.bitRate;
         if (br > 0) {
-            // according https://lora-alliance.org/wp-content/uploads/2021/05/RP002-1.0.3-FINAL-1.pdf paragraph 4.2.1
+            // according
+            // https://lora-alliance.org/wp-content/uploads/2021/05/RP002-1.0.3-FINAL-1.pdf
+            // paragraph 4.2.1
             int nbits = (11 + pl) * 8;
             return (double) nbits / br;
         }
         // can't calculate
         return 0.0;
     }
-    
+
+    public double calculate(UplinkMessage message) {
+        return calculate(message.settings.dataRate, message.rawPayload.length);
+    }
+
 }

@@ -9,8 +9,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
-import nl.bertriksikken.ttn.message.UplinkMessage;
-
 public final class ExportEventWriter {
 
     private final CsvMapper csvMapper = new CsvMapper();
@@ -22,10 +20,7 @@ public final class ExportEventWriter {
         csvMapper.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
     }
 
-    public void write(UplinkMessage uplinkMessage) throws IOException {
-        // create export event
-        ExportEvent exportEvent = ExportEvent.fromUplinkMessage(uplinkMessage);
-
+    public void write(ExportEvent exportEvent) throws IOException {
         // log it
         boolean append = logFile.exists();
         CsvSchema schema = csvMapper.schemaFor(exportEvent.getClass());

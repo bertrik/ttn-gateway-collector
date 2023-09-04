@@ -2,9 +2,8 @@ package nl.bertriksikken.ttn.eventstream;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -39,52 +38,54 @@ public final class StreamEventsReceiver {
     private static final Duration RETRY_INTERVAL = Duration.ofSeconds(60);
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private final RequestCallback requestCallback = new RequestCallback();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private final String url;
-    private final IEventStreamCallback callback;
     private final OkHttpClient httpClient;
-    private final List<Request> requests = new ArrayList<>();
-    private final Map<Request, Call> requestMap = new ConcurrentHashMap<>();
+    private final Map<Request, Call> callMap = new ConcurrentHashMap<>();
 
     private volatile boolean canceled = false;
 
-    public StreamEventsReceiver(String url, IEventStreamCallback callback) {
-        this.url = url;
-        this.callback = callback;
+    public StreamEventsReceiver(String url) {
+        this.url = Objects.requireNonNull(url);
         httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(true).pingInterval(PING_INTERVAL)
             .readTimeout(Duration.ZERO).build();
         mapper.findAndRegisterModules();
     }
 
-    public void addSubscription(StreamEventsRequest request, String apiKey) throws JsonProcessingException {
-        String requestJson = mapper.writeValueAsString(request);
-        RequestBody body = RequestBody.create(MEDIATYPE_JSON, requestJson);
-        Request httpRequest = new Request.Builder().post(body).url(url).header("Accept", "text/event-stream")
-            .header("Authorization", "Bearer " + apiKey).build();
-        requests.add(httpRequest);
-    }
+    public void subscribe(String gatewayId, String apiKey, IEventStreamCallback eventCallback)
+        throws JsonProcessingException {
+        LOG.info("Subscribing to event stream for '{}'", gatewayId);
 
-    public void start() {
-        requests.forEach(this::connect);
+        StreamEventsRequest request = new StreamEventsRequest(gatewayId);
+        String requestJson = mapper.writeValueAsString(request);
+        RequestBody requestBody = RequestBody.create(MEDIATYPE_JSON, requestJson);
+        Request httpRequest = new Request.Builder().post(requestBody).url(url).header("Accept", "text/event-stream")
+            .header("Authorization", "Bearer " + apiKey).build();
+        connect(httpRequest, eventCallback);
     }
 
     public void stop() {
         LOG.info("Stopping");
         canceled = true;
+        callMap.values().forEach(Call::cancel);
         executor.shutdownNow();
-        requestMap.values().forEach(Call::cancel);
     }
 
-    private void connect(Request request) {
+    private void connect(Request request, IEventStreamCallback eventCallback) {
         LOG.info("Starting request {}", request);
         Call call = httpClient.newCall(request);
-        requestMap.put(request, call);
-        call.enqueue(requestCallback);
+        callMap.put(request, call);
+        call.enqueue(new RequestCallback(eventCallback));
     }
 
     private final class RequestCallback implements Callback {
+
+        private final IEventStreamCallback callback;
+
+        public RequestCallback(IEventStreamCallback callback) {
+            this.callback = callback;
+        }
 
         @Override
         public void onFailure(Call call, IOException e) {
@@ -101,7 +102,8 @@ public final class StreamEventsReceiver {
             } catch (IOException e) {
                 if (!canceled) {
                     LOG.warn("Scheduling reconnect in {} ...", RETRY_INTERVAL, e);
-                    executor.schedule(() -> connect(call.request()), RETRY_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
+                    executor.schedule(() -> connect(call.request(), callback), RETRY_INTERVAL.toMillis(),
+                        TimeUnit.MILLISECONDS);
                 }
             } finally {
                 LOG.info("Stream stopped");

@@ -2,12 +2,15 @@ package nl.bertriksikken.ttngatewaycollector.export;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import nl.bertriksikken.lorawan.AirTimeCalculator;
+import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
@@ -16,7 +19,7 @@ import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
  * Represents one line in the export.
  */
 @JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr",
-        "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
+    "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
 public final class ExportEvent {
 
     private static final AirTimeCalculator airTimeCalculator = AirTimeCalculator.LORAWAN;
@@ -34,7 +37,7 @@ public final class ExportEvent {
     @JsonProperty("snr")
     final double snr;
     @JsonProperty("rssi")
-    final int rssi;
+    final double rssi;
     @JsonProperty("airtime")
     final BigDecimal airtime;
 
@@ -61,11 +64,11 @@ public final class ExportEvent {
     String devNonce = "";
 
     enum EPacketType {
-        JOIN_REQUEST, UNCONFIRMED_UPLINK, CONFIRMED_UPLINK
+        JOIN_REQUEST, UNCONFIRMED_UPLINK, CONFIRMED_UPLINK, DOWNLINK
     }
 
     private ExportEvent(String time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
-            int rssi, double airtime) {
+        double rssi, double airtime) {
         this.time = time;
         this.gateway = gateway;
         this.rawPayload = rawPayload;
@@ -86,8 +89,9 @@ public final class ExportEvent {
         String gatewayId = rxMetadata.gatewayIds.gatewayId;
         double snr = rxMetadata.snr;
         int rssi = rxMetadata.rssi;
-        double airtime = airTimeCalculator.calculate(message);
-        ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
+        double airtime = airTimeCalculator.calculate(message.settings.dataRate, rawPayload.length);
+        ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi,
+            airtime);
 
         JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {
@@ -106,10 +110,19 @@ public final class ExportEvent {
         return event;
     }
 
+    public static ExportEvent fromDownlinkData(Instant time, String gateway, GsDownSendData data) {
+        double airtime = airTimeCalculator.calculate(data.scheduled.dataRate, data.rawPayload.length);
+        ExportEvent event = new ExportEvent(time.truncatedTo(ChronoUnit.MICROS).toString(), gateway, data.rawPayload,
+            data.scheduled.dataRate.lora.spreadingFactor, data.scheduled.frequency, 0.0,
+            data.scheduled.downlink.txPower, airtime);
+        event.packetType = EPacketType.DOWNLINK.toString();
+        return event;
+    }
+
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "{%s,%s,%d,%d,%f,%d,%d,%s,%s,%d,%d,%s,%s,%s,%s}", gateway, time, frequency,
-                sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
+        return String.format(Locale.ROOT, "{%s,%s,%d,%d,%f,%f,%d,%s,%s,%d,%d,%s,%s,%s,%s}", gateway, time, frequency,
+            sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
     }
 
 }

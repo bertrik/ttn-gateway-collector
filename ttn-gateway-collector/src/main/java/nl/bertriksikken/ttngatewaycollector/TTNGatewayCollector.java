@@ -14,10 +14,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.StreamEventsReceiver;
-import nl.bertriksikken.ttn.eventstream.StreamEventsRequest;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.GsUpReceiveData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
+import nl.bertriksikken.ttngatewaycollector.export.ExportEvent;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
 import nl.bertriksikken.udp.UdpProtocolSender;
 
@@ -33,7 +33,7 @@ public final class TTNGatewayCollector {
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
-        this.receiver = new StreamEventsReceiver(config.url, this::eventReceived);
+        this.receiver = new StreamEventsReceiver(config.url);
         this.eventWriter = new ExportEventWriter(new File(config.logFileName));
         this.udpSender = new UdpProtocolSender(config.udpProtocolConfig);
 
@@ -53,11 +53,9 @@ public final class TTNGatewayCollector {
         LOG.info("Starting");
         udpSender.start();
         for (GatewayReceiverConfig receiverConfig : config.receivers) {
-            LOG.info("Adding receiver for '{}'", receiverConfig.gatewayId);
-            StreamEventsRequest request = new StreamEventsRequest(receiverConfig.gatewayId);
-            receiver.addSubscription(request, receiverConfig.apiKey);
+            String gatewayId = receiverConfig.gatewayId;
+            receiver.subscribe(gatewayId, receiverConfig.apiKey, event -> eventReceived(gatewayId, event));
         }
-        receiver.start();
         LOG.info("Started");
     }
 
@@ -69,7 +67,8 @@ public final class TTNGatewayCollector {
     }
 
     // package-private for testing
-    void eventReceived(Event event) {
+    void eventReceived(String gatewayId, Event event) {
+        ExportEvent exportEvent;
         try {
             // only interested in gateway uplink events
             switch (event.getName()) {
@@ -80,9 +79,10 @@ public final class TTNGatewayCollector {
                 // ignore
                 break;
             case "gs.down.send":
-                LOG.info("Downlink: {}", event.getData());
+                LOG.info("Gateway downlink received: {}", event.getData());
                 GsDownSendData gsDownSendData = mapper.treeToValue(event.getData(), GsDownSendData.class);
-                LOG.info("TODO GsDownSendData: {}", gsDownSendData);
+                exportEvent = ExportEvent.fromDownlinkData(event.getTime(), gatewayId, gsDownSendData);
+                eventWriter.write(exportEvent);
                 break;
             case "gs.gateway.connection.stats":
                 // ignore
@@ -100,7 +100,8 @@ public final class TTNGatewayCollector {
                     UplinkMessage uplinkMessage = mapper.treeToValue(gsUpReceiveData.getMessage(), UplinkMessage.class);
 
                     // send to logger
-                    eventWriter.write(uplinkMessage);
+                    exportEvent = ExportEvent.fromUplinkMessage(uplinkMessage);
+                    eventWriter.write(exportEvent);
 
                     // send to UDP sender
                     udpSender.send(uplinkMessage);

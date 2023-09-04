@@ -18,6 +18,7 @@ public final class GsUpReceiveData {
         return dataType;
     }
 
+    // typically contains an UplinkMessage
     public JsonNode getMessage() {
         return message;
     }
