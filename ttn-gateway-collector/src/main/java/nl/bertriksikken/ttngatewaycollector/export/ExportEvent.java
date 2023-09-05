@@ -1,15 +1,21 @@
 package nl.bertriksikken.ttngatewaycollector.export;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import nl.bertriksikken.lorawan.AirTimeCalculator;
+import nl.bertriksikken.lorawan.LorawanPacket;
+import nl.bertriksikken.lorawan.MType;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
@@ -21,6 +27,8 @@ import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 @JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr",
     "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
 public final class ExportEvent {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExportEvent.class);
 
     private static final AirTimeCalculator airTimeCalculator = AirTimeCalculator.LORAWAN;
 
@@ -63,10 +71,6 @@ public final class ExportEvent {
     @JsonProperty("dev_nonce")
     String devNonce = "";
 
-    enum EPacketType {
-        JOIN_REQUEST, UNCONFIRMED_UPLINK, CONFIRMED_UPLINK, DOWNLINK
-    }
-
     private ExportEvent(String time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
         double rssi, double airtime) {
         this.time = time;
@@ -95,7 +99,7 @@ public final class ExportEvent {
 
         JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {
-            event.packetType = EPacketType.JOIN_REQUEST.toString();
+            event.packetType = MType.JOIN_REQUEST.toString();
             event.joinEui = joinRequestPayload.joinEui;
             event.devEui = joinRequestPayload.devEui;
             event.devNonce = joinRequestPayload.devNonce;
@@ -111,11 +115,21 @@ public final class ExportEvent {
     }
 
     public static ExportEvent fromDownlinkData(Instant time, String gateway, GsDownSendData data) {
+        String timestamp = time.truncatedTo(ChronoUnit.MICROS).toString();
         double airtime = airTimeCalculator.calculate(data.scheduled.dataRate, data.rawPayload.length);
-        ExportEvent event = new ExportEvent(time.truncatedTo(ChronoUnit.MICROS).toString(), gateway, data.rawPayload,
+        ExportEvent event = new ExportEvent(timestamp, gateway, data.rawPayload,
             data.scheduled.dataRate.lora.spreadingFactor, data.scheduled.frequency, 0.0,
             data.scheduled.downlink.txPower, airtime);
-        event.packetType = EPacketType.DOWNLINK.toString();
+        try {
+            LorawanPacket packet = LorawanPacket.decode(data.rawPayload);
+            event.packetType = MType.fromMhdr(packet.mhdr).toString();
+            event.devAddr = packet.macPayload.devAddr;
+            event.fport = packet.macPayload.fport;
+            event.fcnt = packet.macPayload.fcnt;
+            event.adr = packet.macPayload.adr;
+        } catch (IOException e) {
+            LOG.warn("Could not decode payload: {}", e.getMessage());
+        }
         return event;
     }
 

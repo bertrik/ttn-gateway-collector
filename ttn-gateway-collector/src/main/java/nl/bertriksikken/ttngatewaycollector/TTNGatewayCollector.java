@@ -84,7 +84,13 @@ public final class TTNGatewayCollector {
                 exportEvent = ExportEvent.fromDownlinkData(event.getTime(), gatewayId, gsDownSendData);
                 eventWriter.write(exportEvent);
                 break;
+            case "gs.down.tx.success":
+                break;
             case "gs.gateway.connection.stats":
+                // ignore
+                break;
+            case "gs.txack.receive":
+            case "gs.txack.forward":
                 // ignore
                 break;
             case "gs.up.drop":
