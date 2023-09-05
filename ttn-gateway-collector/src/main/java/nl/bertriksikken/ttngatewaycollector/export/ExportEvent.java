@@ -71,9 +71,9 @@ public final class ExportEvent {
     @JsonProperty("dev_nonce")
     String devNonce = "";
 
-    private ExportEvent(String time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
+    private ExportEvent(Instant time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
         double rssi, double airtime) {
-        this.time = time;
+        this.time = time.truncatedTo(ChronoUnit.MILLIS).toString();
         this.gateway = gateway;
         this.rawPayload = rawPayload;
         this.sf = spreadingFactor;
@@ -84,13 +84,12 @@ public final class ExportEvent {
     }
 
     public static ExportEvent fromUplinkMessage(UplinkMessage message) {
+        RxMetadata rxMetadata = message.rxMetadata.get(0);
+        Instant time = rxMetadata.time;
+        String gatewayId = rxMetadata.gatewayIds.gatewayId;
         byte[] rawPayload = message.rawPayload;
         int spreadingFactor = message.settings.dataRate.lora.spreadingFactor;
         int frequency = message.settings.frequency;
-
-        RxMetadata rxMetadata = message.rxMetadata.get(0);
-        String time = rxMetadata.time.toString();
-        String gatewayId = rxMetadata.gatewayIds.gatewayId;
         double snr = rxMetadata.snr;
         int rssi = rxMetadata.rssi;
         double airtime = airTimeCalculator.calculate(message.settings.dataRate, rawPayload.length);
@@ -115,9 +114,8 @@ public final class ExportEvent {
     }
 
     public static ExportEvent fromDownlinkData(Instant time, String gateway, GsDownSendData data) {
-        String timestamp = time.truncatedTo(ChronoUnit.MICROS).toString();
         double airtime = airTimeCalculator.calculate(data.scheduled.dataRate, data.rawPayload.length);
-        ExportEvent event = new ExportEvent(timestamp, gateway, data.rawPayload,
+        ExportEvent event = new ExportEvent(time, gateway, data.rawPayload,
             data.scheduled.dataRate.lora.spreadingFactor, data.scheduled.frequency, 0.0,
             data.scheduled.downlink.txPower, airtime);
         try {
