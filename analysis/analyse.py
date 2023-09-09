@@ -10,10 +10,15 @@ from dateutil import parser as dateparser
 
 # the net ids of the major operators, others will be counted as 'Other'
 netids = {  0x00 : 'Experimental',
+            0x01 : 'Experimental',
+            0x02 : 'Actility',
             0x03 : 'Proximus',
+            0x08 : 'Orbiwise',
             0x0A : 'KPN',
+            0x0F : 'Orange',
             0x13 : 'TheThingsNetwork',
-            0x24 : 'Helium'}
+            0x24 : 'Helium',
+            0x62 : 'Unknown (0x62)'}
 
 def get_operator(row):
     """ takes a devaddr in hex and returns the operator it belongs to """
