@@ -1,6 +1,6 @@
 [versions]
 slf4j = "2.0.9"
-jackson = "2.15.2"
+jackson = "2.15.3"
 retrofit = "2.9.0"
 
 [libraries]
@@ -18,7 +18,7 @@ retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", versio
 retrofit-mock = { module = "com.squareup.retrofit2:retrofit-mock", version.ref = "retrofit" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
-spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.7.3"}
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.8.0"}
 
 [bundles]
 jackson = ["jackson-bind", "jackson-yaml", "jackson-csv", "jackson-jsr310"]
@@ -27,6 +27,6 @@ retrofit = ["retrofit", "retrofit-jackson", "retrofit-scalars"]
 [plugins]
 dependencycheck = "org.owasp.dependencycheck:8.4.0"
 spotbugs = "com.github.spotbugs:5.0.14"
-versions = "com.github.ben-manes.versions:0.48.0"
+versions = "com.github.ben-manes.versions:0.49.0"
 version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.0"
 
