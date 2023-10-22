@@ -3,10 +3,15 @@ package nl.bertriksikken.ttngatewaycollector;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.bertriksikken.udp.UdpProtocolConfig;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(getterVisibility = Visibility.NONE)
 public final class TTNGatewayCollectorConfig {
     
     @JsonProperty("url")

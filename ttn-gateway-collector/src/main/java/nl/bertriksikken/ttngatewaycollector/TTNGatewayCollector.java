@@ -7,8 +7,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
@@ -125,15 +123,18 @@ public final class TTNGatewayCollector {
     }
 
     private static TTNGatewayCollectorConfig readConfig(File file) throws IOException {
+        TTNGatewayCollectorConfig config = new TTNGatewayCollectorConfig();
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-        try {
-            return mapper.readValue(file, TTNGatewayCollectorConfig.class);
-        } catch (IOException e) {
-            LOG.warn("Failed to load config {}, writing defaults", file.getAbsoluteFile());
-            TTNGatewayCollectorConfig config = new TTNGatewayCollectorConfig();
+        if (file.exists()) {
+            try {
+                return mapper.readValue(file, TTNGatewayCollectorConfig.class);
+            } catch (IOException e) {
+                LOG.warn("Failed to load config {}, using defaults", file.getAbsoluteFile());
+            }
+        } else {
+            LOG.warn("No config found, writing default configuration {}", file.getAbsoluteFile());
             mapper.writeValue(file, config);
-            return config;
         }
+        return config;
     }
 }
