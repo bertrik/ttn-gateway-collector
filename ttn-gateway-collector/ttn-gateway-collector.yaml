@@ -1,9 +1,0 @@
----
-url: "https://eu1.cloud.thethings.network/api/v3/events"
-gateways:
-- gatewayId: "technolution-gouda"
-  apiKey: "NNSXS.3ITPM54KRJHDX6RXCCKZXFTXA4WFVIOMCTDVANY.7IE264DE5HWZKMAER7YMCMRY27RSRU2IUWA5AIH7YDYYR4CO7L7A"
-udp:
-  host: stofradar.nl
-  port: 1700
-
