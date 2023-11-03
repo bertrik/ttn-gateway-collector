@@ -40,7 +40,7 @@ public final class UdpPushData {
         ByteBuffer bb = ByteBuffer.allocate(1500);
         bb.put(PROTOCOL_VERSION);
         bb.putShort((short) (token & 0xFFFF));
-        bb.put((byte) 0);
+        bb.put((byte) 0); // PUSH DATA identifier
         bb.put(eui);
         bb.put(jsonData.getBytes(StandardCharsets.US_ASCII));
         return Arrays.copyOf(bb.array(), bb.position());
