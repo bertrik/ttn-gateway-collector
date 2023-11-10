@@ -16,16 +16,13 @@ public final class UdpPushDataJson {
     @JsonProperty("rxpk")
     final List<RxPk> packets = new ArrayList<>();
 
-    void addReceiveData(Instant time, long timestamp, double frequency, String dataRate, String codingRate, int rssi,
-        double snr, byte[] data) {
-        packets.add(new RxPk(time, timestamp, frequency, dataRate, codingRate, rssi, snr, data));
+    public void add(RxPk packet) {
+        packets.add(packet);
     }
 
-    private static final class RxPk {
+    public static final class RxPk {
         @JsonProperty("time")
         final String time;
-        @JsonProperty("tmms")
-        final long tmms;
         @JsonProperty("tmst")
         final long tmst;
         @JsonProperty("chan")
@@ -54,7 +51,6 @@ public final class UdpPushDataJson {
         public RxPk(Instant time, long timestamp, double frequency, String dataRate, String codingRate, int rssi,
             double snr, byte[] data) {
             this.time = time.toString();
-            this.tmms = 0;
             this.tmst = timestamp;
             this.chan = 0;
             this.chain = 0;
@@ -75,4 +71,5 @@ public final class UdpPushDataJson {
                 rssi, lsnr, size, data);
         }
     }
+
 }

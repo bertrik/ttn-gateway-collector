@@ -6,6 +6,7 @@ application {
 
 dependencies {
     implementation libs.reload4j
+    implementation libs.paho.client.mqttv3
     
     implementation libs.bundles.jackson
     implementation libs.bundles.retrofit

@@ -19,6 +19,7 @@ retrofit-mock = { module = "com.squareup.retrofit2:retrofit-mock", version.ref =
 
 junit = { module = "junit:junit", version = "4.13.2" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.8.0"}
+paho-client-mqttv3 = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", version = "1.2.5" }
 
 [bundles]
 jackson = ["jackson-bind", "jackson-yaml", "jackson-csv", "jackson-jsr310"]

@@ -17,7 +17,8 @@ import nl.bertriksikken.ttn.message.GsUpReceiveData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEvent;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
-import nl.bertriksikken.udp.UdpProtocolSender;
+import nl.bertriksikken.ttngatewaycollector.mqtt.MqttSender;
+import nl.bertriksikken.udp.UdpSender;
 
 public final class TTNGatewayCollector {
 
@@ -27,13 +28,16 @@ public final class TTNGatewayCollector {
     private final StreamEventsReceiver receiver;
     private final ObjectMapper mapper = new ObjectMapper();
     private final ExportEventWriter eventWriter;
-    private final UdpProtocolSender udpSender;
+    private final UdpSender udpSender;
+    private final MqttSender mqttSender;
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
-        this.receiver = new StreamEventsReceiver(config.url);
-        this.eventWriter = new ExportEventWriter(new File(config.logFileName));
-        this.udpSender = new UdpProtocolSender(config.udpProtocolConfig);
+
+        receiver = new StreamEventsReceiver(config.url);
+        eventWriter = new ExportEventWriter(new File(config.logFileName));
+        udpSender = new UdpSender(config.udpProtocolConfig);
+        mqttSender = new MqttSender(config.mqttSenderConfig);
 
         mapper.findAndRegisterModules();
     }
@@ -50,6 +54,7 @@ public final class TTNGatewayCollector {
     private void start() throws IOException {
         LOG.info("Starting");
         udpSender.start();
+        mqttSender.start();
         for (GatewayReceiverConfig receiverConfig : config.receivers) {
             String gatewayId = receiverConfig.gatewayId;
             receiver.subscribe(gatewayId, receiverConfig.apiKey, event -> eventReceived(gatewayId, event));
@@ -60,6 +65,7 @@ public final class TTNGatewayCollector {
     private void stop() {
         LOG.info("Stopping");
         receiver.stop();
+        mqttSender.stop();
         udpSender.stop();
         LOG.info("Stopped");
     }
@@ -109,6 +115,9 @@ public final class TTNGatewayCollector {
 
                     // send to UDP sender
                     udpSender.send(uplinkMessage);
+
+                    // send to MQTT sender
+                    mqttSender.sendUplink(uplinkMessage);
                 } else {
                     LOG.warn("Unhandled gs.up.receive: {}", gsUpReceiveData.getMessage());
                 }
