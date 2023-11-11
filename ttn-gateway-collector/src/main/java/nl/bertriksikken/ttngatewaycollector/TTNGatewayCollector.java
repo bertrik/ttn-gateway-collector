@@ -2,6 +2,8 @@ package nl.bertriksikken.ttngatewaycollector;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
@@ -15,7 +17,6 @@ import nl.bertriksikken.ttn.eventstream.StreamEventsReceiver;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.GsUpReceiveData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttngatewaycollector.export.ExportEvent;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
 import nl.bertriksikken.ttngatewaycollector.mqtt.MqttSender;
 import nl.bertriksikken.udp.UdpSender;
@@ -24,20 +25,24 @@ public final class TTNGatewayCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(TTNGatewayCollector.class);
 
+    private final List<IEventProcessor> eventProcessors = new ArrayList<>();
     private final TTNGatewayCollectorConfig config;
     private final StreamEventsReceiver receiver;
     private final ObjectMapper mapper = new ObjectMapper();
-    private final ExportEventWriter eventWriter;
-    private final UdpSender udpSender;
-    private final MqttSender mqttSender;
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
 
         receiver = new StreamEventsReceiver(config.url);
-        eventWriter = new ExportEventWriter(new File(config.logFileName));
-        udpSender = new UdpSender(config.udpProtocolConfig);
-        mqttSender = new MqttSender(config.mqttSenderConfig);
+        if (!config.logFileName.isEmpty()) {
+            eventProcessors.add(new ExportEventWriter(new File(config.logFileName)));
+        }
+        if (!config.udpProtocolConfig.host.isEmpty()) {
+            eventProcessors.add(new UdpSender(config.udpProtocolConfig));
+        }
+        if (!config.mqttSenderConfig.url.isEmpty()) {
+            eventProcessors.add(new MqttSender(config.mqttSenderConfig));
+        }
 
         mapper.findAndRegisterModules();
     }
@@ -53,8 +58,9 @@ public final class TTNGatewayCollector {
 
     private void start() throws IOException {
         LOG.info("Starting");
-        udpSender.start();
-        mqttSender.start();
+        for (IEventProcessor processor : eventProcessors) {
+            processor.start();
+        }
         for (GatewayReceiverConfig receiverConfig : config.receivers) {
             String gatewayId = receiverConfig.gatewayId;
             receiver.subscribe(gatewayId, receiverConfig.apiKey, event -> eventReceived(gatewayId, event));
@@ -65,14 +71,12 @@ public final class TTNGatewayCollector {
     private void stop() {
         LOG.info("Stopping");
         receiver.stop();
-        mqttSender.stop();
-        udpSender.stop();
+        eventProcessors.forEach(IEventProcessor::stop);
         LOG.info("Stopped");
     }
 
     // package-private for testing
     void eventReceived(String gatewayId, Event event) {
-        ExportEvent exportEvent;
         try {
             // only interested in gateway uplink events
             switch (event.getName()) {
@@ -85,8 +89,7 @@ public final class TTNGatewayCollector {
             case "gs.down.send":
                 LOG.info("Gateway downlink received: {}", event.getData());
                 GsDownSendData gsDownSendData = mapper.treeToValue(event.getData(), GsDownSendData.class);
-                exportEvent = ExportEvent.fromDownlinkData(event.getTime(), gatewayId, gsDownSendData);
-                eventWriter.write(exportEvent);
+                eventProcessors.forEach(p -> p.handleDownlink(event.getTime(), gatewayId, gsDownSendData));
                 break;
             case "gs.down.tx.success":
                 break;
@@ -105,19 +108,11 @@ public final class TTNGatewayCollector {
                 LOG.info("Gateway uplink received: {}", event.getData());
                 // parse as gs.up.receive data
                 GsUpReceiveData gsUpReceiveData = mapper.treeToValue(event.getData(), GsUpReceiveData.class);
-                if (gsUpReceiveData.getDataType().equals("type.googleapis.com/ttn.lorawan.v3.GatewayUplinkMessage")) {
+                if (gsUpReceiveData.getDataType().equals(UplinkMessage.TYPE)) {
                     // parse as uplink message
                     UplinkMessage uplinkMessage = mapper.treeToValue(gsUpReceiveData.getMessage(), UplinkMessage.class);
 
-                    // send to logger
-                    exportEvent = ExportEvent.fromUplinkMessage(uplinkMessage);
-                    eventWriter.write(exportEvent);
-
-                    // send to UDP sender
-                    udpSender.send(uplinkMessage);
-
-                    // send to MQTT sender
-                    mqttSender.sendUplink(uplinkMessage);
+                    eventProcessors.forEach(p -> p.handleUplink(uplinkMessage));
                 } else {
                     LOG.warn("Unhandled gs.up.receive: {}", gsUpReceiveData.getMessage());
                 }

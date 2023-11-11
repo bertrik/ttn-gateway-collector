@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,11 +18,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
+import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
 
-public final class UdpSender {
+public final class UdpSender implements IEventProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(UdpSender.class);
 
@@ -42,7 +45,7 @@ public final class UdpSender {
 
     public void start() throws IOException {
         if (!config.host.isEmpty()) {
-            LOG.info("UDP sender configured for {}:{}", config.host, config.port);
+            LOG.info("Starting UDP sender for {}:{}", config.host, config.port);
             inetAddress = InetAddress.getByName(config.host);
             udpSocket = new DatagramSocket();
         } else {
@@ -54,20 +57,6 @@ public final class UdpSender {
         LOG.info("Stopping");
         udpSocket.close();
         executor.shutdownNow();
-    }
-
-    public void send(UplinkMessage uplink) {
-        // decode EUI
-        RxMetadata rxMetadata = uplink.rxMetadata.get(0);
-        byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
-
-        RxPk packet = udpMessageBuilder.buildRxPk(uplink);
-        byte[] data = encode(token.incrementAndGet(), eui, packet);
-
-        // schedule for transmission
-        if (udpSocket != null && data.length > 0) {
-            executor.execute(() -> sendUdp(udpSocket, data));
-        }
     }
 
     public byte[] encode(int token, byte[] eui, RxPk packet) {
@@ -106,6 +95,26 @@ public final class UdpSender {
             data[i / 2] = (byte) Integer.parseInt(hexString.substring(i, i + 2), 16);
         }
         return data;
+    }
+
+    @Override
+    public void handleUplink(UplinkMessage uplink) {
+        // decode EUI
+        RxMetadata rxMetadata = uplink.rxMetadata.get(0);
+        byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
+
+        RxPk packet = udpMessageBuilder.buildRxPk(uplink);
+        byte[] data = encode(token.incrementAndGet(), eui, packet);
+
+        // schedule for transmission
+        if (udpSocket != null && data.length > 0) {
+            executor.execute(() -> sendUdp(udpSocket, data));
+        }
+    }
+
+    @Override
+    public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
+        // not implemented yet
     }
 
 }

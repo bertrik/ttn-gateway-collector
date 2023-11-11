@@ -1,6 +1,7 @@
 package nl.bertriksikken.ttngatewaycollector.mqtt;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,12 +16,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.bertriksikken.ttn.message.GsDownSendData.Scheduled.Downlink;
+import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
+import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 import nl.bertriksikken.udp.UdpMessageBuilder;
 import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
 
-public final class MqttSender {
+public final class MqttSender implements IEventProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(MqttSender.class);
 
@@ -56,7 +58,17 @@ public final class MqttSender {
         executor.shutdownNow();
     }
 
-    public void sendUplink(UplinkMessage uplink) {
+    private void publish(String topic, String message) {
+        try {
+            byte[] payload = message.getBytes(StandardCharsets.UTF_8);
+            mqttClient.publish(topic, payload, config.qos, false);
+        } catch (MqttException e) {
+            LOG.warn("Failed to send message '{}' to topic '{}'", message, topic, e);
+        }
+    }
+
+    @Override
+    public void handleUplink(UplinkMessage uplink) {
         RxPk rxPacket = udpMessageBuilder.buildRxPk(uplink);
         try {
             String json = mapper.writeValueAsString(rxPacket);
@@ -66,17 +78,9 @@ public final class MqttSender {
         }
     }
 
-    public void sendDownlink(Downlink downlink) {
-        LOG.warn("Not implemented yet");
-    }
-
-    private void publish(String topic, String message) {
-        try {
-            byte[] payload = message.getBytes(StandardCharsets.UTF_8);
-            mqttClient.publish(topic, payload, config.qos, false);
-        } catch (MqttException e) {
-            LOG.warn("Failed to send message '{}' to topic '{}'", message, topic, e);
-        }
+    @Override
+    public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
+        // not implemented yet
     }
 
 }

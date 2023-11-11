@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class UdpSenderConfig {
 
     @JsonProperty("host")
-    String host = "";
-    
+    public String host = "";
+
     @JsonProperty("port")
     int port = 1700;
-    
+
 }

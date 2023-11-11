@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class UplinkMessage {
 
+    public static final String TYPE = "type.googleapis.com/ttn.lorawan.v3.GatewayUplinkMessage";
+
     @JsonProperty("raw_payload")
     public byte[] rawPayload = new byte[0];
     @JsonProperty("payload")

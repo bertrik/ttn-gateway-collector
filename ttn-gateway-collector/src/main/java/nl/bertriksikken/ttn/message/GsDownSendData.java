@@ -14,7 +14,7 @@ import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
 public final class GsDownSendData {
 
     @JsonProperty("@type")
-    String dataType = "";
+    String type = ""; // typically "type.googleapis.com/ttn.lorawan.v3.DownlinkMessage
 
     @JsonProperty("raw_payload")
     public byte[] rawPayload;
@@ -24,7 +24,7 @@ public final class GsDownSendData {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "{dataType=%s,rawPayload=%d bytes,scheduled=%s}", dataType, rawPayload.length,
+        return String.format(Locale.ROOT, "{type=%s,rawPayload=%d bytes,scheduled=%s}", type, rawPayload.length,
             scheduled);
     }
 

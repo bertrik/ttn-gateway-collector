@@ -20,7 +20,7 @@ public final class GsDownSendDataTest {
         GsDownSendData downSendData = mapper.readValue(url, GsDownSendData.class);
         System.out.println(downSendData);
         
-        Assert.assertEquals("type.googleapis.com/ttn.lorawan.v3.DownlinkMessage", downSendData.dataType);
+        Assert.assertEquals("type.googleapis.com/ttn.lorawan.v3.DownlinkMessage", downSendData.type);
         Assert.assertEquals(15, downSendData.rawPayload.length);
         Scheduled scheduled = downSendData.scheduled;
         Assert.assertEquals(125000, scheduled.dataRate.lora.bandWidth);
