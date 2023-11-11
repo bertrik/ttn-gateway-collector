@@ -20,6 +20,7 @@ import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 import nl.bertriksikken.udp.UdpMessageBuilder;
+import nl.bertriksikken.udp.UdpPullRespJson.TxPk;
 import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
 
 public final class MqttSender implements IEventProcessor {
@@ -80,7 +81,13 @@ public final class MqttSender implements IEventProcessor {
 
     @Override
     public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
-        // not implemented yet
+        TxPk txPacket = udpMessageBuilder.buildTxPk(time, downlink);
+        try {
+            String json = mapper.writeValueAsString(txPacket);
+            executor.execute(() -> publish(config.downlinkTopic, json));
+        } catch (JsonProcessingException e) {
+            LOG.warn("Failed to serialize", e);
+        }
     }
 
 }

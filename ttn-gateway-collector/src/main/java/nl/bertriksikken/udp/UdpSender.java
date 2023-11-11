@@ -22,6 +22,7 @@ import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
+import nl.bertriksikken.udp.UdpPullRespJson.TxPk;
 import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
 
 public final class UdpSender implements IEventProcessor {
@@ -35,7 +36,7 @@ public final class UdpSender implements IEventProcessor {
     private final AtomicInteger token = new AtomicInteger(0);
     private final UdpMessageBuilder udpMessageBuilder = new UdpMessageBuilder();
     private final UdpSenderConfig config;
-    
+
     private InetAddress inetAddress;
     private DatagramSocket udpSocket;
 
@@ -59,7 +60,7 @@ public final class UdpSender implements IEventProcessor {
         executor.shutdownNow();
     }
 
-    public byte[] encode(int token, byte[] eui, RxPk packet) {
+    public byte[] encodePushData(int token, byte[] eui, RxPk packet) {
         // encode packet as JSON
         UdpPushDataJson json = new UdpPushDataJson();
         json.add(packet);
@@ -72,6 +73,25 @@ public final class UdpSender implements IEventProcessor {
             bb.putShort((short) (token & 0xFFFF));
             bb.put((byte) 0); // PUSH DATA identifier
             bb.put(eui);
+            bb.put(jsonData.getBytes(StandardCharsets.US_ASCII));
+            return Arrays.copyOf(bb.array(), bb.position());
+        } catch (JsonProcessingException e) {
+            LOG.warn("Could not build packet", e);
+            return new byte[0];
+        }
+    }
+
+    public byte[] encodePullResp(int token, TxPk packet) {
+        // encode packet as JSON
+        UdpPullRespJson json = new UdpPullRespJson(packet);
+        try {
+            String jsonData = MAPPER.writeValueAsString(json);
+
+            // build UDP packet
+            ByteBuffer bb = ByteBuffer.allocate(1500);
+            bb.put(PROTOCOL_VERSION);
+            bb.putShort((short) (token & 0xFFFF));
+            bb.put((byte) 3); // PULL RESP identifier
             bb.put(jsonData.getBytes(StandardCharsets.US_ASCII));
             return Arrays.copyOf(bb.array(), bb.position());
         } catch (JsonProcessingException e) {
@@ -102,19 +122,22 @@ public final class UdpSender implements IEventProcessor {
         // decode EUI
         RxMetadata rxMetadata = uplink.rxMetadata.get(0);
         byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
-
         RxPk packet = udpMessageBuilder.buildRxPk(uplink);
-        byte[] data = encode(token.incrementAndGet(), eui, packet);
+        byte[] data = encodePushData(token.incrementAndGet(), eui, packet);
+        sendUdp(data);
+    }
 
+    @Override
+    public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
+        TxPk packet = udpMessageBuilder.buildTxPk(time, downlink);
+        byte[] data = encodePullResp(token.incrementAndGet(), packet);
+        sendUdp(data);
+    }
+
+    private void sendUdp(byte[] data) {
         // schedule for transmission
         if (udpSocket != null && data.length > 0) {
             executor.execute(() -> sendUdp(udpSocket, data));
         }
     }
-
-    @Override
-    public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
-        // not implemented yet
-    }
-
 }
