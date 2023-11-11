@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
-import nl.bertriksikken.udp.UdpMessageBuilder;
-import nl.bertriksikken.udp.UdpPullRespJson.TxPk;
-import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpMessageBuilder;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
 
 public final class MqttSender implements IEventProcessor {
 

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import nl.bertriksikken.ttngatewaycollector.export.CsvLoggerConfig;
 import nl.bertriksikken.ttngatewaycollector.mqtt.MqttSenderConfig;
-import nl.bertriksikken.udp.UdpSenderConfig;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpSenderConfig;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(getterVisibility = Visibility.NONE)

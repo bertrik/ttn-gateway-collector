@@ -1,4 +1,4 @@
-package nl.bertriksikken.udp;
+package nl.bertriksikken.ttngatewaycollector.udp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

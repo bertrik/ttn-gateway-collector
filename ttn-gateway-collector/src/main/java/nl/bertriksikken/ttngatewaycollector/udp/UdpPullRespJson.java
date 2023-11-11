@@ -1,4 +1,4 @@
-package nl.bertriksikken.udp;
+package nl.bertriksikken.ttngatewaycollector.udp;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

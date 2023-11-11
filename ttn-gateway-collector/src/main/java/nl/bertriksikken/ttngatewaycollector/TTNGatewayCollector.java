@@ -19,7 +19,7 @@ import nl.bertriksikken.ttn.message.GsUpReceiveData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
 import nl.bertriksikken.ttngatewaycollector.mqtt.MqttSender;
-import nl.bertriksikken.udp.UdpSender;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpSender;
 
 public final class TTNGatewayCollector {
 

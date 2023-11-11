@@ -1,4 +1,4 @@
-package nl.bertriksikken.udp;
+package nl.bertriksikken.ttngatewaycollector.udp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -22,8 +22,8 @@ import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
-import nl.bertriksikken.udp.UdpPullRespJson.TxPk;
-import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
 
 public final class UdpSender implements IEventProcessor {
 

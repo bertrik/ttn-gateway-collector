@@ -1,4 +1,4 @@
-package nl.bertriksikken.udp;
+package nl.bertriksikken.ttngatewaycollector.udp;
 
 import java.time.Instant;
 import java.util.Locale;
@@ -8,8 +8,8 @@ import nl.bertriksikken.ttn.message.GsDownSendData.Scheduled;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
-import nl.bertriksikken.udp.UdpPullRespJson.TxPk;
-import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
 
 public final class UdpMessageBuilder {
 
