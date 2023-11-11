@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import nl.bertriksikken.ttngatewaycollector.export.CsvLoggerConfig;
 import nl.bertriksikken.ttngatewaycollector.mqtt.MqttSenderConfig;
 import nl.bertriksikken.udp.UdpSenderConfig;
 
@@ -22,7 +23,7 @@ public final class TTNGatewayCollectorConfig {
     List<GatewayReceiverConfig> receivers = new ArrayList<>();
 
     @JsonProperty("logfile")
-    String logFileName = "gateway.csv";
+    CsvLoggerConfig csvLoggerConfig = new CsvLoggerConfig();
 
     @JsonProperty("udp")
     UdpSenderConfig udpProtocolConfig = new UdpSenderConfig();

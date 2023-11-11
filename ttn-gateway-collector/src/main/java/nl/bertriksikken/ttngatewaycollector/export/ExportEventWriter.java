@@ -28,8 +28,8 @@ public final class ExportEventWriter implements IEventProcessor {
     private final CsvMapper csvMapper = new CsvMapper();
     private final File logFile;
 
-    public ExportEventWriter(File logFile) {
-        this.logFile = logFile;
+    public ExportEventWriter(CsvLoggerConfig config) {
+        logFile = new File(config.logFileName);
         csvMapper.findAndRegisterModules();
         csvMapper.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
     }

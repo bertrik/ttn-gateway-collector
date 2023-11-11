@@ -26,7 +26,7 @@ public final class UdpPullRespJson {
         @JsonProperty("tmst")
         final long tmst;
         @JsonProperty("freq")
-        double freq;
+        final double freq;
         @JsonProperty("rfch")
         final int chain;
         @JsonProperty("powe")

@@ -34,8 +34,8 @@ public final class TTNGatewayCollector {
         this.config = config;
 
         receiver = new StreamEventsReceiver(config.url);
-        if (!config.logFileName.isEmpty()) {
-            eventProcessors.add(new ExportEventWriter(new File(config.logFileName)));
+        if (!config.csvLoggerConfig.logFileName.isEmpty()) {
+            eventProcessors.add(new ExportEventWriter(config.csvLoggerConfig));
         }
         if (!config.udpProtocolConfig.host.isEmpty()) {
             eventProcessors.add(new UdpSender(config.udpProtocolConfig));
