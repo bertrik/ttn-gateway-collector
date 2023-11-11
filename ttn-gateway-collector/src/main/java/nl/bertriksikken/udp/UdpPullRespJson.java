@@ -1,6 +1,7 @@
 package nl.bertriksikken.udp;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -45,7 +46,7 @@ public final class UdpPullRespJson {
 
         public TxPk(Instant time, long timestamp, double frequency, String dataRate, String codingRate, double power,
             boolean invertPol, byte[] data) {
-            this.time = time.toString();
+            this.time = time.truncatedTo(ChronoUnit.MICROS).toString();
             this.imme = false;
             this.tmst = timestamp;
             this.chain = 0;
