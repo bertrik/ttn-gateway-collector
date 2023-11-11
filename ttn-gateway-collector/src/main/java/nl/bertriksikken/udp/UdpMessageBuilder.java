@@ -7,6 +7,7 @@ import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.GsDownSendData.Scheduled;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
+import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
 import nl.bertriksikken.udp.UdpPullRespJson.TxPk;
 import nl.bertriksikken.udp.UdpPushDataJson.RxPk;
 
@@ -17,8 +18,7 @@ public final class UdpMessageBuilder {
         Instant time = rxMetadata.time;
         long timestamp = rxMetadata.timestamp;
         double frequency = uplink.settings.frequency / 1E6;
-        String dataRate = String.format(Locale.ROOT, "SF%dBW%d", uplink.settings.dataRate.lora.spreadingFactor,
-            uplink.settings.dataRate.lora.bandWidth / 1000);
+        String dataRate = createSFBW(uplink.settings.dataRate);
         String codingRate = uplink.settings.dataRate.lora.codingRate;
         int rssi = rxMetadata.rssi;
         double snr = rxMetadata.snr;
@@ -30,13 +30,16 @@ public final class UdpMessageBuilder {
         Scheduled scheduled = downlink.scheduled;
         long timestamp = scheduled.timestamp;
         double frequency = scheduled.frequency / 1E6;
-        String dataRate = String.format(Locale.ROOT, "SF%dBW%d", scheduled.dataRate.lora.spreadingFactor,
-            scheduled.dataRate.lora.bandWidth / 1000);
+        String dataRate = createSFBW(scheduled.dataRate);
         String codingRate = scheduled.dataRate.lora.codingRate;
         double power = scheduled.downlink.txPower;
         boolean invert = scheduled.downlink.invertPolarization;
         byte[] data = downlink.rawPayload;
         return new TxPk(time, timestamp, frequency, dataRate, codingRate, power, invert, data);
+    }
+
+    private String createSFBW(DataRate dataRate) {
+        return String.format(Locale.ROOT, "SF%dBW%d", dataRate.lora.spreadingFactor, dataRate.lora.bandWidth / 1000);
     }
 
 }
