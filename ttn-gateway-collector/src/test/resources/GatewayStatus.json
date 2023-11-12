@@ -1,0 +1,26 @@
+{
+  "@type": "type.googleapis.com/ttn.lorawan.v3.GatewayStatus",
+  "time": "2023-11-12T16:31:18Z",
+  "versions": {
+    "ttn-lw-gateway-server": "3.28.0-rc2-SNAPSHOT-ee7fad721"
+  },
+  "antenna_locations": [
+    {
+      "latitude": 52.07788,
+      "longitude": 4.39223,
+      "altitude": 1,
+      "source": "SOURCE_GPS"
+    }
+  ],
+  "ip": [
+    "83.84.7.238"
+  ],
+  "metrics": {
+    "rxin": 5,
+    "rxok": 1,
+    "rxfw": 1,
+    "ackr": 66.7,
+    "txin": 0,
+    "txok": 0
+  }
+}

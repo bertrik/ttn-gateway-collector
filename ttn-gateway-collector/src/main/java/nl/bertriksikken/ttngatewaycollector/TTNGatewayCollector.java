@@ -14,6 +14,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import nl.bertriksikken.ttn.eventstream.Event;
 import nl.bertriksikken.ttn.eventstream.StreamEventsReceiver;
+import nl.bertriksikken.ttn.message.GatewayStatus;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.GsUpReceiveData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
@@ -95,6 +96,11 @@ public final class TTNGatewayCollector {
                 break;
             case "gs.gateway.connection.stats":
                 // ignore
+                break;
+            case "gs.status.receive":
+                LOG.info("Gateways status receive: {}", event.getData());
+                GatewayStatus gatewayStatus = mapper.treeToValue(event.getData(), GatewayStatus.class);
+                eventProcessors.forEach(p -> p.handleStatus(event.getTime(), event.getGatewayIds(), gatewayStatus));
                 break;
             case "gs.txack.receive":
             case "gs.txack.forward":

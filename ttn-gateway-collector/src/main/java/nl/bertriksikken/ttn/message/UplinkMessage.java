@@ -8,6 +8,8 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+
 /**
  * LoRaWAN uplink message.
  * <p>
@@ -158,7 +160,6 @@ public final class UplinkMessage {
                     return String.format(Locale.ROOT, "{bitrate=%d}", bitRate);
                 }
             }
-
         }
     }
 
@@ -186,15 +187,5 @@ public final class UplinkMessage {
         public String toString() {
             return String.format(Locale.ROOT, "{rssi=%s,snr=%.1f,channel=%s}", rssi, snr, channelIndex);
         }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class GatewayIds {
-            @JsonProperty("gateway_id")
-            public String gatewayId = "";
-
-            @JsonProperty("eui")
-            public String eui = "";
-        }
-
     }
 }

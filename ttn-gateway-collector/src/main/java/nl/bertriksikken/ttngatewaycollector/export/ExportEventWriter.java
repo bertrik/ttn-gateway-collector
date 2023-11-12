@@ -15,6 +15,8 @@ import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.GatewayStatus;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
@@ -56,6 +58,11 @@ public final class ExportEventWriter implements IEventProcessor {
     public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
         ExportEvent event = ExportEvent.fromDownlinkData(time, gateway, downlink);
         executor.execute(() -> write(event));
+    }
+
+    @Override
+    public void handleStatus(Instant time, GatewayIds gatewayIds, GatewayStatus gatewayStatus) {
+        // not implemented
     }
 
     @Override

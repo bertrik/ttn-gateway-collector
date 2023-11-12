@@ -1,6 +1,7 @@
 package nl.bertriksikken.ttngatewaycollector.udp;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -18,12 +19,15 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.GatewayStatus;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.Stat;
 
 public final class UdpSender implements IEventProcessor {
 
@@ -60,25 +64,15 @@ public final class UdpSender implements IEventProcessor {
         executor.shutdownNow();
     }
 
-    public byte[] encodePushData(int token, byte[] eui, RxPk packet) {
-        // encode packet as JSON
-        UdpPushDataJson json = new UdpPushDataJson();
-        json.add(packet);
-        try {
-            String jsonData = MAPPER.writeValueAsString(json);
-
-            // build UDP packet
-            ByteBuffer bb = ByteBuffer.allocate(1500);
-            bb.put(PROTOCOL_VERSION);
-            bb.putShort((short) (token & 0xFFFF));
-            bb.put((byte) 0); // PUSH DATA identifier
-            bb.put(eui);
-            bb.put(jsonData.getBytes(StandardCharsets.US_ASCII));
-            return Arrays.copyOf(bb.array(), bb.position());
-        } catch (JsonProcessingException e) {
-            LOG.warn("Could not build packet", e);
-            return new byte[0];
-        }
+    public byte[] encodePushData(int token, byte[] eui, String json) {
+        // build UDP packet
+        ByteBuffer bb = ByteBuffer.allocate(1500);
+        bb.put(PROTOCOL_VERSION);
+        bb.putShort((short) (token & 0xFFFF));
+        bb.put((byte) 0); // PUSH DATA identifier
+        bb.put(eui);
+        bb.put(json.getBytes(StandardCharsets.US_ASCII));
+        return Arrays.copyOf(bb.array(), bb.position());
     }
 
     public byte[] encodePullResp(int token, TxPk packet) {
@@ -122,9 +116,15 @@ public final class UdpSender implements IEventProcessor {
         // decode EUI
         RxMetadata rxMetadata = uplink.rxMetadata.get(0);
         byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
-        RxPk packet = udpMessageBuilder.buildRxPk(uplink);
-        byte[] data = encodePushData(token.incrementAndGet(), eui, packet);
-        sendUdp(data);
+        RxPk rxPk = udpMessageBuilder.buildRxPk(uplink);
+        UdpPushDataJson pushData = new UdpPushDataJson(rxPk);
+        try {
+            String json = MAPPER.writeValueAsString(pushData);
+            byte[] data = encodePushData(token.incrementAndGet(), eui, json);
+            sendUdp(data);
+        } catch (JsonProcessingException e) {
+            LOG.warn("Could not build packet", e);
+        }
     }
 
     @Override
@@ -132,6 +132,21 @@ public final class UdpSender implements IEventProcessor {
         TxPk packet = udpMessageBuilder.buildTxPk(time, downlink);
         byte[] data = encodePullResp(token.incrementAndGet(), packet);
         sendUdp(data);
+    }
+
+    @Override
+    public void handleStatus(Instant time, GatewayIds gatewayIds, GatewayStatus gatewayStatus) {
+        // not implemented
+        byte[] eui = parseHex(gatewayIds.eui);
+        Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);
+        UdpPushDataJson pushData = new UdpPushDataJson(stat);
+        try {
+            String json = MAPPER.writeValueAsString(pushData);
+            byte[] data = encodePushData(token.incrementAndGet(), eui, json);
+            sendUdp(data);
+        } catch (JsonProcessingException e) {
+            LOG.warn("Could not build packet", e);
+        }
     }
 
     private void sendUdp(byte[] data) {

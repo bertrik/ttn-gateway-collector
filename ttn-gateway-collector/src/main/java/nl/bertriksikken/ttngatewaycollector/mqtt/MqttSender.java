@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.GatewayStatus;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
@@ -88,6 +90,11 @@ public final class MqttSender implements IEventProcessor {
         } catch (JsonProcessingException e) {
             LOG.warn("Failed to serialize", e);
         }
+    }
+
+    @Override
+    public void handleStatus(Instant time, GatewayIds gatewayIds, GatewayStatus gatewayStatus) {
+        // not implemented
     }
 
 }

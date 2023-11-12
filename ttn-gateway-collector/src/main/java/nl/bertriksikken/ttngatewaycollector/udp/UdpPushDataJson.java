@@ -1,23 +1,35 @@
 package nl.bertriksikken.ttngatewaycollector.udp;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * JSON structure according to
  * https://github.com/Lora-net/packet_forwarder/blob/master/PROTOCOL.TXT
  */
+@JsonInclude(Include.NON_NULL)
 public final class UdpPushDataJson {
 
     @JsonProperty("rxpk")
-    final List<RxPk> packets = new ArrayList<>();
+    private final List<RxPk> packets;
 
-    public void add(RxPk packet) {
-        packets.add(packet);
+    @JsonProperty("stat")
+    private final Stat stat;
+
+    UdpPushDataJson(RxPk packet) {
+        this.packets = List.of(packet);
+        this.stat = null;
+    }
+
+    UdpPushDataJson(Stat stat) {
+        this.packets = null;
+        this.stat = stat;
     }
 
     public static final class RxPk {
@@ -69,6 +81,44 @@ public final class UdpPushDataJson {
         public String toString() {
             return String.format(Locale.ROOT, "{%s,%f,%s,%s,%d,%.1f,%d,%s,%d,%s}", time, freq, stat, modu, datr, codr,
                 rssi, lsnr, size, data);
+        }
+    }
+
+    @JsonInclude(Include.NON_NULL)
+    public static final class Stat {
+        @JsonProperty("time")
+        final String time;
+        @JsonProperty("lati")
+        final Double latitude;
+        @JsonProperty("long")
+        final Double longitude;
+        @JsonProperty("alti")
+        final Integer altitude;
+        @JsonProperty("rxnb")
+        final int rxnb;
+        @JsonProperty("rxok")
+        final int rxok;
+        @JsonProperty("rxfw")
+        final int rxfw;
+        @JsonProperty("ackr")
+        final double ackr;
+        @JsonProperty("dwnb")
+        final int dwnb;
+        @JsonProperty("txnb")
+        final int txnb;
+
+        public Stat(Instant time, Double latitude, Double longitude, Integer altitude, int rxnb, int rxok, int rxfw,
+            double ackr, int dwnb, int txnb) {
+            this.time = time.truncatedTo(ChronoUnit.MICROS).toString();
+            this.latitude = latitude;
+            this.longitude = longitude;
+            this.altitude = altitude;
+            this.rxnb = rxnb;
+            this.rxok = rxok;
+            this.rxfw = rxfw;
+            this.ackr = ackr;
+            this.dwnb = dwnb;
+            this.txnb = txnb;
         }
     }
 
