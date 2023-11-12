@@ -24,6 +24,7 @@ import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpMessageBuilder;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.Stat;
 
 public final class MqttSender implements IEventProcessor {
 
@@ -47,8 +48,8 @@ public final class MqttSender implements IEventProcessor {
     }
 
     public void start() {
-        LOG.info("Starting MQTT sender for url '{}', topics '{}'/'{}'", config.url, config.uplinkTopic,
-            config.downlinkTopic);
+        LOG.info("Starting MQTT sender for url '{}', topics '{}'/'{}'/'{}'", config.url, config.uplinkTopic,
+            config.downlinkTopic, config.statusTopic);
         try {
             mqttClient.connect(options);
         } catch (MqttException e) {
@@ -62,11 +63,13 @@ public final class MqttSender implements IEventProcessor {
     }
 
     private void publish(String topic, String message) {
-        try {
-            byte[] payload = message.getBytes(StandardCharsets.UTF_8);
-            mqttClient.publish(topic, payload, config.qos, false);
-        } catch (MqttException e) {
-            LOG.warn("Failed to send message '{}' to topic '{}'", message, topic, e);
+        if (!topic.isEmpty() && !message.isEmpty()) {
+            try {
+                byte[] payload = message.getBytes(StandardCharsets.UTF_8);
+                mqttClient.publish(topic, payload, config.qos, false);
+            } catch (MqttException e) {
+                LOG.warn("Failed to send message '{}' to topic '{}'", message, topic, e);
+            }
         }
     }
 
@@ -94,7 +97,12 @@ public final class MqttSender implements IEventProcessor {
 
     @Override
     public void handleStatus(Instant time, GatewayIds gatewayIds, GatewayStatus gatewayStatus) {
-        // not implemented
+        Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);
+        try {
+            String json = mapper.writeValueAsString(stat);
+            executor.execute(() -> publish(config.statusTopic, json));
+        } catch (JsonProcessingException e) {
+            LOG.warn("Failed to serialize", e);
+        }
     }
-
 }

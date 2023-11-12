@@ -16,4 +16,7 @@ public final class MqttSenderConfig {
     @JsonProperty("downlinkTopic")
     public String downlinkTopic = "lorawan/downlink";
 
+    @JsonProperty("statusTopic")
+    public String statusTopic = "lorawan/status";
+
 }
