@@ -1,7 +1,6 @@
 package nl.bertriksikken.ttngatewaycollector.udp;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
 import nl.bertriksikken.ttn.message.GatewayStatus;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
@@ -135,7 +134,7 @@ public final class UdpSender implements IEventProcessor {
     }
 
     @Override
-    public void handleStatus(Instant time, GatewayIds gatewayIds, GatewayStatus gatewayStatus) {
+    public void handleStatus(Instant time, GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
         // not implemented
         byte[] eui = parseHex(gatewayIds.eui);
         Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);

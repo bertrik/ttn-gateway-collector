@@ -8,7 +8,7 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
 
 /**
  * LoRaWAN uplink message.
@@ -166,7 +166,7 @@ public final class UplinkMessage {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RxMetadata {
         @JsonProperty("gateway_ids")
-        public GatewayIds gatewayIds = new GatewayIds();
+        public GatewayIdentifiers gatewayIds = GatewayIdentifiers.create("", "");
 
         @JsonProperty("time")
         public Instant time = Instant.now();

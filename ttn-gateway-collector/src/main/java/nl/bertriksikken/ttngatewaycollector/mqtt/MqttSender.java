@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
 import nl.bertriksikken.ttn.message.GatewayStatus;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
@@ -96,7 +96,7 @@ public final class MqttSender implements IEventProcessor {
     }
 
     @Override
-    public void handleStatus(Instant time, GatewayIds gatewayIds, GatewayStatus gatewayStatus) {
+    public void handleStatus(Instant time, GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
         Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);
         try {
             String json = mapper.writeValueAsString(stat);

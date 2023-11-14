@@ -15,7 +15,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
-import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
 import nl.bertriksikken.ttn.message.GatewayStatus;
 import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
@@ -61,7 +61,7 @@ public final class ExportEventWriter implements IEventProcessor {
     }
 
     @Override
-    public void handleStatus(Instant time, GatewayIds gatewayIds, GatewayStatus gatewayStatus) {
+    public void handleStatus(Instant time, GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
         // not implemented
     }
 

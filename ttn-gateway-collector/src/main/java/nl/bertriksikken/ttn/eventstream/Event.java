@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import nl.bertriksikken.ttn.message.GatewayIdentifier;
-import nl.bertriksikken.ttn.message.GatewayIdentifier.GatewayIds;
+import nl.bertriksikken.ttn.message.EntityIdentifiers;
+import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
 
 /**
  * See
@@ -26,7 +26,7 @@ public final class Event {
     String time = "";
 
     @JsonProperty("identifiers")
-    List<GatewayIdentifier> identifiers = new ArrayList<>();
+    List<EntityIdentifiers> identifiers = new ArrayList<>();
 
     @JsonProperty("data")
     JsonNode data = new TextNode("");
@@ -39,11 +39,11 @@ public final class Event {
         return Instant.parse(time);
     }
 
-    public GatewayIds getGatewayIds() {
+    public GatewayIdentifiers getGatewayIds() {
         if (identifiers.isEmpty()) {
             return null;
         }
-        return identifiers.get(0).gatewayId;
+        return identifiers.get(0).gatewayIds;
     }
 
     public JsonNode getData() {
