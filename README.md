@@ -24,9 +24,17 @@ url: "https://eu1.cloud.thethings.network/api/v3/events"
 gateways:
 - gatewayId: "bertrik-ttig-2"
   apiKey: "NNSXS.UZHV7MYRN3R74XXY2SM3R67CEPIYX5J3AEIGGMI.secret"
+log:
+  filename: "gateway.csv"
 udp:
   host: "example.com"
   port: 1700
+mqtt:
+  url: "tcp://example.com"
+  qos: 0
+  uplinkTopic: "lorawan/uplink"
+  downlinkTopic: "lorawan/downlink"
+  statusTopic: "lorawan/status"
 ~~~~
 
 ## Running
