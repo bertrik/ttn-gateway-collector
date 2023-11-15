@@ -44,14 +44,14 @@ public final class UdpPullResp {
         @JsonProperty("data")
         final byte[] data;
 
-        public TxPk(Instant time, long timestamp, double frequency, String dataRate, String codingRate, double power,
-            boolean invertPol, byte[] data) {
+        public TxPk(Instant time, long timestamp, double frequency, String modulation, String dataRate,
+            String codingRate, double power, boolean invertPol, byte[] data) {
             this.time = time.truncatedTo(ChronoUnit.MICROS).toString();
             this.imme = false;
             this.tmst = timestamp;
             this.chain = 0;
             this.freq = frequency;
-            this.modu = "LORA";
+            this.modu = modulation;
             this.datr = dataRate;
             this.codr = codingRate;
             this.ipol = invertPol;

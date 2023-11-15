@@ -22,24 +22,26 @@ public final class UdpMessageBuilder {
         Instant time = rxMetadata.time;
         long timestamp = rxMetadata.timestamp;
         double frequency = uplink.settings.frequency / 1E6;
+        String modulation = createModulation(uplink.settings.dataRate);
         String dataRate = createSFBW(uplink.settings.dataRate);
         String codingRate = uplink.settings.dataRate.lora.codingRate;
         int rssi = rxMetadata.rssi;
         double snr = rxMetadata.snr;
         byte[] data = uplink.rawPayload;
-        return new RxPk(time, timestamp, frequency, dataRate, codingRate, rssi, snr, data);
+        return new RxPk(time, timestamp, frequency, modulation, dataRate, codingRate, rssi, snr, data);
     }
 
     public TxPk buildTxPk(Instant time, GsDownSendData downlink) {
         Scheduled scheduled = downlink.scheduled;
         long timestamp = scheduled.timestamp;
         double frequency = scheduled.frequency / 1E6;
+        String modulation = createModulation(scheduled.dataRate);
         String dataRate = createSFBW(scheduled.dataRate);
         String codingRate = scheduled.dataRate.lora.codingRate;
         double power = scheduled.downlink.txPower;
         boolean invert = scheduled.downlink.invertPolarization;
         byte[] data = downlink.rawPayload;
-        return new TxPk(time, timestamp, frequency, dataRate, codingRate, power, invert, data);
+        return new TxPk(time, timestamp, frequency, modulation, dataRate, codingRate, power, invert, data);
     }
 
     public Stat buildStat(Instant time, GatewayStatus status) {
@@ -58,7 +60,14 @@ public final class UdpMessageBuilder {
     }
 
     private String createSFBW(DataRate dataRate) {
+        if (dataRate.fsk.bitRate > 0) {
+            return String.format(Locale.ROOT, "%d", dataRate.fsk.bitRate);
+        }
         return String.format(Locale.ROOT, "SF%dBW%d", dataRate.lora.spreadingFactor, dataRate.lora.bandWidth / 1000);
+    }
+
+    private String createModulation(DataRate dataRate) {
+        return (dataRate.fsk.bitRate > 0) ? "FSK" : "LORA";
     }
 
 }

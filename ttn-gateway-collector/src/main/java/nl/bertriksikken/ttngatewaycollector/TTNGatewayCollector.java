@@ -98,7 +98,7 @@ public final class TTNGatewayCollector {
                 // ignore
                 break;
             case "gs.status.receive":
-                LOG.info("Gateways status receive: {}", event.getData());
+                LOG.info("Gateway status received: {}", event.getData());
                 GatewayStatus gatewayStatus = mapper.treeToValue(event.getData(), GatewayStatus.class);
                 eventProcessors.forEach(p -> p.handleStatus(event.getTime(), event.getGatewayIds(), gatewayStatus));
                 break;

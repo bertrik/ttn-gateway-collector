@@ -32,6 +32,7 @@ public final class UdpPushData {
         this.stat = stat;
     }
 
+    @JsonInclude(Include.NON_NULL)
     public static final class RxPk {
         @JsonProperty("time")
         final String time;
@@ -50,7 +51,7 @@ public final class UdpPushData {
         @JsonProperty("datr")
         String datr;
         @JsonProperty("codr")
-        String codr;
+        String codr; // only for LORA
         @JsonProperty("rssi")
         int rssi;
         @JsonProperty("lsnr")
@@ -60,15 +61,15 @@ public final class UdpPushData {
         @JsonProperty("data")
         byte[] data;
 
-        public RxPk(Instant time, long timestamp, double frequency, String dataRate, String codingRate, int rssi,
-            double snr, byte[] data) {
+        public RxPk(Instant time, long timestamp, double frequency, String modulation, String dataRate,
+            String codingRate, int rssi, double snr, byte[] data) {
             this.time = time.truncatedTo(ChronoUnit.MICROS).toString();
             this.tmst = timestamp;
             this.chan = 0;
             this.chain = 0;
             this.freq = frequency;
             this.stat = 1;
-            this.modu = "LORA";
+            this.modu = modulation;
             this.datr = dataRate;
             this.codr = codingRate;
             this.rssi = rssi;
