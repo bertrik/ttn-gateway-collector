@@ -62,7 +62,7 @@ public final class UdpPushData {
 
         public RxPk(Instant time, long timestamp, double frequency, String dataRate, String codingRate, int rssi,
             double snr, byte[] data) {
-            this.time = time.toString();
+            this.time = time.truncatedTo(ChronoUnit.MICROS).toString();
             this.tmst = timestamp;
             this.chan = 0;
             this.chain = 0;
