@@ -22,7 +22,7 @@ public final class TTNGatewayCollectorConfig {
     @JsonProperty("gateways")
     List<GatewayReceiverConfig> receivers = new ArrayList<>();
 
-    @JsonProperty("logfile")
+    @JsonProperty("log")
     CsvLoggerConfig csvLoggerConfig = new CsvLoggerConfig();
 
     @JsonProperty("udp")
