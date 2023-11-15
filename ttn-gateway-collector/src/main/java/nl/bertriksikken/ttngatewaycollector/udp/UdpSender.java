@@ -24,9 +24,9 @@ import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.Stat;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
 
 public final class UdpSender implements IEventProcessor {
 
@@ -76,7 +76,7 @@ public final class UdpSender implements IEventProcessor {
 
     public byte[] encodePullResp(int token, TxPk packet) {
         // encode packet as JSON
-        UdpPullRespJson json = new UdpPullRespJson(packet);
+        UdpPullResp json = new UdpPullResp(packet);
         try {
             String jsonData = MAPPER.writeValueAsString(json);
 
@@ -116,7 +116,7 @@ public final class UdpSender implements IEventProcessor {
         RxMetadata rxMetadata = uplink.rxMetadata.get(0);
         byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
         RxPk rxPk = udpMessageBuilder.buildRxPk(uplink);
-        UdpPushDataJson pushData = new UdpPushDataJson(rxPk);
+        UdpPushData pushData = new UdpPushData(rxPk);
         try {
             String json = MAPPER.writeValueAsString(pushData);
             byte[] data = encodePushData(token.incrementAndGet(), eui, json);
@@ -138,7 +138,7 @@ public final class UdpSender implements IEventProcessor {
         // not implemented
         byte[] eui = parseHex(gatewayIds.eui);
         Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);
-        UdpPushDataJson pushData = new UdpPushDataJson(stat);
+        UdpPushData pushData = new UdpPushData(stat);
         try {
             String json = MAPPER.writeValueAsString(pushData);
             byte[] data = encodePushData(token.incrementAndGet(), eui, json);

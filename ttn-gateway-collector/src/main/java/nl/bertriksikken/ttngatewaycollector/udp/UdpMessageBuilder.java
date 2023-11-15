@@ -11,9 +11,9 @@ import nl.bertriksikken.ttn.message.GsDownSendData.Scheduled;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.Stat;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
 
 public final class UdpMessageBuilder {
 

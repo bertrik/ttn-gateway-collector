@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * https://github.com/Lora-net/packet_forwarder/blob/master/PROTOCOL.TXT
  */
 @JsonInclude(Include.NON_NULL)
-public final class UdpPushDataJson {
+public final class UdpPushData {
 
     @JsonProperty("rxpk")
     private final List<RxPk> packets;
@@ -22,12 +22,12 @@ public final class UdpPushDataJson {
     @JsonProperty("stat")
     private final Stat stat;
 
-    UdpPushDataJson(RxPk packet) {
+    UdpPushData(RxPk packet) {
         this.packets = List.of(packet);
         this.stat = null;
     }
 
-    UdpPushDataJson(Stat stat) {
+    UdpPushData(Stat stat) {
         this.packets = null;
         this.stat = stat;
     }

@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * JSON structure according to
  * https://github.com/Lora-net/packet_forwarder/blob/master/PROTOCOL.TXT
  */
-public final class UdpPullRespJson {
+public final class UdpPullResp {
 
     @JsonProperty("txpk")
     private final TxPk txPk;
 
-    UdpPullRespJson(TxPk txPk) {
+    UdpPullResp(TxPk txPk) {
         this.txPk = txPk;
     }
 

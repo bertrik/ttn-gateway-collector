@@ -22,9 +22,9 @@ import nl.bertriksikken.ttn.message.GsDownSendData;
 import nl.bertriksikken.ttn.message.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpMessageBuilder;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPullRespJson.TxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.RxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushDataJson.Stat;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
 
 public final class MqttSender implements IEventProcessor {
 
