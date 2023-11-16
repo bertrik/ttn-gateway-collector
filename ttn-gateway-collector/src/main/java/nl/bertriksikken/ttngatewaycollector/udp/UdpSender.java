@@ -68,7 +68,7 @@ public final class UdpSender implements IEventProcessor {
         ByteBuffer bb = ByteBuffer.allocate(1500);
         bb.put(PROTOCOL_VERSION);
         bb.putShort((short) (token & 0xFFFF));
-        bb.put((byte) 0); // PUSH DATA identifier
+        bb.put(UdpPushData.IDENTIFIER);
         bb.put(eui);
         bb.put(json.getBytes(StandardCharsets.US_ASCII));
         return Arrays.copyOf(bb.array(), bb.position());
@@ -84,7 +84,7 @@ public final class UdpSender implements IEventProcessor {
             ByteBuffer bb = ByteBuffer.allocate(1500);
             bb.put(PROTOCOL_VERSION);
             bb.putShort((short) (token & 0xFFFF));
-            bb.put((byte) 3); // PULL RESP identifier
+            bb.put(UdpPullResp.IDENTIFIER);
             bb.put(jsonData.getBytes(StandardCharsets.US_ASCII));
             return Arrays.copyOf(bb.array(), bb.position());
         } catch (JsonProcessingException e) {

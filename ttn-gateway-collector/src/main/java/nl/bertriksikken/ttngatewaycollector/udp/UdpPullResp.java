@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public final class UdpPullResp {
 
+    public static final byte IDENTIFIER = 3;
+    
     @JsonProperty("txpk")
     private final TxPk txPk;
 

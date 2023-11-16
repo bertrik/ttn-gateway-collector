@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
 public final class UdpPushData {
 
+    public static final byte IDENTIFIER = 0;
+
     @JsonProperty("rxpk")
     private final List<RxPk> packets;
 
