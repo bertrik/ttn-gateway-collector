@@ -90,6 +90,7 @@ public final class StreamEventsReceiver {
         @Override
         public void onFailure(Call call, IOException e) {
             LOG.warn("onFailure: call={}, exception={}", call, e);
+            scheduleReconnect(call.request(), RETRY_INTERVAL);
         }
 
         @Override
@@ -101,13 +102,16 @@ public final class StreamEventsReceiver {
                 }
             } catch (IOException e) {
                 if (!canceled) {
-                    LOG.warn("Scheduling reconnect in {} ...", RETRY_INTERVAL, e);
-                    executor.schedule(() -> connect(call.request(), callback), RETRY_INTERVAL.toMillis(),
-                        TimeUnit.MILLISECONDS);
+                    scheduleReconnect(call.request(), RETRY_INTERVAL);
                 }
             } finally {
                 LOG.info("Stream stopped");
             }
+        }
+
+        private void scheduleReconnect(Request request, Duration delay) {
+            LOG.warn("Scheduling reconnect in {} ...", delay);
+            executor.schedule(() -> connect(request, callback), delay.toMillis(), TimeUnit.MILLISECONDS);
         }
 
         private void processResponse(BufferedSource source) throws IOException {
