@@ -20,16 +20,16 @@ import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
 public final class Event {
 
     @JsonProperty("name")
-    String name = "";
+    private String name = "";
 
     @JsonProperty("time")
-    String time = "";
+    private String time = "";
 
     @JsonProperty("identifiers")
-    List<EntityIdentifiers> identifiers = new ArrayList<>();
+    private List<EntityIdentifiers> identifiers = new ArrayList<>();
 
     @JsonProperty("data")
-    JsonNode data = new TextNode("");
+    private JsonNode data = new TextNode("");
 
     public String getName() {
         return name;
@@ -43,7 +43,7 @@ public final class Event {
         if (identifiers.isEmpty()) {
             return null;
         }
-        return identifiers.get(0).gatewayIds;
+        return identifiers.get(0).getGatewayIds();
     }
 
     public JsonNode getData() {

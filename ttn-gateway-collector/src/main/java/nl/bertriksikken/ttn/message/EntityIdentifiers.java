@@ -13,7 +13,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class EntityIdentifiers {
 
     @JsonProperty("gateway_ids")
-    public GatewayIdentifiers gatewayIds;
+    private GatewayIdentifiers gatewayIds;
+
+    public GatewayIdentifiers getGatewayIds() {
+        return gatewayIds;
+    }
 
     public static EntityIdentifiers createGatewayIds(String id) {
         EntityIdentifiers identifiers = new EntityIdentifiers();
