@@ -1,6 +1,6 @@
 [versions]
 slf4j = "2.0.9"
-jackson = "2.16.0"
+jackson = "2.16.1"
 retrofit = "2.9.0"
 
 [libraries]
@@ -27,7 +27,7 @@ retrofit = ["retrofit", "retrofit-jackson", "retrofit-scalars"]
 
 [plugins]
 dependencycheck = "org.owasp.dependencycheck:8.4.3"
-spotbugs = "com.github.spotbugs:6.0.2"
+spotbugs = "com.github.spotbugs:6.0.4"
 versions = "com.github.ben-manes.versions:0.50.0"
 version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.0"
 
