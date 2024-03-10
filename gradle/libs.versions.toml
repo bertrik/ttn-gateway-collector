@@ -1,6 +1,6 @@
 [versions]
 slf4j = "2.0.12"
-jackson = "2.16.1"
+jackson = "2.16.2"
 retrofit = "2.9.0"
 
 [libraries]
