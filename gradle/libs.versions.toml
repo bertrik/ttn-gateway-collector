@@ -1,7 +1,7 @@
 [versions]
 slf4j = "2.0.12"
 jackson = "2.17.0"
-retrofit = "2.9.0"
+retrofit = "2.10.0"
 
 [libraries]
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
@@ -27,7 +27,7 @@ retrofit = ["retrofit", "retrofit-jackson", "retrofit-scalars"]
 
 [plugins]
 dependencycheck = "org.owasp.dependencycheck:8.4.3"
-spotbugs = "com.github.spotbugs:6.0.7"
+spotbugs = "com.github.spotbugs:6.0.8"
 versions = "com.github.ben-manes.versions:0.51.0"
 version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.0"
 
