@@ -1,25 +1,23 @@
 package nl.bertriksikken.ttngatewaycollector.export;
 
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.EntityIdentifiers;
+import nl.bertriksikken.ttn.lorawan.v3.GatewayStatus;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-
-import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
-import nl.bertriksikken.ttn.message.GatewayStatus;
-import nl.bertriksikken.ttn.message.GsDownSendData;
-import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 
 public final class ExportEventWriter implements IEventProcessor {
 
@@ -55,18 +53,18 @@ public final class ExportEventWriter implements IEventProcessor {
     }
 
     @Override
-    public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
+    public void handleDownlink(Instant time, String gateway, DownlinkMessage downlink) {
         ExportEvent event = ExportEvent.fromDownlinkData(time, gateway, downlink);
         executor.execute(() -> write(event));
     }
 
     @Override
-    public void handleStatus(Instant time, GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
+    public void handleStatus(Instant time, EntityIdentifiers.GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
         // not implemented
     }
 
     @Override
-    public void start() throws IOException {
+    public void start() {
         LOG.info("Starting CVS event writer for '{}'", logFile.getAbsolutePath());
     }
 

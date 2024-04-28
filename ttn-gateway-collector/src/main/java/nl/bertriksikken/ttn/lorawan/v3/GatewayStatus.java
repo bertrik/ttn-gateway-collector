@@ -1,22 +1,18 @@
-package nl.bertriksikken.ttn.message;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.*;
 
 /**
  * https://www.thethingsindustries.com/docs/reference/api/events/#event:gs.status.receive
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class GatewayStatus {
+public final class GatewayStatus extends AbstractMessage {
 
     @JsonProperty("@type")
-    public String type = ""; // typically "type.googleapis.com/ttn.lorawan.v3.GatewayStatus"
+    public static final String TYPE = "type.googleapis.com/ttn.lorawan.v3.GatewayStatus";
 
     @JsonProperty("time")
     public String time = "";
@@ -33,6 +29,15 @@ public final class GatewayStatus {
     @JsonProperty("metrics")
     public Metrics metrics = new Metrics();
 
+    public GatewayStatus() {
+        super(TYPE);
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.ROOT, "{%s,time=%s,versions=%s,antennas=%s,ip=%s,metrics=%s}", super.toString(), time, versions, antennaLocations, ip, metrics);
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Location {
         @JsonProperty("latitude")
@@ -46,8 +51,7 @@ public final class GatewayStatus {
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT, "{lat=%.6f,lon=%.6f,alt=%d,source=%s}", latitude, longitude, altitude,
-                source);
+            return String.format(Locale.ROOT, "{lat=%.6f,lon=%.6f,alt=%d,source=%s}", latitude, longitude, altitude, source);
         }
     }
 

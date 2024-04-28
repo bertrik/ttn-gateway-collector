@@ -1,4 +1,4 @@
-package nl.bertriksikken.ttn.message;
+package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

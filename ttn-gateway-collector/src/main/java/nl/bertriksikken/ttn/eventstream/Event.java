@@ -1,16 +1,13 @@
 package nl.bertriksikken.ttn.eventstream;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import nl.bertriksikken.ttn.lorawan.v3.AbstractMessage;
+import nl.bertriksikken.ttn.lorawan.v3.EntityIdentifiers;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-
-import nl.bertriksikken.ttn.message.EntityIdentifiers;
-import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
 
 /**
  * See
@@ -29,7 +26,7 @@ public final class Event {
     private List<EntityIdentifiers> identifiers = new ArrayList<>();
 
     @JsonProperty("data")
-    private JsonNode data = new TextNode("");
+    private AbstractMessage data;
 
     public String getName() {
         return name;
@@ -39,15 +36,15 @@ public final class Event {
         return Instant.parse(time);
     }
 
-    public GatewayIdentifiers getGatewayIds() {
+    public EntityIdentifiers.GatewayIdentifiers getGatewayIds() {
         if (identifiers.isEmpty()) {
             return null;
         }
         return identifiers.get(0).getGatewayIds();
     }
 
-    public JsonNode getData() {
-        return data.deepCopy();
+    public AbstractMessage getData() {
+        return data;
     }
 
 }

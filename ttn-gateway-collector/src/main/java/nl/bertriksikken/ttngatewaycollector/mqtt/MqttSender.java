@@ -1,11 +1,16 @@
 package nl.bertriksikken.ttngatewaycollector.mqtt;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.EntityIdentifiers;
+import nl.bertriksikken.ttn.lorawan.v3.GatewayStatus;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpMessageBuilder;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -13,18 +18,11 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
-import nl.bertriksikken.ttn.message.GatewayStatus;
-import nl.bertriksikken.ttn.message.GsDownSendData;
-import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpMessageBuilder;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class MqttSender implements IEventProcessor {
 
@@ -85,7 +83,7 @@ public final class MqttSender implements IEventProcessor {
     }
 
     @Override
-    public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
+    public void handleDownlink(Instant time, String gateway, DownlinkMessage downlink) {
         TxPk txPacket = udpMessageBuilder.buildTxPk(time, downlink);
         try {
             String json = mapper.writeValueAsString(txPacket);
@@ -96,7 +94,7 @@ public final class MqttSender implements IEventProcessor {
     }
 
     @Override
-    public void handleStatus(Instant time, GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
+    public void handleStatus(Instant time, EntityIdentifiers.GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
         Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);
         try {
             String json = mapper.writeValueAsString(stat);

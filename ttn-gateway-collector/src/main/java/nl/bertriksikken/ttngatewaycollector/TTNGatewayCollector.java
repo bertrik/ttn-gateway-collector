@@ -1,26 +1,24 @@
 package nl.bertriksikken.ttngatewaycollector;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import nl.bertriksikken.ttn.eventstream.Event;
+import nl.bertriksikken.ttn.eventstream.StreamEventsReceiver;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.GatewayStatus;
+import nl.bertriksikken.ttn.lorawan.v3.GatewayUplinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
+import nl.bertriksikken.ttngatewaycollector.mqtt.MqttSender;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpSender;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
-import nl.bertriksikken.ttn.eventstream.Event;
-import nl.bertriksikken.ttn.eventstream.StreamEventsReceiver;
-import nl.bertriksikken.ttn.message.GatewayStatus;
-import nl.bertriksikken.ttn.message.GsDownSendData;
-import nl.bertriksikken.ttn.message.GsUpReceiveData;
-import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttngatewaycollector.export.ExportEventWriter;
-import nl.bertriksikken.ttngatewaycollector.mqtt.MqttSender;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpSender;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class TTNGatewayCollector {
 
@@ -48,7 +46,7 @@ public final class TTNGatewayCollector {
         mapper.findAndRegisterModules();
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         PropertyConfigurator.configure("log4j.properties");
 
         TTNGatewayCollectorConfig config = readConfig(new File("ttn-gateway-collector.yaml"));
@@ -78,9 +76,8 @@ public final class TTNGatewayCollector {
 
     // package-private for testing
     void eventReceived(String gatewayId, Event event) {
-        try {
-            // only interested in gateway uplink events
-            switch (event.getName()) {
+        // only interested in gateway uplink events
+        switch (event.getName()) {
             case "events.stream.start":
                 LOG.info("Stream started");
                 break;
@@ -89,8 +86,9 @@ public final class TTNGatewayCollector {
                 break;
             case "gs.down.send":
                 LOG.info("Gateway downlink received: {}", event.getData());
-                GsDownSendData gsDownSendData = mapper.treeToValue(event.getData(), GsDownSendData.class);
-                eventProcessors.forEach(p -> p.handleDownlink(event.getTime(), gatewayId, gsDownSendData));
+                if (event.getData() instanceof DownlinkMessage downlinkMessage) {
+                    eventProcessors.forEach(p -> p.handleDownlink(event.getTime(), gatewayId, downlinkMessage));
+                }
                 break;
             case "gs.down.tx.success":
                 break;
@@ -99,8 +97,9 @@ public final class TTNGatewayCollector {
                 break;
             case "gs.status.receive":
                 LOG.info("Gateway status received: {}", event.getData());
-                GatewayStatus gatewayStatus = mapper.treeToValue(event.getData(), GatewayStatus.class);
-                eventProcessors.forEach(p -> p.handleStatus(event.getTime(), event.getGatewayIds(), gatewayStatus));
+                if (event.getData() instanceof GatewayStatus gatewayStatus) {
+                    eventProcessors.forEach(p -> p.handleStatus(event.getTime(), event.getGatewayIds(), gatewayStatus));
+                }
                 break;
             case "gs.txack.receive":
             case "gs.txack.forward":
@@ -113,22 +112,16 @@ public final class TTNGatewayCollector {
             case "gs.up.receive":
                 LOG.info("Gateway uplink received: {}", event.getData());
                 // parse as gs.up.receive data
-                GsUpReceiveData gsUpReceiveData = mapper.treeToValue(event.getData(), GsUpReceiveData.class);
-                if (gsUpReceiveData.getDataType().equals(UplinkMessage.TYPE)) {
-                    // parse as uplink message
-                    UplinkMessage uplinkMessage = mapper.treeToValue(gsUpReceiveData.getMessage(), UplinkMessage.class);
-
+                if (event.getData() instanceof GatewayUplinkMessage gatewayUplinkMessage) {
+                    UplinkMessage uplinkMessage = gatewayUplinkMessage.getMessage();
                     eventProcessors.forEach(p -> p.handleUplink(uplinkMessage));
                 } else {
-                    LOG.warn("Unhandled gs.up.receive: {}", gsUpReceiveData.getMessage());
+                    LOG.warn("Unhandled gs.up.receive: {}", event.getData());
                 }
                 break;
             default:
                 LOG.info("Unhandled event {}: {}", event.getName(), event.getData());
                 break;
-            }
-        } catch (IOException e) {
-            LOG.warn("Exception processing event", e);
         }
     }
 

@@ -1,24 +1,15 @@
-package nl.bertriksikken.ttn.message;
+package nl.bertriksikken.ttn.lorawan.v3;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
-
-/**
- * LoRaWAN uplink message.
- * <p>
- * https://www.thethingsindustries.com/docs/reference/data-formats/#uplink-messages
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class UplinkMessage {
-
-    public static final String TYPE = "type.googleapis.com/ttn.lorawan.v3.GatewayUplinkMessage";
 
     @JsonProperty("raw_payload")
     public byte[] rawPayload = new byte[0];
@@ -27,12 +18,11 @@ public final class UplinkMessage {
     @JsonProperty("settings")
     public Settings settings = new Settings();
     @JsonProperty("rx_metadata")
-    public List<RxMetadata> rxMetadata = Arrays.asList(new RxMetadata());
+    public List<RxMetadata> rxMetadata = List.of(new RxMetadata());
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "{raw=<%d bytes>,payload=%s,settings=%s,metadata=%s}", rawPayload.length,
-            payload, settings, rxMetadata);
+        return String.format(Locale.ROOT, "{raw=<%d bytes>,payload=%s,settings=%s,metadata=%s}", rawPayload.length, payload, settings, rxMetadata);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -111,62 +101,9 @@ public final class UplinkMessage {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Settings {
-        @JsonProperty("data_rate")
-        public DataRate dataRate = new DataRate();
-        @JsonProperty("frequency")
-        public int frequency;
-
-        @Override
-        public String toString() {
-            return String.format(Locale.ROOT, "{datarate=%s,frequency=%d}", dataRate, frequency);
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class DataRate {
-            @JsonProperty("lora")
-            public Lora lora = new Lora();
-
-            @JsonProperty("fsk")
-            public Fsk fsk = new Fsk();
-
-            @Override
-            public String toString() {
-                return String.format(Locale.ROOT, "{lora=%s,fsk=%s}", lora, fsk);
-            }
-
-            @JsonIgnoreProperties(ignoreUnknown = true)
-            public static class Lora {
-                @JsonProperty("spreading_factor")
-                public int spreadingFactor;
-                @JsonProperty("bandwidth")
-                public int bandWidth;
-                @JsonProperty("coding_rate")
-                public String codingRate;
-
-                @Override
-                public String toString() {
-                    return String.format(Locale.ROOT, "{SF=%d,BW=%d,CR=%s}", spreadingFactor, bandWidth, codingRate);
-                }
-            }
-
-            @JsonIgnoreProperties(ignoreUnknown = true)
-            public static class Fsk {
-                @JsonProperty("bit_rate")
-                public int bitRate;
-
-                @Override
-                public String toString() {
-                    return String.format(Locale.ROOT, "{bitrate=%d}", bitRate);
-                }
-            }
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RxMetadata {
         @JsonProperty("gateway_ids")
-        public GatewayIdentifiers gatewayIds = GatewayIdentifiers.create("", "");
+        public EntityIdentifiers.GatewayIdentifiers gatewayIds = EntityIdentifiers.GatewayIdentifiers.create("", "");
 
         @JsonProperty("time")
         public Instant time = Instant.now();
@@ -188,4 +125,5 @@ public final class UplinkMessage {
             return String.format(Locale.ROOT, "{rssi=%s,snr=%.1f,channel=%s}", rssi, snr, channelIndex);
         }
     }
+
 }

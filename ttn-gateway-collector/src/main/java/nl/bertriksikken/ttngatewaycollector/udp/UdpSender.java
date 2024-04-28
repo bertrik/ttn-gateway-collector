@@ -1,5 +1,18 @@
 package nl.bertriksikken.ttngatewaycollector.udp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.EntityIdentifiers;
+import nl.bertriksikken.ttn.lorawan.v3.GatewayStatus;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
+import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,22 +24,6 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import nl.bertriksikken.ttn.message.EntityIdentifiers.GatewayIdentifiers;
-import nl.bertriksikken.ttn.message.GatewayStatus;
-import nl.bertriksikken.ttn.message.GsDownSendData;
-import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
-import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
-import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
 
 public final class UdpSender implements IEventProcessor {
 
@@ -113,7 +110,7 @@ public final class UdpSender implements IEventProcessor {
     @Override
     public void handleUplink(UplinkMessage uplink) {
         // decode EUI
-        RxMetadata rxMetadata = uplink.rxMetadata.get(0);
+        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata.get(0);
         byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
         RxPk rxPk = udpMessageBuilder.buildRxPk(uplink);
         UdpPushData pushData = new UdpPushData(rxPk);
@@ -127,14 +124,14 @@ public final class UdpSender implements IEventProcessor {
     }
 
     @Override
-    public void handleDownlink(Instant time, String gateway, GsDownSendData downlink) {
+    public void handleDownlink(Instant time, String gateway, DownlinkMessage downlink) {
         TxPk packet = udpMessageBuilder.buildTxPk(time, downlink);
         byte[] data = encodePullResp(token.incrementAndGet(), packet);
         sendUdp(data);
     }
 
     @Override
-    public void handleStatus(Instant time, GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
+    public void handleStatus(Instant time, EntityIdentifiers.GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
         // not implemented
         byte[] eui = parseHex(gatewayIds.eui);
         Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);

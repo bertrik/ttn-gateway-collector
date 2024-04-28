@@ -1,9 +1,8 @@
 package nl.bertriksikken.lorawan;
 
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
 import org.junit.Assert;
 import org.junit.Test;
-
-import nl.bertriksikken.ttn.message.UplinkMessage;
 
 public final class AirTimeCalculatorTest {
 

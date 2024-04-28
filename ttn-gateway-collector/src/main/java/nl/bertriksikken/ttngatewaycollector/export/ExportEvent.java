@@ -1,25 +1,21 @@
 package nl.bertriksikken.ttngatewaycollector.export;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import nl.bertriksikken.lorawan.AirTimeCalculator;
+import nl.bertriksikken.lorawan.LorawanPacket;
+import nl.bertriksikken.lorawan.MType;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import nl.bertriksikken.lorawan.AirTimeCalculator;
-import nl.bertriksikken.lorawan.LorawanPacket;
-import nl.bertriksikken.lorawan.MType;
-import nl.bertriksikken.ttn.message.GsDownSendData;
-import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttn.message.UplinkMessage.Payload.JoinRequestPayload;
-import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
 
 /**
  * Represents one line in the export.
@@ -84,7 +80,7 @@ public final class ExportEvent {
     }
 
     public static ExportEvent fromUplinkMessage(UplinkMessage message) {
-        RxMetadata rxMetadata = message.rxMetadata.get(0);
+        UplinkMessage.RxMetadata rxMetadata = message.rxMetadata.get(0);
         Instant time = rxMetadata.time;
         String gatewayId = rxMetadata.gatewayIds.gatewayId;
         byte[] rawPayload = message.rawPayload;
@@ -96,7 +92,7 @@ public final class ExportEvent {
         ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi,
             airtime);
 
-        JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
+        UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {
             event.packetType = MType.JOIN_REQUEST.toString();
             event.joinEui = joinRequestPayload.joinEui;
@@ -113,7 +109,7 @@ public final class ExportEvent {
         return event;
     }
 
-    public static ExportEvent fromDownlinkData(Instant time, String gateway, GsDownSendData data) {
+    public static ExportEvent fromDownlinkData(Instant time, String gateway, DownlinkMessage data) {
         double airtime = airTimeCalculator.calculate(data.scheduled.dataRate, data.rawPayload.length);
         ExportEvent event = new ExportEvent(time, gateway, data.rawPayload,
             data.scheduled.dataRate.lora.spreadingFactor, data.scheduled.frequency, 0.0,

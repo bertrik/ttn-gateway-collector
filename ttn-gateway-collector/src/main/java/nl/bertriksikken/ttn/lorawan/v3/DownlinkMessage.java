@@ -1,20 +1,21 @@
-package nl.bertriksikken.ttn.message;
-
-import java.util.Locale;
+package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
+import java.util.Locale;
 
 /**
  * https://www.thethingsindustries.com/docs/reference/api/events/#event:gs.down.send
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class GsDownSendData {
+public final class DownlinkMessage extends AbstractMessage {
 
-    @JsonProperty("@type")
-    String type = ""; // typically "type.googleapis.com/ttn.lorawan.v3.DownlinkMessage
+    public static final String TYPE = "type.googleapis.com/ttn.lorawan.v3.DownlinkMessage";
+
+    public DownlinkMessage() {
+        super(TYPE);
+    }
 
     @JsonProperty("raw_payload")
     public byte[] rawPayload;
@@ -24,13 +25,12 @@ public final class GsDownSendData {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "{type=%s,rawPayload=%d bytes,scheduled=%s}", type, rawPayload.length,
-            scheduled);
+        return String.format(Locale.ROOT, "{%s,raw=<%d bytes>,scheduled=%s}", super.toString(), rawPayload.length, scheduled);
     }
 
     public static final class Scheduled {
         @JsonProperty("data_rate")
-        public DataRate dataRate = new DataRate();
+        public Settings.DataRate dataRate = new Settings.DataRate();
 
         @JsonProperty("frequency")
         public int frequency;
@@ -46,9 +46,7 @@ public final class GsDownSendData {
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT,
-                "{data_rate=%s,frequency=%d,timestamp=%d,downlink=%s,concentratorTimestamp=%d}", dataRate, frequency,
-                timestamp, downlink, concentratorTimestamp);
+            return String.format(Locale.ROOT, "{data_rate=%s,frequency=%d,timestamp=%d,downlink=%s,concentratorTimestamp=%d}", dataRate, frequency, timestamp, downlink, concentratorTimestamp);
         }
 
         public static final class Downlink {

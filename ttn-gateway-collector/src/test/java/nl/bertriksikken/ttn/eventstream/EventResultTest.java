@@ -3,12 +3,13 @@ package nl.bertriksikken.ttn.eventstream;
 import java.io.IOException;
 import java.net.URL;
 
+import nl.bertriksikken.ttn.lorawan.v3.AbstractMessage;
+import nl.bertriksikken.ttn.lorawan.v3.GatewayUplinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import nl.bertriksikken.ttn.message.UplinkMessage;
 
 public final class EventResultTest {
     
@@ -20,7 +21,7 @@ public final class EventResultTest {
 
     @Test
     public void testDecodeEvent() throws IOException {
-        URL url = getClass().getResource("/unconfirmed_up_event.json");
+        URL url = getClass().getResource("/GatewayUplinkMessageResult.json");
 
         // decode top-level event
         EventResult result = mapper.readValue(url, EventResult.class);
@@ -28,7 +29,9 @@ public final class EventResultTest {
         Assert.assertNotNull(event);
         
         // decode data inside event
-        UplinkMessage uplinkMessage = mapper.treeToValue(event.getData(), UplinkMessage.class);
+        AbstractMessage data = event.getData();
+        GatewayUplinkMessage gatewayUplinkMessage = (GatewayUplinkMessage) data;
+        UplinkMessage uplinkMessage = gatewayUplinkMessage.getMessage();
         Assert.assertNotNull(uplinkMessage);
     }
 

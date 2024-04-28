@@ -89,12 +89,12 @@ public final class StreamEventsReceiver {
 
         @Override
         public void onFailure(Call call, IOException e) {
-            LOG.warn("onFailure: call={}, exception={}", call, e);
+            LOG.warn("onFailure: call={}", call, e);
             scheduleReconnect(call.request(), RETRY_INTERVAL);
         }
 
         @Override
-        public void onResponse(Call call, Response response) throws IOException {
+        public void onResponse(Call call, Response response) {
             try (ResponseBody body = response.body()) {
                 LOG.info("Stream started: {}", response);
                 while (!canceled) {
@@ -117,8 +117,12 @@ public final class StreamEventsReceiver {
         private void processResponse(BufferedSource source) throws IOException {
             String line = source.readUtf8Line();
             if ((line != null) && !line.isEmpty()) {
-                EventResult result = mapper.readValue(line, EventResult.class);
-                callback.eventReceived(result.getEvent());
+                try {
+                    EventResult result = mapper.readValue(line, EventResult.class);
+                    callback.eventReceived(result.getEvent());
+                } catch (JsonProcessingException e) {
+                    LOG.warn("Caught exception processing '{}': {}", line, e.getMessage());
+                }
             }
         }
     }
@@ -128,7 +132,7 @@ public final class StreamEventsReceiver {
      */
     public interface IEventStreamCallback {
         // notifies of a received event
-        public void eventReceived(Event event);
+        void eventReceived(Event event);
     }
 
 }

@@ -1,7 +1,7 @@
 package nl.bertriksikken.lorawan;
 
-import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
+import nl.bertriksikken.ttn.lorawan.v3.Settings;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
 
 /**
  * Air time calculation, according to AN1200.13 "LoRa Modem Designer’s Guide"
@@ -11,10 +11,10 @@ public final class AirTimeCalculator {
     // air time calculator for typical settings used in LoRaWAN
     public static final AirTimeCalculator LORAWAN = new AirTimeCalculator(8, true, 125_000, 1);
 
-    private int bw;
-    private int preamble;
-    private boolean header;
-    private int cr;
+    private final int bw;
+    private final int preamble;
+    private final boolean header;
+    private final int cr;
 
     public AirTimeCalculator(int preamble, boolean header, int bw, int cr) {
         this.preamble = preamble;
@@ -23,7 +23,7 @@ public final class AirTimeCalculator {
         this.cr = cr;
     }
 
-    public double calculate(DataRate dataRate, int pl) {
+    public double calculate(Settings.DataRate dataRate, int pl) {
         // LoRa
         int sf = dataRate.lora.spreadingFactor;
         if ((sf >= 6) && (sf <= 12)) {

@@ -1,24 +1,20 @@
 package nl.bertriksikken.ttngatewaycollector.udp;
 
-import java.time.Instant;
-import java.util.Locale;
-
-import nl.bertriksikken.ttn.message.GatewayStatus;
-import nl.bertriksikken.ttn.message.GatewayStatus.Location;
-import nl.bertriksikken.ttn.message.GatewayStatus.Metrics;
-import nl.bertriksikken.ttn.message.GsDownSendData;
-import nl.bertriksikken.ttn.message.GsDownSendData.Scheduled;
-import nl.bertriksikken.ttn.message.UplinkMessage;
-import nl.bertriksikken.ttn.message.UplinkMessage.RxMetadata;
-import nl.bertriksikken.ttn.message.UplinkMessage.Settings.DataRate;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.GatewayStatus;
+import nl.bertriksikken.ttn.lorawan.v3.Settings;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
 
+import java.time.Instant;
+import java.util.Locale;
+
 public final class UdpMessageBuilder {
 
     public RxPk buildRxPk(UplinkMessage uplink) {
-        RxMetadata rxMetadata = uplink.rxMetadata.get(0);
+        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata.get(0);
         Instant time = rxMetadata.time;
         long timestamp = rxMetadata.timestamp;
         double frequency = uplink.settings.frequency / 1E6;
@@ -31,8 +27,8 @@ public final class UdpMessageBuilder {
         return new RxPk(time, timestamp, frequency, modulation, dataRate, codingRate, rssi, snr, data);
     }
 
-    public TxPk buildTxPk(Instant time, GsDownSendData downlink) {
-        Scheduled scheduled = downlink.scheduled;
+    public TxPk buildTxPk(Instant time, DownlinkMessage downlink) {
+        DownlinkMessage.Scheduled scheduled = downlink.scheduled;
         long timestamp = scheduled.timestamp;
         double frequency = scheduled.frequency / 1E6;
         String modulation = createModulation(scheduled.dataRate);
@@ -49,24 +45,24 @@ public final class UdpMessageBuilder {
         Double longitude = null;
         Integer altitude = null;
         if (!status.antennaLocations.isEmpty()) {
-            Location location = status.antennaLocations.get(0);
+            GatewayStatus.Location location = status.antennaLocations.get(0);
             latitude = location.latitude;
             longitude = location.longitude;
             altitude = location.altitude;
         }
-        Metrics metrics = status.metrics;
+        GatewayStatus.Metrics metrics = status.metrics;
         return new Stat(time, latitude, longitude, altitude, metrics.rxin, metrics.rxok, metrics.rxfw, metrics.ackr,
             metrics.txin, metrics.txok);
     }
 
-    private String createSFBW(DataRate dataRate) {
+    private String createSFBW(Settings.DataRate dataRate) {
         if (dataRate.fsk.bitRate > 0) {
             return String.format(Locale.ROOT, "%d", dataRate.fsk.bitRate);
         }
         return String.format(Locale.ROOT, "SF%dBW%d", dataRate.lora.spreadingFactor, dataRate.lora.bandWidth / 1000);
     }
 
-    private String createModulation(DataRate dataRate) {
+    private String createModulation(Settings.DataRate dataRate) {
         return (dataRate.fsk.bitRate > 0) ? "FSK" : "LORA";
     }
 
