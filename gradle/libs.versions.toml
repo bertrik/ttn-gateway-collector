@@ -1,5 +1,5 @@
 [versions]
-jackson = "2.17.0"
+jackson = "2.17.1"
 retrofit = "2.11.0"
 slf4j = "2.0.13"
 
@@ -18,7 +18,7 @@ retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", versio
 retrofit-mock = { module = "com.squareup.retrofit2:retrofit-mock", version.ref = "retrofit" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
-spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.8.3"}
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.8.5"}
 paho-client-mqttv3 = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", version = "1.2.5" }
 
 [bundles]
