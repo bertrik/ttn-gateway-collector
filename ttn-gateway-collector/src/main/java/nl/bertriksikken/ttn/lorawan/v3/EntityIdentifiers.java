@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * https://www.thethingsindustries.com/docs/reference/api/events/#message:EntityIdentifiers
+ * https://www.thethingsindustries.com/docs/api/reference/grpc/events/#message:EntityIdentifiers
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -26,7 +26,7 @@ public final class EntityIdentifiers {
     }
 
     /**
-     * https://www.thethingsindustries.com/docs/reference/api/events/#message:GatewayIdentifiers
+     * https://www.thethingsindustries.com/docs/api/reference/grpc/events/#message:GatewayIdentifiers
      */
     @JsonInclude(Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)

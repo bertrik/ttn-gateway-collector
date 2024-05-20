@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.*;
 
 /**
- * https://www.thethingsindustries.com/docs/reference/api/events/#event:gs.status.receive
+ * https://www.thethingsindustries.com/docs/api/reference/grpc/events/#event:gs.status.receive
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class GatewayStatus extends AbstractMessage {

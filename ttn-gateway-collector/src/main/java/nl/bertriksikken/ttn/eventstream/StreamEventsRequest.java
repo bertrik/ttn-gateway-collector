@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * See https://www.thethingsindustries.com/docs/reference/api/events/#message:StreamEventsRequest
+ * See https://www.thethingsindustries.com/docs/api/reference/grpc/events/#message:StreamEventsRequest
  */
 @JsonAutoDetect(fieldVisibility = Visibility.NONE)
 public final class StreamEventsRequest {

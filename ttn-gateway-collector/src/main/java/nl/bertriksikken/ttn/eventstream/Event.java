@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * See
- * https://www.thethingsindustries.com/docs/reference/api/events/#message:Event
+ * https://www.thethingsindustries.com/docs/api/reference/grpc/events/#message:Event
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class Event {
