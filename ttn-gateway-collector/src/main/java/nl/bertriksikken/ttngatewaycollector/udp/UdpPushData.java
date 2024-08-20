@@ -2,6 +2,7 @@ package nl.bertriksikken.ttngatewaycollector.udp;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,9 +20,11 @@ public final class UdpPushData {
     public static final byte IDENTIFIER = 0;
 
     @JsonProperty("rxpk")
+    @SuppressWarnings("unused")
     private final List<RxPk> packets;
 
     @JsonProperty("stat")
+    @SuppressWarnings("unused")
     private final Stat stat;
 
     UdpPushData(RxPk packet) {
@@ -82,8 +85,8 @@ public final class UdpPushData {
 
         @Override
         public String toString() {
-            return String.format(Locale.ROOT, "{%s,%f,%s,%s,%d,%.1f,%d,%s,%d,%s}", time, freq, stat, modu, datr, codr,
-                rssi, lsnr, size, data);
+            return String.format(Locale.ROOT, "{%s,%f,%d,%s,%s,%s,%d,%.1f,%d,%s}", time, freq, stat, modu, datr, codr,
+                rssi, lsnr, size, Arrays.toString(data));
         }
     }
 

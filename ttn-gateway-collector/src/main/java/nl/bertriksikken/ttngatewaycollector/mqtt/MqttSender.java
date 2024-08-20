@@ -45,6 +45,7 @@ public final class MqttSender implements IEventProcessor {
         options.setAutomaticReconnect(true);
     }
 
+    @Override
     public void start() {
         LOG.info("Starting MQTT sender for url '{}', topics '{}'/'{}'/'{}'", config.url, config.uplinkTopic,
             config.downlinkTopic, config.statusTopic);
@@ -55,6 +56,7 @@ public final class MqttSender implements IEventProcessor {
         }
     }
 
+    @Override
     public void stop() {
         LOG.info("Stopping MQTT sender");
         executor.shutdownNow();

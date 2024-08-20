@@ -44,6 +44,7 @@ public final class UdpSender implements IEventProcessor {
         this.config = config;
     }
 
+    @Override
     public void start() throws IOException {
         if (!config.host.isEmpty()) {
             LOG.info("Starting UDP sender for {}:{}", config.host, config.port);
@@ -54,6 +55,7 @@ public final class UdpSender implements IEventProcessor {
         }
     }
 
+    @Override
     public void stop() {
         LOG.info("Stopping");
         udpSocket.close();

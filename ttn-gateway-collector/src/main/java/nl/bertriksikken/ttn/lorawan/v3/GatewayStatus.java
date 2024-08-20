@@ -69,6 +69,11 @@ public final class GatewayStatus extends AbstractMessage {
         public int txin;
         @JsonProperty("txok")
         public int txok;
+
+        @Override
+        public String toString() {
+            return String.format(Locale.ROOT, "{rxin=%d,rxok=%d,rxfw=%d,ackr=%.1f,txin=%d,txok=%d}", rxin, rxok, rxfw, ackr, txin, txok);
+        }
     }
 
 }

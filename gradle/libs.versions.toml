@@ -1,11 +1,13 @@
 [versions]
 jackson = "2.17.2"
 retrofit = "2.11.0"
-slf4j = "2.0.15"
+slf4j = "2.0.16"
 
 [libraries]
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 reload4j = { module = "org.slf4j:slf4j-reload4j", version.ref= "slf4j" }
+
+errorprone_annotationprocessor = "com.google.errorprone:error_prone_core:2.30.0"
 
 jackson-bind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref= "jackson" }
 jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
@@ -27,7 +29,5 @@ retrofit = ["retrofit", "retrofit-jackson", "retrofit-scalars"]
 
 [plugins]
 dependencycheck = "org.owasp.dependencycheck:8.4.3"
-spotbugs = "com.github.spotbugs:6.0.20"
+errorprone = "net.ltgt.errorprone:4.0.1"
 versions = "com.github.ben-manes.versions:0.51.0"
-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.0"
-

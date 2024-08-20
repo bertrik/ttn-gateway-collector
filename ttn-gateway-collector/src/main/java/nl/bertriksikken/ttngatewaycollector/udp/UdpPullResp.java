@@ -14,6 +14,7 @@ public final class UdpPullResp {
     public static final byte IDENTIFIER = 3;
     
     @JsonProperty("txpk")
+    @SuppressWarnings("unused")
     private final TxPk txPk;
 
     UdpPullResp(TxPk txPk) {

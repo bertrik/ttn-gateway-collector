@@ -1,5 +1,12 @@
 package nl.bertriksikken.ttn.eventstream;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.*;
+import okio.BufferedSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
@@ -8,22 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okio.BufferedSource;
 
 /**
  * Subscribes to the event stream of a gateway.<br>
@@ -111,7 +102,7 @@ public final class StreamEventsReceiver {
 
         private void scheduleReconnect(Request request, Duration delay) {
             LOG.warn("Scheduling reconnect in {} ...", delay);
-            executor.schedule(() -> connect(request, callback), delay.toMillis(), TimeUnit.MILLISECONDS);
+            var unused = executor.schedule(() -> connect(request, callback), delay.toMillis(), TimeUnit.MILLISECONDS);
         }
 
         private void processResponse(BufferedSource source) throws IOException {
