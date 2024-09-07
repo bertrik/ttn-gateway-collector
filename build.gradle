@@ -38,11 +38,11 @@ subprojects {
 
     // Standard libraries added to all projects
     dependencies {
-        annotationProcessor libs.errorprone.annotationprocessor
+        errorprone(libs.errorprone.core)
+        compileOnly libs.errorprone.annotations
 
         implementation libs.slf4j
 
-        testAnnotationProcessor libs.errorprone.annotationprocessor
         testImplementation libs.junit
         testImplementation libs.reload4j
     }
