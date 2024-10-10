@@ -27,7 +27,6 @@ public final class TTNGatewayCollector {
     private final List<IEventProcessor> eventProcessors = new ArrayList<>();
     private final TTNGatewayCollectorConfig config;
     private final StreamEventsReceiver receiver;
-    private final ObjectMapper mapper = new ObjectMapper();
 
     public TTNGatewayCollector(TTNGatewayCollectorConfig config) {
         this.config = config;
@@ -42,8 +41,6 @@ public final class TTNGatewayCollector {
         if (!config.mqttSenderConfig.url.isEmpty()) {
             eventProcessors.add(new MqttSender(config.mqttSenderConfig));
         }
-
-        mapper.findAndRegisterModules();
     }
 
     public static void main(String[] args) throws IOException {
