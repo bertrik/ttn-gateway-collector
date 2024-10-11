@@ -47,4 +47,7 @@ public final class Event {
         return data;
     }
 
+    public record Result(@JsonProperty("result") Event event) {
+    }
 }
+

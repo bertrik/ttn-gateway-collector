@@ -1,20 +1,19 @@
 package nl.bertriksikken.ttn.eventstream;
 
-import java.io.IOException;
-import java.net.URL;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.bertriksikken.ttn.lorawan.v3.AbstractMessage;
 import nl.bertriksikken.ttn.lorawan.v3.GatewayUplinkMessage;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.URL;
 
 public final class EventResultTest {
-    
+
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
     public EventResultTest() {
         mapper.findAndRegisterModules();
     }
@@ -24,10 +23,10 @@ public final class EventResultTest {
         URL url = getClass().getResource("/GatewayUplinkMessageResult.json");
 
         // decode top-level event
-        EventResult result = mapper.readValue(url, EventResult.class);
-        Event event = result.getEvent();
+        Event.Result result = mapper.readValue(url, Event.Result.class);
+        Event event = result.event();
         Assert.assertNotNull(event);
-        
+
         // decode data inside event
         AbstractMessage data = event.getData();
         GatewayUplinkMessage gatewayUplinkMessage = (GatewayUplinkMessage) data;

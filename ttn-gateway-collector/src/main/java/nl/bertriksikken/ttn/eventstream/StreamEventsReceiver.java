@@ -109,8 +109,8 @@ public final class StreamEventsReceiver {
             String line = source.readUtf8Line();
             if ((line != null) && !line.isEmpty()) {
                 try {
-                    EventResult result = mapper.readValue(line, EventResult.class);
-                    callback.eventReceived(result.getEvent());
+                    Event.Result result = mapper.readValue(line, Event.Result.class);
+                    callback.eventReceived(result.event());
                 } catch (JsonProcessingException e) {
                     LOG.warn("Caught exception processing '{}': {}", line, e.getMessage());
                 }
