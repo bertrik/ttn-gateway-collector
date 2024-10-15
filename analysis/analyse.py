@@ -127,7 +127,7 @@ def analyse(packets):
 
 def main():
     """ The main entry point """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-f", "--filename", help="The name of the CSV file to analyse",
                         default="gateway.csv")
     args = parser.parse_args()
