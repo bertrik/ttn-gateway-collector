@@ -13,9 +13,6 @@ public final class GatewayUplinkMessage extends AbstractMessage {
     @JsonProperty("message")
     private UplinkMessage message;
 
-    @JsonProperty("band_id")
-    private String bandId = "";
-
     public GatewayUplinkMessage() {
         super(TYPE);
     }
@@ -26,7 +23,7 @@ public final class GatewayUplinkMessage extends AbstractMessage {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "{%s,message=%s,bandid=%s}", super.toString(), message, bandId);
+        return String.format(Locale.ROOT, "{%s,message=%s}", super.toString(), message);
     }
 
 }
