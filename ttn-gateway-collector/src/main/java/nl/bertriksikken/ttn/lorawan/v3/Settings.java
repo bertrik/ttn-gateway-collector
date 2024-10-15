@@ -1,59 +1,37 @@
 package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Locale;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class Settings {
-    @JsonProperty("data_rate")
-    public DataRate dataRate = new DataRate();
-    @JsonProperty("frequency")
-    public int frequency;
-
-    @Override
-    public String toString() {
-        return String.format(Locale.ROOT, "{datarate=%s,frequency=%d}", dataRate, frequency);
+public record Settings(@JsonProperty("data_rate") DataRate dataRate, @JsonProperty("frequency") int frequency) {
+    @SuppressWarnings("MissingOverride")
+    public Settings() {
+        this(new DataRate(new DataRate.Lora()), 0);
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class DataRate {
-        @JsonProperty("lora")
-        public DataRate.Lora lora = new DataRate.Lora();
+    public record DataRate(@JsonProperty("lora") Lora lora, @JsonProperty("fsk") Fsk fsk) {
+        public DataRate(Lora lora) {
+            this(lora, new Fsk(0));
+        }
 
-        @JsonProperty("fsk")
-        public DataRate.Fsk fsk = new DataRate.Fsk();
-
-        @Override
-        public String toString() {
-            return String.format(Locale.ROOT, "{lora=%s,fsk=%s}", lora, fsk);
+        public DataRate(Fsk fsk) {
+            this(new Lora(), fsk);
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Lora {
-            @JsonProperty("spreading_factor")
-            public int spreadingFactor;
-            @JsonProperty("bandwidth")
-            public int bandWidth;
-            @JsonProperty("coding_rate")
-            public String codingRate;
-
-            @Override
-            public String toString() {
-                return String.format(Locale.ROOT, "{SF=%d,BW=%d,CR=%s}", spreadingFactor, bandWidth, codingRate);
+        public record Lora(@JsonProperty("spreading_factor") int spreadingFactor,
+                           @JsonProperty("bandwidth") int bandWidth, @JsonProperty("coding_rate") String codingRate) {
+            Lora() {
+                this(0, 0, "");
             }
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Fsk {
-            @JsonProperty("bit_rate")
-            public int bitRate;
-
-            @Override
-            public String toString() {
-                return String.format(Locale.ROOT, "{bitrate=%d}", bitRate);
-            }
+        public record Fsk(@JsonProperty("bit_rate") int bitRate) {
         }
     }
 }

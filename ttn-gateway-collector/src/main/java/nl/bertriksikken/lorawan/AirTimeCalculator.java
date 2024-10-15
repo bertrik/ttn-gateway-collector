@@ -25,7 +25,8 @@ public final class AirTimeCalculator {
 
     public double calculate(Settings.DataRate dataRate, int pl) {
         // LoRa
-        int sf = dataRate.lora.spreadingFactor;
+        Settings.DataRate.Lora lora = dataRate.lora();
+        int sf = (lora != null) ? dataRate.lora().spreadingFactor() : 0;
         if ((sf >= 6) && (sf <= 12)) {
             double tsym = Math.pow(2, sf) / bw;
             double tpreamble = tsym * (preamble + 4.25);
@@ -37,7 +38,8 @@ public final class AirTimeCalculator {
             return tpreamble + tpayload;
         }
         // FSK
-        int br = dataRate.fsk.bitRate;
+        Settings.DataRate.Fsk fsk = dataRate.fsk();
+        int br = (fsk != null) ? dataRate.fsk().bitRate() : 0;
         if (br > 0) {
             // according
             // https://lora-alliance.org/wp-content/uploads/2021/05/RP002-1.0.3-FINAL-1.pdf
@@ -50,7 +52,7 @@ public final class AirTimeCalculator {
     }
 
     public double calculate(UplinkMessage message) {
-        return calculate(message.settings.dataRate, message.rawPayload.length);
+        return calculate(message.settings.dataRate(), message.rawPayload.length);
     }
 
 }

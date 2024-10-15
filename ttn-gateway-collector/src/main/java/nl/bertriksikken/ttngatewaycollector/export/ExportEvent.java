@@ -6,6 +6,7 @@ import nl.bertriksikken.lorawan.AirTimeCalculator;
 import nl.bertriksikken.lorawan.LorawanPacket;
 import nl.bertriksikken.lorawan.MType;
 import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.Settings;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,7 @@ import java.util.Locale;
 /**
  * Represents one line in the export.
  */
-@JsonPropertyOrder({ "time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr",
-    "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce" })
+@JsonPropertyOrder({"time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr", "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce"})
 public final class ExportEvent {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExportEvent.class);
@@ -67,8 +67,7 @@ public final class ExportEvent {
     @JsonProperty("dev_nonce")
     String devNonce = "";
 
-    private ExportEvent(Instant time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr,
-        double rssi, double airtime) {
+    private ExportEvent(Instant time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr, double rssi, double airtime) {
         this.time = time.truncatedTo(ChronoUnit.MILLIS).toString();
         this.gateway = gateway;
         this.rawPayload = rawPayload;
@@ -84,13 +83,13 @@ public final class ExportEvent {
         Instant time = rxMetadata.time;
         String gatewayId = rxMetadata.gatewayIds.gatewayId;
         byte[] rawPayload = message.rawPayload;
-        int spreadingFactor = message.settings.dataRate.lora.spreadingFactor;
-        int frequency = message.settings.frequency;
+        Settings.DataRate.Lora lora = message.settings.dataRate().lora();
+        int spreadingFactor = (lora != null) ? lora.spreadingFactor() : 0;
+        int frequency = message.settings.frequency();
         double snr = rxMetadata.snr;
         int rssi = rxMetadata.rssi;
-        double airtime = airTimeCalculator.calculate(message.settings.dataRate, rawPayload.length);
-        ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi,
-            airtime);
+        double airtime = airTimeCalculator.calculate(message.settings.dataRate(), rawPayload.length);
+        ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
 
         UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {
@@ -111,9 +110,10 @@ public final class ExportEvent {
 
     public static ExportEvent fromDownlinkData(Instant time, String gateway, DownlinkMessage data) {
         double airtime = airTimeCalculator.calculate(data.scheduled.dataRate, data.rawPayload.length);
-        ExportEvent event = new ExportEvent(time, gateway, data.rawPayload,
-            data.scheduled.dataRate.lora.spreadingFactor, data.scheduled.frequency, 0.0,
-            data.scheduled.downlink.txPower, airtime);
+        Settings.DataRate.Lora lora = data.scheduled.dataRate.lora();
+        int sf = (lora != null) ? lora.spreadingFactor() : 0;
+        ExportEvent event = new ExportEvent(time, gateway, data.rawPayload, sf, data.scheduled.frequency, 0.0,
+                data.scheduled.downlink.txPower, airtime);
         try {
             LorawanPacket packet = LorawanPacket.decode(data.rawPayload);
             event.packetType = MType.fromMhdr(packet.mhdr).toString();
@@ -129,8 +129,8 @@ public final class ExportEvent {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "{%s,%s,%d,%d,%f,%f,%d,%s,%s,%d,%d,%s,%s,%s,%s}", gateway, time, frequency,
-            sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
+        return String.format(Locale.ROOT, "{%s,%s,%d,%d,%f,%f,%d,%s,%s,%d,%d,%s,%s,%s,%s}",
+                gateway, time, frequency, sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
     }
 
 }

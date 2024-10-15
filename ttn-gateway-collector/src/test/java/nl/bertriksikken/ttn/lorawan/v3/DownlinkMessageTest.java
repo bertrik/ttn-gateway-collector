@@ -19,7 +19,7 @@ public final class DownlinkMessageTest {
 
         Assert.assertEquals(15, downlinkMessage.rawPayload.length);
         DownlinkMessage.Scheduled scheduled = downlinkMessage.scheduled;
-        Assert.assertEquals(125000, scheduled.dataRate.lora.bandWidth);
+        Assert.assertEquals(125000, scheduled.dataRate.lora().bandWidth());
         Assert.assertEquals(867900000, scheduled.frequency);
         Assert.assertEquals(3432044212L, scheduled.timestamp);
         Assert.assertEquals(16.15, scheduled.downlink.txPower, 0.001);

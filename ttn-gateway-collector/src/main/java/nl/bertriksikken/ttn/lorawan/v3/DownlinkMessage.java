@@ -30,7 +30,7 @@ public final class DownlinkMessage extends AbstractMessage {
 
     public static final class Scheduled {
         @JsonProperty("data_rate")
-        public Settings.DataRate dataRate = new Settings.DataRate();
+        public Settings.DataRate dataRate = new Settings.DataRate(new Settings.DataRate.Lora());
 
         @JsonProperty("frequency")
         public int frequency;

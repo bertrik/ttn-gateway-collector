@@ -17,10 +17,11 @@ public final class UdpMessageBuilder {
         UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata.get(0);
         Instant time = rxMetadata.time;
         long timestamp = rxMetadata.timestamp;
-        double frequency = uplink.settings.frequency / 1E6;
-        String modulation = createModulation(uplink.settings.dataRate);
-        String dataRate = createSFBW(uplink.settings.dataRate);
-        String codingRate = uplink.settings.dataRate.lora.codingRate;
+        double frequency = uplink.settings.frequency() / 1E6;
+        String modulation = createModulation(uplink.settings.dataRate());
+        String dataRate = createSFBW(uplink.settings.dataRate());
+        Settings.DataRate.Lora lora = uplink.settings.dataRate().lora();
+        String codingRate = (lora != null) ? lora.codingRate() : "";
         int rssi = rxMetadata.rssi;
         double snr = rxMetadata.snr;
         byte[] data = uplink.rawPayload;
@@ -33,7 +34,7 @@ public final class UdpMessageBuilder {
         double frequency = scheduled.frequency / 1E6;
         String modulation = createModulation(scheduled.dataRate);
         String dataRate = createSFBW(scheduled.dataRate);
-        String codingRate = scheduled.dataRate.lora.codingRate;
+        String codingRate = scheduled.dataRate.lora().codingRate();
         double power = scheduled.downlink.txPower;
         boolean invert = scheduled.downlink.invertPolarization;
         byte[] data = downlink.rawPayload;
@@ -52,18 +53,20 @@ public final class UdpMessageBuilder {
         }
         GatewayStatus.Metrics metrics = status.metrics;
         return new Stat(time, latitude, longitude, altitude, metrics.rxin, metrics.rxok, metrics.rxfw, metrics.ackr,
-            metrics.txin, metrics.txok);
+                metrics.txin, metrics.txok);
     }
 
     private String createSFBW(Settings.DataRate dataRate) {
-        if (dataRate.fsk.bitRate > 0) {
-            return String.format(Locale.ROOT, "%d", dataRate.fsk.bitRate);
+        Settings.DataRate.Fsk fsk = dataRate.fsk();
+        if ((fsk != null) && fsk.bitRate() > 0) {
+            return String.format(Locale.ROOT, "%d", dataRate.fsk().bitRate());
         }
-        return String.format(Locale.ROOT, "SF%dBW%d", dataRate.lora.spreadingFactor, dataRate.lora.bandWidth / 1000);
+        return String.format(Locale.ROOT, "SF%dBW%d", dataRate.lora().spreadingFactor(), dataRate.lora().bandWidth() / 1000);
     }
 
     private String createModulation(Settings.DataRate dataRate) {
-        return (dataRate.fsk.bitRate > 0) ? "FSK" : "LORA";
+        Settings.DataRate.Fsk fsk = dataRate.fsk();
+        return (fsk != null) && (fsk.bitRate() > 0) ? "FSK" : "LORA";
     }
 
 }
