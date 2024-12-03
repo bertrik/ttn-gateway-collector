@@ -1,8 +1,8 @@
 [versions]
-jackson = "2.18.1"
+jackson = "2.18.2"
 retrofit = "2.11.0"
 slf4j = "2.0.16"
-errorprone = "2.35.1"
+errorprone = "2.36.0"
 
 [libraries]
 errorprone_annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
