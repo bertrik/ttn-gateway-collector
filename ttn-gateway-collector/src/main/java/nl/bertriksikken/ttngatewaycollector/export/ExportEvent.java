@@ -94,17 +94,17 @@ public final class ExportEvent {
         UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
         if (joinRequestPayload != null) {
             event.packetType = MType.JOIN_REQUEST.toString();
-            event.joinEui = joinRequestPayload.joinEui;
-            event.devEui = joinRequestPayload.devEui;
-            event.devNonce = joinRequestPayload.devNonce;
+            event.joinEui = joinRequestPayload.joinEui();
+            event.devEui = joinRequestPayload.devEui();
+            event.devNonce = joinRequestPayload.devNonce();
         } else {
-            event.packetType = message.payload.mhdr.mtype;
+            event.packetType = message.payload.mhdr.mtype();
         }
 
-        event.devAddr = message.payload.macPayload.fhdr.devAddr;
-        event.fport = message.payload.macPayload.fport;
-        event.fcnt = message.payload.macPayload.fhdr.fcnt;
-        event.adr = message.payload.macPayload.fhdr.fctrl.adr;
+        event.devAddr = message.payload.macPayload.fhdr().devAddr();
+        event.fport = message.payload.macPayload.fport();
+        event.fcnt = message.payload.macPayload.fhdr().fcnt();
+        event.adr = message.payload.macPayload.fhdr().fctrl().adr();
         return event;
     }
 
@@ -113,7 +113,7 @@ public final class ExportEvent {
         Settings.DataRate.Lora lora = data.scheduled.dataRate.lora();
         int sf = (lora != null) ? lora.spreadingFactor() : 0;
         ExportEvent event = new ExportEvent(time, gateway, data.rawPayload, sf, data.scheduled.frequency, 0.0,
-                data.scheduled.downlink.txPower, airtime);
+                data.scheduled.downlink.txPower(), airtime);
         try {
             LorawanPacket packet = LorawanPacket.decode(data.rawPayload);
             event.packetType = MType.fromMhdr(packet.mhdr).toString();

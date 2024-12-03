@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class UplinkMessage {
@@ -40,63 +40,55 @@ public final class UplinkMessage {
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class MHdr {
-            @JsonProperty("m_type")
-            public String mtype = "";
+        public record MHdr(@JsonProperty("m_type") String mtype) {
+            public MHdr {
+                mtype = Objects.requireNonNullElse(mtype, "");
+            }
 
-            @Override
-            public String toString() {
-                return String.format(Locale.ROOT, "{mtype=%s}", mtype);
+            public MHdr() {
+                this(null);
             }
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class MacPayload {
-            @JsonProperty("f_hdr")
-            public FHdr fhdr = new FHdr();
-            @JsonProperty("f_port")
-            public int fport;
+        public record MacPayload(@JsonProperty("f_hdr") FHdr fhdr,
+                                 @JsonProperty("f_port") int fport) {
+            public MacPayload {
+                fhdr = Objects.requireNonNullElse(fhdr, new FHdr());
+            }
 
-            @Override
-            public String toString() {
-                return String.format(Locale.ROOT, "{fhdr=%s,fport=%d}", fhdr, fport);
+            public MacPayload() {
+                this(null, 0);
             }
 
             @JsonIgnoreProperties(ignoreUnknown = true)
-            public static class FHdr {
-                @JsonProperty("dev_addr")
-                public String devAddr = "";
-                @JsonProperty("f_ctrl")
-                public FCtrl fctrl = new FCtrl();
-                @JsonProperty("f_cnt")
-                public int fcnt = 0;
+            public record FHdr(@JsonProperty("dev_addr") String devAddr,
+                               @JsonProperty("f_ctrl") FCtrl fctrl,
+                               @JsonProperty("f_cnt") int fcnt) {
+                public FHdr {
+                    devAddr = Objects.requireNonNullElse(devAddr, "");
+                    fctrl = Objects.requireNonNullElse(fctrl, new FCtrl(false));
+                }
 
-                @Override
-                public String toString() {
-                    return String.format(Locale.ROOT, "{devAddr=%s,fctrl=%s,fcnt=%d}", devAddr, fctrl, fcnt);
+                public FHdr() {
+                    this(null, null, 0);
                 }
 
                 @JsonIgnoreProperties(ignoreUnknown = true)
-                public static class FCtrl {
-                    @JsonProperty("adr")
-                    public boolean adr = false;
-
-                    @Override
-                    public String toString() {
-                        return String.format(Locale.ROOT, "{adr=%s}", adr);
-                    }
+                public record FCtrl(@JsonProperty("adr") boolean adr) {
                 }
             }
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class JoinRequestPayload {
-            @JsonProperty("join_eui")
-            public String joinEui = "";
-            @JsonProperty("dev_eui")
-            public String devEui = "";
-            @JsonProperty("dev_nonce")
-            public String devNonce = "";
+        public record JoinRequestPayload(@JsonProperty("join_eui") String joinEui,
+                                         @JsonProperty("dev_eui") String devEui,
+                                         @JsonProperty("dev_nonce") String devNonce) {
+            public JoinRequestPayload {
+                joinEui = Objects.requireNonNullElse(joinEui, "");
+                devEui = Objects.requireNonNullElse(devEui, "");
+                devNonce = Objects.requireNonNullElse(devNonce, "");
+            }
         }
     }
 

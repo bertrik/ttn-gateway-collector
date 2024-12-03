@@ -3,10 +3,15 @@ package nl.bertriksikken.ttn.lorawan.v3;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * https://www.thethingsindustries.com/docs/api/reference/grpc/events/#event:gs.status.receive
+ * <a href="https://www.thethingsindustries.com/docs/api/reference/grpc/events/#event:gs.status.receive">gs.status.receive</a>
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class GatewayStatus extends AbstractMessage {
@@ -39,40 +44,23 @@ public final class GatewayStatus extends AbstractMessage {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Location {
-        @JsonProperty("latitude")
-        public double latitude = Double.NaN;
-        @JsonProperty("longitude")
-        public double longitude = Double.NaN;
-        @JsonProperty("altitude")
-        public int altitude = 0;
-        @JsonProperty("source")
-        public String source = "";
-
-        @Override
-        public String toString() {
-            return String.format(Locale.ROOT, "{lat=%.6f,lon=%.6f,alt=%d,source=%s}", latitude, longitude, altitude, source);
+    public record Location(@JsonProperty("latitude") Double latitude,
+                           @JsonProperty("longitude") Double longitude,
+                           @JsonProperty("altitude") int altitude,
+                           @JsonProperty("source") String source) {
+        public Location {
+            latitude = Objects.requireNonNullElse(latitude, Double.NaN);
+            longitude = Objects.requireNonNullElse(longitude, Double.NaN);
+            source = Objects.requireNonNullElse(source, "");
         }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Metrics {
-        @JsonProperty("rxin")
-        public int rxin;
-        @JsonProperty("rxok")
-        public int rxok;
-        @JsonProperty("rxfw")
-        public int rxfw;
-        @JsonProperty("ackr")
-        public double ackr = Double.NaN;
-        @JsonProperty("txin")
-        public int txin;
-        @JsonProperty("txok")
-        public int txok;
-
-        @Override
-        public String toString() {
-            return String.format(Locale.ROOT, "{rxin=%d,rxok=%d,rxfw=%d,ackr=%.1f,txin=%d,txok=%d}", rxin, rxok, rxfw, ackr, txin, txok);
+    public record Metrics(@JsonProperty("rxin") int rxin, @JsonProperty("rxok") int rxok,
+                          @JsonProperty("rxfw") int rxfw, @JsonProperty("ackr") double ackr,
+                          @JsonProperty("txin") int txin, @JsonProperty("txok") int txok) {
+        public Metrics() {
+            this(0, 0, 0, 0.0, 0, 0);
         }
     }
 

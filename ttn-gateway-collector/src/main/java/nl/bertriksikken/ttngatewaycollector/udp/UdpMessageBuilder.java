@@ -35,8 +35,8 @@ public final class UdpMessageBuilder {
         String modulation = createModulation(scheduled.dataRate);
         String dataRate = createSFBW(scheduled.dataRate);
         String codingRate = scheduled.dataRate.lora().codingRate();
-        double power = scheduled.downlink.txPower;
-        boolean invert = scheduled.downlink.invertPolarization;
+        double power = scheduled.downlink.txPower();
+        boolean invert = scheduled.downlink.invertPolarization();
         byte[] data = downlink.rawPayload;
         return new TxPk(time, timestamp, frequency, modulation, dataRate, codingRate, power, invert, data);
     }
@@ -47,13 +47,13 @@ public final class UdpMessageBuilder {
         Integer altitude = null;
         if (!status.antennaLocations.isEmpty()) {
             GatewayStatus.Location location = status.antennaLocations.get(0);
-            latitude = location.latitude;
-            longitude = location.longitude;
-            altitude = location.altitude;
+            latitude = location.latitude();
+            longitude = location.longitude();
+            altitude = location.altitude();
         }
         GatewayStatus.Metrics metrics = status.metrics;
-        return new Stat(time, latitude, longitude, altitude, metrics.rxin, metrics.rxok, metrics.rxfw, metrics.ackr,
-                metrics.txin, metrics.txok);
+        return new Stat(time, latitude, longitude, altitude, metrics.rxin(), metrics.rxok(), metrics.rxfw(), metrics.ackr(),
+                metrics.txin(), metrics.txok());
     }
 
     private String createSFBW(Settings.DataRate dataRate) {

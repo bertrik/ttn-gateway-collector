@@ -6,22 +6,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Locale;
 
 /**
- * https://www.thethingsindustries.com/docs/reference/api/events/#event:gs.down.send
+ * <a href="https://www.thethingsindustries.com/docs/reference/api/events/#event:gs.down.send">gs.down.send</a>
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class DownlinkMessage extends AbstractMessage {
 
     public static final String TYPE = "type.googleapis.com/ttn.lorawan.v3.DownlinkMessage";
+    @JsonProperty("raw_payload")
+    public byte[] rawPayload;
+    @JsonProperty("scheduled")
+    public Scheduled scheduled = new Scheduled();
 
     public DownlinkMessage() {
         super(TYPE);
     }
-
-    @JsonProperty("raw_payload")
-    public byte[] rawPayload;
-
-    @JsonProperty("scheduled")
-    public Scheduled scheduled = new Scheduled();
 
     @Override
     public String toString() {
@@ -49,16 +47,10 @@ public final class DownlinkMessage extends AbstractMessage {
             return String.format(Locale.ROOT, "{data_rate=%s,frequency=%d,timestamp=%d,downlink=%s,concentratorTimestamp=%d}", dataRate, frequency, timestamp, downlink, concentratorTimestamp);
         }
 
-        public static final class Downlink {
-            @JsonProperty("tx_power")
-            public double txPower;
-
-            @JsonProperty("invert_polarization")
-            public boolean invertPolarization;
-
-            @Override
-            public String toString() {
-                return String.format(Locale.ROOT, "{tx_power=%.2f,invert_polarization=%s", txPower, invertPolarization);
+        public record Downlink(@JsonProperty("tx_power") double txPower,
+                               @JsonProperty("invert_polarization") boolean invertPolarization) {
+            public Downlink() {
+                this(Double.NaN, false);
             }
         }
     }
