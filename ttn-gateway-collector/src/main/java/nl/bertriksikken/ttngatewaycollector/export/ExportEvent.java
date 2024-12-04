@@ -91,20 +91,20 @@ public final class ExportEvent {
         double airtime = airTimeCalculator.calculate(message.settings.dataRate(), rawPayload.length);
         ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
 
-        UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload;
+        UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload();
         if (joinRequestPayload != null) {
             event.packetType = MType.JOIN_REQUEST.toString();
             event.joinEui = joinRequestPayload.joinEui();
             event.devEui = joinRequestPayload.devEui();
             event.devNonce = joinRequestPayload.devNonce();
         } else {
-            event.packetType = message.payload.mhdr.mtype();
+            event.packetType = message.payload.mhdr().mtype();
         }
 
-        event.devAddr = message.payload.macPayload.fhdr().devAddr();
-        event.fport = message.payload.macPayload.fport();
-        event.fcnt = message.payload.macPayload.fhdr().fcnt();
-        event.adr = message.payload.macPayload.fhdr().fctrl().adr();
+        event.devAddr = message.payload.macPayload().fhdr().devAddr();
+        event.fport = message.payload.macPayload().fport();
+        event.fcnt = message.payload.macPayload().fhdr().fcnt();
+        event.adr = message.payload.macPayload().fhdr().fctrl().adr();
         return event;
     }
 

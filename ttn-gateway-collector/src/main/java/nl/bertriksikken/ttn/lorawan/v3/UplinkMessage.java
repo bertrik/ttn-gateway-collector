@@ -26,17 +26,17 @@ public final class UplinkMessage {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Payload {
-        @JsonProperty("m_hdr")
-        public MHdr mhdr = new MHdr();
-        @JsonProperty("mac_payload")
-        public MacPayload macPayload = new MacPayload();
-        @JsonProperty("join_request_payload")
-        public JoinRequestPayload joinRequestPayload; // can be null if absent
+    public record Payload(@JsonProperty("m_hdr") MHdr mhdr,
+                          @JsonProperty("mac_payload") MacPayload macPayload,
+                          @JsonProperty("join_request_payload") JoinRequestPayload joinRequestPayload) {
+        public Payload {
+            mhdr = Objects.requireNonNullElse(mhdr, new MHdr());
+            macPayload = Objects.requireNonNullElse(macPayload, new MacPayload());
+            // joinRequestPayload can be null if absent
+        }
 
-        @Override
-        public String toString() {
-            return String.format(Locale.ROOT, "{mhdr=%s,mac=%s}", mhdr, macPayload);
+        public Payload() {
+            this(null, null, null);
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
