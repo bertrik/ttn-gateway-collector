@@ -35,6 +35,10 @@ subprojects {
         }
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
     // Standard libraries added to all projects
     dependencies {
         errorprone(libs.errorprone.core)
@@ -42,7 +46,10 @@ subprojects {
 
         implementation libs.slf4j
 
-        testImplementation libs.junit
+        testImplementation(platform(libs.junit.bom))
+        testImplementation libs.junit.jupiter
+        testRuntimeOnly libs.junit.platform.launcher
+
         testImplementation libs.reload4j
     }
 

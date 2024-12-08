@@ -1,9 +1,9 @@
 package nl.bertriksikken.lorawan;
 
-import java.io.IOException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.io.IOException;
 
 public final class LorawanPacketTest {
 
@@ -15,13 +15,13 @@ public final class LorawanPacketTest {
         byte[] data = new byte[] { 0x60, 0x58, 0x17, 0x0b, 0x26, (byte) 0x80, 0x24, 0x02, 0x78, (byte) 0x86, 0x14,
             0x1b };
         LorawanPacket packet = LorawanPacket.decode(data);
-        Assert.assertEquals(MType.UNCONFIRMED_DATA_DOWN, MType.fromMhdr(packet.mhdr));
-        Assert.assertEquals("260B1758", packet.macPayload.devAddr);
-        Assert.assertEquals(true, packet.macPayload.adr);
-        Assert.assertEquals(false, packet.macPayload.ack);
-        Assert.assertEquals(548, packet.macPayload.fcnt);
-        Assert.assertEquals(0, packet.macPayload.fport);
-        Assert.assertEquals(0, packet.macPayload.frmPayload.length);
+        Assertions.assertEquals(MType.UNCONFIRMED_DATA_DOWN, MType.fromMhdr(packet.mhdr));
+        Assertions.assertEquals("260B1758", packet.macPayload.devAddr);
+        Assertions.assertTrue(packet.macPayload.adr);
+        Assertions.assertFalse(packet.macPayload.ack);
+        Assertions.assertEquals(548, packet.macPayload.fcnt);
+        Assertions.assertEquals(0, packet.macPayload.fport);
+        Assertions.assertEquals(0, packet.macPayload.frmPayload.length);
     }
 
 }

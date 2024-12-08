@@ -2,8 +2,8 @@ package nl.bertriksikken.lorawan;
 
 import nl.bertriksikken.ttn.lorawan.v3.Settings;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public final class AirTimeCalculatorTest {
 
@@ -30,7 +30,7 @@ public final class AirTimeCalculatorTest {
         uplink.rawPayload = new byte[12 + n];
         uplink.settings = new Settings(new Settings.DataRate(lora), 868100000);
         double ms = calculator.calculate(uplink) / 0.001;
-        Assert.assertEquals(expected, ms, 0.1);
+        Assertions.assertEquals(expected, ms, 0.1);
     }
 
     /**
@@ -46,7 +46,7 @@ public final class AirTimeCalculatorTest {
         uplink.rawPayload = new byte[12 + n];
         uplink.settings = new Settings(new Settings.DataRate(new Settings.DataRate.Fsk(bitRate)), 868100000);
         double ms = calculator.calculate(uplink) / 0.001;
-        Assert.assertEquals(expected, ms, 0.1);
+        Assertions.assertEquals(expected, ms, 0.1);
     }
 
 }
