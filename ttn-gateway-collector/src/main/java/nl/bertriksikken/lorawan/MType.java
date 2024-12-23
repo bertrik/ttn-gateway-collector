@@ -25,6 +25,10 @@ public enum MType {
         this.description = description;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public static MType fromMhdr(int mhdr) {
         int code = (mhdr >> 5) & 7;
         return Stream.of(MType.values()).filter(v -> (v.code == code)).findFirst().orElseThrow();

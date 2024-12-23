@@ -116,7 +116,7 @@ public final class ExportEvent {
                 data.scheduled.downlink.txPower(), airtime);
         try {
             LorawanPacket packet = LorawanPacket.decode(data.rawPayload);
-            event.packetType = MType.fromMhdr(packet.mhdr).toString();
+            event.packetType = MType.fromMhdr(packet.mhdr).getDescription();
             event.devAddr = packet.macPayload.devAddr;
             event.fport = packet.macPayload.fport;
             event.fcnt = packet.macPayload.fcnt;
