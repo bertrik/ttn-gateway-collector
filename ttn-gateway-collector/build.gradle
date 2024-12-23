@@ -11,8 +11,6 @@ dependencies {
     implementation libs.bundles.jackson
     implementation libs.bundles.retrofit
     
-    compileOnly libs.spotbugs.annotations
-    
     testImplementation libs.retrofit.mock
 }
 

@@ -25,7 +25,6 @@ junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
-spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.8.6"}
 paho-client-mqttv3 = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", version = "1.2.5" }
 
 [bundles]
