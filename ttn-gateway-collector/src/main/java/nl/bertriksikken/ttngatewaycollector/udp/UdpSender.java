@@ -113,7 +113,7 @@ public final class UdpSender implements IEventProcessor {
     public void handleUplink(UplinkMessage uplink) {
         // decode EUI
         UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata.get(0);
-        byte[] eui = parseHex(rxMetadata.gatewayIds.eui);
+        byte[] eui = parseHex(rxMetadata.gatewayIds().eui());
         RxPk rxPk = udpMessageBuilder.buildRxPk(uplink);
         UdpPushData pushData = new UdpPushData(rxPk);
         try {
@@ -135,7 +135,7 @@ public final class UdpSender implements IEventProcessor {
     @Override
     public void handleStatus(Instant time, EntityIdentifiers.GatewayIdentifiers gatewayIds, GatewayStatus gatewayStatus) {
         // not implemented
-        byte[] eui = parseHex(gatewayIds.eui);
+        byte[] eui = parseHex(gatewayIds.eui());
         Stat stat = udpMessageBuilder.buildStat(time, gatewayStatus);
         UdpPushData pushData = new UdpPushData(stat);
         try {

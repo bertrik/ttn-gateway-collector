@@ -21,7 +21,7 @@ public final class UplinkMessageTest {
 
         UplinkMessage uplink = mapper.readValue(url, UplinkMessage.class);
         System.out.println(uplink);
-        Assertions.assertEquals(3119016580L, uplink.rxMetadata.get(0).timestamp);
+        Assertions.assertEquals(3119016580L, uplink.rxMetadata.get(0).timestamp());
     }
     
     @Test

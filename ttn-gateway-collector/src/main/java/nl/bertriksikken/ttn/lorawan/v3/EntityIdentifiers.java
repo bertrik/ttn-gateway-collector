@@ -15,14 +15,14 @@ public final class EntityIdentifiers {
     @JsonProperty("gateway_ids")
     private GatewayIdentifiers gatewayIds;
 
-    public GatewayIdentifiers getGatewayIds() {
-        return gatewayIds;
-    }
-
     public static EntityIdentifiers createGatewayIds(String id) {
         EntityIdentifiers identifiers = new EntityIdentifiers();
         identifiers.gatewayIds = GatewayIdentifiers.create(id, null);
         return identifiers;
+    }
+
+    public GatewayIdentifiers getGatewayIds() {
+        return gatewayIds;
     }
 
     /**
@@ -30,18 +30,10 @@ public final class EntityIdentifiers {
      */
     @JsonInclude(Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class GatewayIdentifiers {
-
-        @JsonProperty("gateway_id")
-        public String gatewayId;
-        @JsonProperty("eui")
-        public String eui;
-
+    public record GatewayIdentifiers(@JsonProperty("gateway_id") String gatewayId,
+                                     @JsonProperty("eui") String eui) {
         public static GatewayIdentifiers create(String id, String eui) {
-            GatewayIdentifiers identifiers = new GatewayIdentifiers();
-            identifiers.gatewayId = id;
-            identifiers.eui = eui;
-            return identifiers;
+            return new GatewayIdentifiers(id, eui);
         }
     }
 }

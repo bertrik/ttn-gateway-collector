@@ -93,28 +93,19 @@ public final class UplinkMessage {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class RxMetadata {
-        @JsonProperty("gateway_ids")
-        public EntityIdentifiers.GatewayIdentifiers gatewayIds = EntityIdentifiers.GatewayIdentifiers.create("", "");
+    public record RxMetadata(@JsonProperty("gateway_ids") EntityIdentifiers.GatewayIdentifiers gatewayIds,
+                             @JsonProperty("time") Instant time,
+                             @JsonProperty("timestamp") long timestamp,
+                             @JsonProperty("rssi") int rssi,
+                             @JsonProperty("snr") double snr,
+                             @JsonProperty("channel_index") int channelIndex) {
 
-        @JsonProperty("time")
-        public Instant time = Instant.now();
-
-        @JsonProperty("timestamp")
-        public long timestamp;
-
-        @JsonProperty("rssi")
-        public int rssi;
-
-        @JsonProperty("snr")
-        public double snr;
-
-        @JsonProperty("channel_index")
-        public int channelIndex;
-
-        @Override
-        public String toString() {
-            return String.format(Locale.ROOT, "{rssi=%s,snr=%.1f,channel=%s}", rssi, snr, channelIndex);
+        public RxMetadata {
+            gatewayIds = Objects.requireNonNullElse(gatewayIds, EntityIdentifiers.GatewayIdentifiers.create("", ""));
+            time = Objects.requireNonNullElse(time, Instant.now());
+        }
+        public RxMetadata() {
+            this(null, null, 0, 0, 0.0, 0);
         }
     }
 

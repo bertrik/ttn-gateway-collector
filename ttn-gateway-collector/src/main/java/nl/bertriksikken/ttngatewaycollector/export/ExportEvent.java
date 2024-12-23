@@ -80,14 +80,14 @@ public final class ExportEvent {
 
     public static ExportEvent fromUplinkMessage(UplinkMessage message) {
         UplinkMessage.RxMetadata rxMetadata = message.rxMetadata.get(0);
-        Instant time = rxMetadata.time;
-        String gatewayId = rxMetadata.gatewayIds.gatewayId;
+        Instant time = rxMetadata.time();
+        String gatewayId = rxMetadata.gatewayIds().gatewayId();
         byte[] rawPayload = message.rawPayload;
         Settings.DataRate.Lora lora = message.settings.dataRate().lora();
         int spreadingFactor = (lora != null) ? lora.spreadingFactor() : 0;
         int frequency = message.settings.frequency();
-        double snr = rxMetadata.snr;
-        int rssi = rxMetadata.rssi;
+        double snr = rxMetadata.snr();
+        int rssi = rxMetadata.rssi();
         double airtime = airTimeCalculator.calculate(message.settings.dataRate(), rawPayload.length);
         ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
 
