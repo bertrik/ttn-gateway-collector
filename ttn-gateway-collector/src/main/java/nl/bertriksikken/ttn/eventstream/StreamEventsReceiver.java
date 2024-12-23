@@ -57,10 +57,10 @@ public final class StreamEventsReceiver {
     }
 
     public void stop() {
-        LOG.info("Stopping");
         canceled = true;
         callMap.values().forEach(Call::cancel);
         executor.shutdownNow();
+        LOG.info("Stopped");
     }
 
     private void connect(Request request, IEventStreamCallback eventCallback) {

@@ -61,11 +61,9 @@ public final class TTNGatewayCollector {
             String gatewayId = receiverConfig.gatewayId;
             receiver.subscribe(gatewayId, receiverConfig.apiKey, event -> eventReceived(gatewayId, event));
         }
-        LOG.info("Started");
     }
 
     private void stop() {
-        LOG.info("Stopping");
         receiver.stop();
         eventProcessors.forEach(IEventProcessor::stop);
         LOG.info("Stopped");
