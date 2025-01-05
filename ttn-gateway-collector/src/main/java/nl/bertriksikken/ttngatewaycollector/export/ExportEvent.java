@@ -79,32 +79,32 @@ public final class ExportEvent {
     }
 
     public static ExportEvent fromUplinkMessage(UplinkMessage message) {
-        UplinkMessage.RxMetadata rxMetadata = message.rxMetadata.get(0);
+        UplinkMessage.RxMetadata rxMetadata = message.rxMetadata().get(0);
         Instant time = rxMetadata.time();
         String gatewayId = rxMetadata.gatewayIds().gatewayId();
-        byte[] rawPayload = message.rawPayload;
-        Settings.DataRate.Lora lora = message.settings.dataRate().lora();
+        byte[] rawPayload = message.rawPayload();
+        Settings.DataRate.Lora lora = message.settings().dataRate().lora();
         int spreadingFactor = (lora != null) ? lora.spreadingFactor() : 0;
-        int frequency = message.settings.frequency();
+        int frequency = message.settings().frequency();
         double snr = rxMetadata.snr();
         int rssi = rxMetadata.rssi();
-        double airtime = airTimeCalculator.calculate(message.settings.dataRate(), rawPayload.length);
+        double airtime = airTimeCalculator.calculate(message.settings().dataRate(), rawPayload.length);
         ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
 
-        UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload.joinRequestPayload();
+        UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload().joinRequestPayload();
         if (joinRequestPayload != null) {
             event.packetType = MType.JOIN_REQUEST.toString();
             event.joinEui = joinRequestPayload.joinEui();
             event.devEui = joinRequestPayload.devEui();
             event.devNonce = joinRequestPayload.devNonce();
         } else {
-            event.packetType = message.payload.mhdr().mtype();
+            event.packetType = message.payload().mhdr().mtype();
         }
 
-        event.devAddr = message.payload.macPayload().fhdr().devAddr();
-        event.fport = message.payload.macPayload().fport();
-        event.fcnt = message.payload.macPayload().fhdr().fcnt();
-        event.adr = message.payload.macPayload().fhdr().fctrl().adr();
+        event.devAddr = message.payload().macPayload().fhdr().devAddr();
+        event.fport = message.payload().macPayload().fport();
+        event.fcnt = message.payload().macPayload().fhdr().fcnt();
+        event.adr = message.payload().macPayload().fhdr().fctrl().adr();
         return event;
     }
 

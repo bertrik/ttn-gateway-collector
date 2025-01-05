@@ -5,24 +5,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
+@SuppressWarnings("ArrayRecordComponent")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class UplinkMessage {
+public record UplinkMessage(@JsonProperty("raw_payload") byte[] rawPayload,
+                            @JsonProperty("payload") Payload payload,
+                            @JsonProperty("settings") Settings settings,
+                            @JsonProperty("rx_metadata") List<RxMetadata> rxMetadata) {
 
-    @JsonProperty("raw_payload")
-    public byte[] rawPayload = new byte[0];
-    @JsonProperty("payload")
-    public Payload payload = new Payload();
-    @JsonProperty("settings")
-    public Settings settings = new Settings();
-    @JsonProperty("rx_metadata")
-    public List<RxMetadata> rxMetadata = List.of(new RxMetadata());
+    public UplinkMessage {
+        rawPayload = Objects.requireNonNullElse(rawPayload, new byte[0]);
+        payload = Objects.requireNonNullElse(payload, new Payload());
+        settings = Objects.requireNonNullElse(settings, new Settings());
+        rxMetadata = Objects.requireNonNullElse(rxMetadata, List.of(new RxMetadata()));
+    }
 
     @Override
-    public String toString() {
-        return String.format(Locale.ROOT, "{raw=<%d bytes>,payload=%s,settings=%s,metadata=%s}", rawPayload.length, payload, settings, rxMetadata);
+    public byte[] rawPayload() {
+        return rawPayload.clone();
+    }
+
+    public UplinkMessage() {
+        this(null, null, null, null);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -104,6 +109,7 @@ public final class UplinkMessage {
             gatewayIds = Objects.requireNonNullElse(gatewayIds, EntityIdentifiers.GatewayIdentifiers.create("", ""));
             time = Objects.requireNonNullElse(time, Instant.now());
         }
+
         public RxMetadata() {
             this(null, null, 0, 0, 0.0, 0);
         }

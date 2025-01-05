@@ -112,7 +112,7 @@ public final class UdpSender implements IEventProcessor {
     @Override
     public void handleUplink(UplinkMessage uplink) {
         // decode EUI
-        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata.get(0);
+        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata().get(0);
         byte[] eui = parseHex(rxMetadata.gatewayIds().eui());
         RxPk rxPk = udpMessageBuilder.buildRxPk(uplink);
         UdpPushData pushData = new UdpPushData(rxPk);

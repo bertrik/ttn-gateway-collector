@@ -14,17 +14,17 @@ import java.util.Locale;
 public final class UdpMessageBuilder {
 
     public RxPk buildRxPk(UplinkMessage uplink) {
-        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata.get(0);
+        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata().get(0);
         Instant time = rxMetadata.time();
         long timestamp = rxMetadata.timestamp();
-        double frequency = uplink.settings.frequency() / 1E6;
-        String modulation = createModulation(uplink.settings.dataRate());
-        String dataRate = createSFBW(uplink.settings.dataRate());
-        Settings.DataRate.Lora lora = uplink.settings.dataRate().lora();
+        double frequency = uplink.settings().frequency() / 1E6;
+        String modulation = createModulation(uplink.settings().dataRate());
+        String dataRate = createSFBW(uplink.settings().dataRate());
+        Settings.DataRate.Lora lora = uplink.settings().dataRate().lora();
         String codingRate = (lora != null) ? lora.codingRate() : "";
         int rssi = rxMetadata.rssi();
         double snr = rxMetadata.snr();
-        byte[] data = uplink.rawPayload;
+        byte[] data = uplink.rawPayload();
         return new RxPk(time, timestamp, frequency, modulation, dataRate, codingRate, rssi, snr, data);
     }
 

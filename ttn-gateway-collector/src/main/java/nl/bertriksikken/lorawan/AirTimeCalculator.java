@@ -52,7 +52,7 @@ public final class AirTimeCalculator {
     }
 
     public double calculate(UplinkMessage message) {
-        return calculate(message.settings.dataRate(), message.rawPayload.length);
+        return calculate(message.settings().dataRate(), message.rawPayload().length);
     }
 
 }
