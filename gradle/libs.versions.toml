@@ -2,7 +2,7 @@
 errorprone = "2.38.0"
 jackson = "2.19.0"
 junit = "5.12.2"
-retrofit = "2.11.0"
+retrofit = "3.0.0"
 slf4j = "2.0.17"
 
 [libraries]
