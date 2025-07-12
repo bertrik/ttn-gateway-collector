@@ -21,7 +21,7 @@ import java.util.Locale;
 /**
  * Represents one line in the export.
  */
-@JsonPropertyOrder({"time", "gateway", "frequency", "sf", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr", "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce"})
+@JsonPropertyOrder({"time", "gateway", "frequency", "modulation", "snr", "rssi", "airtime", "raw_payload", "type", "dev_addr", "port", "fcnt", "adr", "join_eui", "dev_eui", "dev_nonce"})
 public final class ExportEvent {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExportEvent.class);
@@ -36,8 +36,8 @@ public final class ExportEvent {
     // radio settings
     @JsonProperty("frequency")
     final int frequency;
-    @JsonProperty("sf")
-    final int sf;
+    @JsonProperty("modulation")
+    final String modulation;
     @JsonProperty("snr")
     final double snr;
     @JsonProperty("rssi")
@@ -67,11 +67,11 @@ public final class ExportEvent {
     @JsonProperty("dev_nonce")
     String devNonce = "";
 
-    private ExportEvent(Instant time, String gateway, byte[] rawPayload, int spreadingFactor, int frequency, double snr, double rssi, double airtime) {
+    private ExportEvent(Instant time, String gateway, byte[] rawPayload, String modulation, int frequency, double snr, double rssi, double airtime) {
         this.time = time.truncatedTo(ChronoUnit.MILLIS).toString();
         this.gateway = gateway;
         this.rawPayload = rawPayload;
-        this.sf = spreadingFactor;
+        this.modulation = modulation;
         this.frequency = frequency;
         this.snr = snr;
         this.rssi = rssi;
@@ -83,13 +83,12 @@ public final class ExportEvent {
         Instant time = rxMetadata.time();
         String gatewayId = rxMetadata.gatewayIds().gatewayId();
         byte[] rawPayload = message.rawPayload();
-        Settings.DataRate.Lora lora = message.settings().dataRate().lora();
-        int spreadingFactor = (lora != null) ? lora.spreadingFactor() : 0;
+        String modulation = getModulation(message.settings().dataRate());
         int frequency = message.settings().frequency();
         double snr = rxMetadata.snr();
         int rssi = rxMetadata.rssi();
         double airtime = airTimeCalculator.calculate(message.settings().dataRate(), rawPayload.length);
-        ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, spreadingFactor, frequency, snr, rssi, airtime);
+        ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, modulation, frequency, snr, rssi, airtime);
 
         UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload().joinRequestPayload();
         if (joinRequestPayload != null) {
@@ -108,11 +107,22 @@ public final class ExportEvent {
         return event;
     }
 
+    private static String getModulation(Settings.DataRate dataRate) {
+        var lora = dataRate.lora();
+        if (lora != null) {
+            return String.format(Locale.ROOT, "SF%dBW%d", lora.spreadingFactor(), lora.bandWidth() / 1000);
+        }
+        var fsk = dataRate.fsk();
+        if (fsk != null) {
+            return String.format(Locale.ROOT, "FSK%d", fsk.bitRate() / 1000);
+        }
+        return "?";
+    }
+
     public static ExportEvent fromDownlinkData(Instant time, String gateway, DownlinkMessage data) {
         double airtime = airTimeCalculator.calculate(data.scheduled.dataRate, data.rawPayload.length);
-        Settings.DataRate.Lora lora = data.scheduled.dataRate.lora();
-        int sf = (lora != null) ? lora.spreadingFactor() : 0;
-        ExportEvent event = new ExportEvent(time, gateway, data.rawPayload, sf, data.scheduled.frequency, 0.0,
+        String modulation = getModulation(data.scheduled.dataRate);
+        ExportEvent event = new ExportEvent(time, gateway, data.rawPayload, modulation, data.scheduled.frequency, 0.0,
                 data.scheduled.downlink.txPower(), airtime);
         try {
             LorawanPacket packet = LorawanPacket.decode(data.rawPayload);
@@ -129,8 +139,8 @@ public final class ExportEvent {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "{%s,%s,%d,%d,%f,%f,%d,%s,%s,%d,%d,%s,%s,%s,%s}",
-                gateway, time, frequency, sf, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
+        return String.format(Locale.ROOT, "{%s,%s,%d,%s,%f,%f,%d,%s,%s,%d,%d,%s,%s,%s,%s}",
+                gateway, time, frequency, modulation, snr, rssi, rawPayload.length, packetType, devAddr, fport, fcnt, adr, joinEui, devEui, devNonce);
     }
 
 }
