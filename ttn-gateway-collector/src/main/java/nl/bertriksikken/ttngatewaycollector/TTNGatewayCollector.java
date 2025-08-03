@@ -73,38 +73,34 @@ public final class TTNGatewayCollector {
     void eventReceived(String gatewayId, Event event) {
         // only interested in gateway uplink events
         switch (event.getName()) {
-            case "events.stream.start":
-                LOG.info("Stream started");
-                break;
-            case "gs.down.schedule.attempt":
+            case "events.stream.start" -> LOG.info("Stream started");
+            case "gs.down.schedule.attempt" -> {
                 // ignore
-                break;
-            case "gs.down.send":
+            }
+            case "gs.down.send" -> {
                 LOG.info("Gateway downlink received: {}", event.getData());
                 if (event.getData() instanceof DownlinkMessage downlinkMessage) {
                     eventProcessors.forEach(p -> p.handleDownlink(event.getTime(), gatewayId, downlinkMessage));
                 }
-                break;
-            case "gs.down.tx.success":
-                break;
-            case "gs.gateway.connection.stats":
+            }
+            case "gs.down.tx.success" -> {
+            }
+            case "gs.gateway.connection.stats" -> {
                 // ignore
-                break;
-            case "gs.status.receive":
+            }
+            case "gs.status.receive" -> {
                 LOG.info("Gateway status received: {}", event.getData());
                 if (event.getData() instanceof GatewayStatus gatewayStatus) {
                     eventProcessors.forEach(p -> p.handleStatus(event.getTime(), event.getGatewayIds(), gatewayStatus));
                 }
-                break;
-            case "gs.txack.receive":
-            case "gs.txack.forward":
+            }
+            case "gs.txack.receive", "gs.txack.forward" -> {
                 // ignore
-                break;
-            case "gs.up.drop":
-            case "gs.up.forward":
+            }
+            case "gs.up.drop", "gs.up.forward" -> {
                 // ignore
-                break;
-            case "gs.up.receive":
+            }
+            case "gs.up.receive" -> {
                 LOG.info("Gateway uplink received: {}", event.getData());
                 // parse as gs.up.receive data
                 if (event.getData() instanceof GatewayUplinkMessage gatewayUplinkMessage) {
@@ -113,10 +109,8 @@ public final class TTNGatewayCollector {
                 } else {
                     LOG.warn("Unhandled gs.up.receive: {}", event.getData());
                 }
-                break;
-            default:
-                LOG.info("Unhandled event {}: {}", event.getName(), event.getData());
-                break;
+            }
+            default -> LOG.info("Unhandled event {}: {}", event.getName(), event.getData());
         }
     }
 

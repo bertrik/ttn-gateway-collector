@@ -50,7 +50,7 @@ public final class StreamEventsReceiver {
 
         StreamEventsRequest request = new StreamEventsRequest(gatewayId);
         String requestJson = mapper.writeValueAsString(request);
-        RequestBody requestBody = RequestBody.create(MEDIATYPE_JSON, requestJson);
+        RequestBody requestBody = RequestBody.create(requestJson, MEDIATYPE_JSON);
         Request httpRequest = new Request.Builder().post(requestBody).url(url).header("Accept", "text/event-stream")
             .header("Authorization", "Bearer " + apiKey).build();
         connect(httpRequest, eventCallback);
@@ -74,7 +74,7 @@ public final class StreamEventsReceiver {
 
         private final IEventStreamCallback callback;
 
-        public RequestCallback(IEventStreamCallback callback) {
+        RequestCallback(IEventStreamCallback callback) {
             this.callback = callback;
         }
 
