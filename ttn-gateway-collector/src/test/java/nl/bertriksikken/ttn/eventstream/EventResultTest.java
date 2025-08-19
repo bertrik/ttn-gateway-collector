@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.bertriksikken.ttn.lorawan.v3.AbstractMessage;
 import nl.bertriksikken.ttn.lorawan.v3.GatewayUplinkMessage;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URL;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public final class EventResultTest {
 
@@ -25,13 +26,13 @@ public final class EventResultTest {
         // decode top-level event
         Event.Result result = mapper.readValue(url, Event.Result.class);
         Event event = result.event();
-        Assertions.assertNotNull(event);
+        assertNotNull(event);
 
         // decode data inside event
         AbstractMessage data = event.getData();
         GatewayUplinkMessage gatewayUplinkMessage = (GatewayUplinkMessage) data;
         UplinkMessage uplinkMessage = gatewayUplinkMessage.getMessage();
-        Assertions.assertNotNull(uplinkMessage);
+        assertNotNull(uplinkMessage);
     }
 
 }

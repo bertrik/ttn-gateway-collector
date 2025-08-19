@@ -3,12 +3,13 @@ package nl.bertriksikken.ttngatewaycollector.export;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public final class ExportEventTest {
 
@@ -18,7 +19,7 @@ public final class ExportEventTest {
     public void testToString() {
         UplinkMessage uplink = new UplinkMessage();
         ExportEvent event = ExportEvent.fromUplinkMessage(uplink);
-        Assertions.assertNotNull(event.toString());
+        assertNotNull(event.toString());
     }
 
     @Test

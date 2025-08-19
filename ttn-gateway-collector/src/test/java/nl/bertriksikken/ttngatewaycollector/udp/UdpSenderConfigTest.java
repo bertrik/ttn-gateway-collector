@@ -2,8 +2,10 @@ package nl.bertriksikken.ttngatewaycollector.udp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UdpSenderConfigTest {
 
@@ -12,7 +14,7 @@ public class UdpSenderConfigTest {
         String json = "{}";
         ObjectMapper mapper = new ObjectMapper();
         UdpSenderConfig config = mapper.readValue(json, UdpSenderConfig.class);
-        Assertions.assertTrue(config.host.isEmpty());
-        Assertions.assertEquals(1700, config.port);
+        assertTrue(config.host.isEmpty());
+        assertEquals(1700, config.port);
     }
 }

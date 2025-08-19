@@ -1,11 +1,12 @@
 package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URL;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class UplinkMessageTest {
 
@@ -21,7 +22,7 @@ public final class UplinkMessageTest {
 
         UplinkMessage uplink = mapper.readValue(url, UplinkMessage.class);
         System.out.println(uplink);
-        Assertions.assertEquals(3119016580L, uplink.rxMetadata().get(0).timestamp());
+        assertEquals(3119016580L, uplink.rxMetadata().get(0).timestamp());
     }
     
     @Test

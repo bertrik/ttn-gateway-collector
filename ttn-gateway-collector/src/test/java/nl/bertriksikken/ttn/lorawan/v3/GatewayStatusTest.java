@@ -2,12 +2,15 @@ package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public final class GatewayStatusTest {
 
@@ -19,27 +22,27 @@ public final class GatewayStatusTest {
         AbstractMessage message = MAPPER.readValue(url, AbstractMessage.class);
         GatewayStatus status = (GatewayStatus) message;
 
-        Assertions.assertNotNull(Instant.parse(status.time));
-        Assertions.assertFalse(status.versions.isEmpty());
-        Assertions.assertFalse(status.antennaLocations.isEmpty());
-        Assertions.assertFalse(status.ip.isEmpty());
+        assertNotNull(Instant.parse(status.time));
+        assertFalse(status.versions.isEmpty());
+        assertFalse(status.antennaLocations.isEmpty());
+        assertFalse(status.ip.isEmpty());
 
         GatewayStatus.Metrics metrics = status.metrics;
-        Assertions.assertEquals(5, metrics.rxin());
-        Assertions.assertEquals(1, metrics.rxok());
-        Assertions.assertEquals(1, metrics.rxfw());
-        Assertions.assertEquals(66.7, metrics.ackr(), 0.1);
-        Assertions.assertEquals(0, metrics.txin());
-        Assertions.assertEquals(0, metrics.txok());
+        assertEquals(5, metrics.rxin());
+        assertEquals(1, metrics.rxok());
+        assertEquals(1, metrics.rxfw());
+        assertEquals(66.7, metrics.ackr(), 0.1);
+        assertEquals(0, metrics.txin());
+        assertEquals(0, metrics.txok());
     }
 
     @Test
     public void testDeserializeEmpty() throws JsonProcessingException {
         GatewayStatus.Location location = MAPPER.readValue("{}", GatewayStatus.Location.class);
-        Assertions.assertNotNull(location.latitude());
-        Assertions.assertNotNull(location.longitude());
-        Assertions.assertEquals(0, location.altitude());
-        Assertions.assertEquals("", location.source());
+        assertNotNull(location.latitude());
+        assertNotNull(location.longitude());
+        assertEquals(0, location.altitude());
+        assertEquals("", location.source());
     }
 
 }
