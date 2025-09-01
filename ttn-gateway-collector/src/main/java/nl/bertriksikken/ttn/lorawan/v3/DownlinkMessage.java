@@ -2,6 +2,7 @@ package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import nl.bertriksikken.ttn.lorawan.v3.Settings.DataRate;
 
 import java.util.Locale;
 
@@ -28,7 +29,7 @@ public final class DownlinkMessage extends AbstractMessage {
 
     public static final class Scheduled {
         @JsonProperty("data_rate")
-        public Settings.DataRate dataRate = new Settings.DataRate(new Settings.DataRate.Lora());
+        public DataRate dataRate = new DataRate(new DataRate.Lora());
 
         @JsonProperty("frequency")
         public int frequency;

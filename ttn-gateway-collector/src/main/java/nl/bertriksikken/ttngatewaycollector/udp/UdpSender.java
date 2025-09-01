@@ -6,6 +6,7 @@ import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
 import nl.bertriksikken.ttn.lorawan.v3.EntityIdentifiers;
 import nl.bertriksikken.ttn.lorawan.v3.GatewayStatus;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttngatewaycollector.IEventProcessor;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
@@ -112,7 +113,7 @@ public final class UdpSender implements IEventProcessor {
     @Override
     public void handleUplink(UplinkMessage uplink) {
         // decode EUI
-        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata().get(0);
+        RxMetadata rxMetadata = uplink.rxMetadata().get(0);
         byte[] eui = parseHex(rxMetadata.gatewayIds().eui());
         RxPk rxPk = udpMessageBuilder.buildRxPk(uplink);
         UdpPushData pushData = new UdpPushData(rxPk);

@@ -6,8 +6,10 @@ import nl.bertriksikken.lorawan.AirTimeCalculator;
 import nl.bertriksikken.lorawan.LorawanPacket;
 import nl.bertriksikken.lorawan.MType;
 import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
-import nl.bertriksikken.ttn.lorawan.v3.Settings;
+import nl.bertriksikken.ttn.lorawan.v3.Settings.DataRate;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage.Payload.JoinRequestPayload;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage.RxMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +81,7 @@ public final class ExportEvent {
     }
 
     public static ExportEvent fromUplinkMessage(UplinkMessage message) {
-        UplinkMessage.RxMetadata rxMetadata = message.rxMetadata().get(0);
+        RxMetadata rxMetadata = message.rxMetadata().get(0);
         Instant time = rxMetadata.time();
         String gatewayId = rxMetadata.gatewayIds().gatewayId();
         byte[] rawPayload = message.rawPayload();
@@ -90,7 +92,7 @@ public final class ExportEvent {
         double airtime = airTimeCalculator.calculate(message.settings().dataRate(), rawPayload.length);
         ExportEvent event = new ExportEvent(time, gatewayId, rawPayload, modulation, frequency, snr, rssi, airtime);
 
-        UplinkMessage.Payload.JoinRequestPayload joinRequestPayload = message.payload().joinRequestPayload();
+        JoinRequestPayload joinRequestPayload = message.payload().joinRequestPayload();
         if (joinRequestPayload != null) {
             event.packetType = MType.JOIN_REQUEST.toString();
             event.joinEui = joinRequestPayload.joinEui();
@@ -107,7 +109,7 @@ public final class ExportEvent {
         return event;
     }
 
-    private static String getModulation(Settings.DataRate dataRate) {
+    private static String getModulation(DataRate dataRate) {
         var lora = dataRate.lora();
         if (lora != null) {
             return String.format(Locale.ROOT, "SF%dBW%d", lora.spreadingFactor(), lora.bandWidth() / 1000);

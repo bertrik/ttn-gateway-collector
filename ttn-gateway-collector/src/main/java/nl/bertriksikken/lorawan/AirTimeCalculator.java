@@ -1,6 +1,7 @@
 package nl.bertriksikken.lorawan;
 
-import nl.bertriksikken.ttn.lorawan.v3.Settings;
+import nl.bertriksikken.ttn.lorawan.v3.Settings.DataRate;
+import nl.bertriksikken.ttn.lorawan.v3.Settings.DataRate.Lora;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
 
 /**
@@ -23,9 +24,9 @@ public final class AirTimeCalculator {
         this.cr = cr;
     }
 
-    public double calculate(Settings.DataRate dataRate, int pl) {
+    public double calculate(DataRate dataRate, int pl) {
         // LoRa
-        Settings.DataRate.Lora lora = dataRate.lora();
+        Lora lora = dataRate.lora();
         int sf = (lora != null) ? dataRate.lora().spreadingFactor() : 0;
         if ((sf >= 6) && (sf <= 12)) {
             double tsym = Math.pow(2, sf) / bw;
@@ -38,7 +39,7 @@ public final class AirTimeCalculator {
             return tpreamble + tpayload;
         }
         // FSK
-        Settings.DataRate.Fsk fsk = dataRate.fsk();
+        DataRate.Fsk fsk = dataRate.fsk();
         int br = (fsk != null) ? dataRate.fsk().bitRate() : 0;
         if (br > 0) {
             // according

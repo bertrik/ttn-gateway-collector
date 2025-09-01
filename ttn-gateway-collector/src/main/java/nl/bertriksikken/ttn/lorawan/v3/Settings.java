@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record Settings(@JsonProperty("data_rate") DataRate dataRate, @JsonProperty("frequency") int frequency) {
+public record Settings(@JsonProperty("data_rate") DataRate dataRate,
+                       @JsonProperty("frequency") int frequency) {
     @SuppressWarnings("MissingOverride")
     public Settings() {
         this(new DataRate(new DataRate.Lora()), 0);

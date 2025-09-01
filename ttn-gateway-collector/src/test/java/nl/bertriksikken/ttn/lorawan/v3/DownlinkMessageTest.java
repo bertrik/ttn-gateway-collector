@@ -1,6 +1,7 @@
 package nl.bertriksikken.ttn.lorawan.v3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage.Scheduled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public final class DownlinkMessageTest {
         DownlinkMessage downlinkMessage = (DownlinkMessage) message;
 
         assertEquals(15, downlinkMessage.rawPayload.length);
-        DownlinkMessage.Scheduled scheduled = downlinkMessage.scheduled;
+        Scheduled scheduled = downlinkMessage.scheduled;
         assertEquals(125000, scheduled.dataRate.lora().bandWidth());
         assertEquals(867900000, scheduled.frequency);
         assertEquals(3432044212L, scheduled.timestamp);

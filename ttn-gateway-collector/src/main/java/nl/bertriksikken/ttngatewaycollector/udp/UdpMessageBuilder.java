@@ -1,9 +1,13 @@
 package nl.bertriksikken.ttngatewaycollector.udp;
 
 import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.DownlinkMessage.Scheduled;
 import nl.bertriksikken.ttn.lorawan.v3.GatewayStatus;
 import nl.bertriksikken.ttn.lorawan.v3.Settings;
+import nl.bertriksikken.ttn.lorawan.v3.Settings.DataRate.Fsk;
+import nl.bertriksikken.ttn.lorawan.v3.Settings.DataRate.Lora;
 import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage;
+import nl.bertriksikken.ttn.lorawan.v3.UplinkMessage.RxMetadata;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPullResp.TxPk;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.RxPk;
 import nl.bertriksikken.ttngatewaycollector.udp.UdpPushData.Stat;
@@ -14,13 +18,13 @@ import java.util.Locale;
 public final class UdpMessageBuilder {
 
     public RxPk buildRxPk(UplinkMessage uplink) {
-        UplinkMessage.RxMetadata rxMetadata = uplink.rxMetadata().get(0);
+        RxMetadata rxMetadata = uplink.rxMetadata().get(0);
         Instant time = rxMetadata.time();
         long timestamp = rxMetadata.timestamp();
         double frequency = uplink.settings().frequency() / 1E6;
         String modulation = createModulation(uplink.settings().dataRate());
         String dataRate = createSFBW(uplink.settings().dataRate());
-        Settings.DataRate.Lora lora = uplink.settings().dataRate().lora();
+        Lora lora = uplink.settings().dataRate().lora();
         String codingRate = (lora != null) ? lora.codingRate() : "";
         int rssi = rxMetadata.rssi();
         double snr = rxMetadata.snr();
@@ -29,7 +33,7 @@ public final class UdpMessageBuilder {
     }
 
     public TxPk buildTxPk(Instant time, DownlinkMessage downlink) {
-        DownlinkMessage.Scheduled scheduled = downlink.scheduled;
+        Scheduled scheduled = downlink.scheduled;
         long timestamp = scheduled.timestamp;
         double frequency = scheduled.frequency / 1E6;
         String modulation = createModulation(scheduled.dataRate);
@@ -57,7 +61,7 @@ public final class UdpMessageBuilder {
     }
 
     private String createSFBW(Settings.DataRate dataRate) {
-        Settings.DataRate.Fsk fsk = dataRate.fsk();
+        Fsk fsk = dataRate.fsk();
         if ((fsk != null) && fsk.bitRate() > 0) {
             return String.format(Locale.ROOT, "%d", dataRate.fsk().bitRate());
         }
@@ -65,7 +69,7 @@ public final class UdpMessageBuilder {
     }
 
     private String createModulation(Settings.DataRate dataRate) {
-        Settings.DataRate.Fsk fsk = dataRate.fsk();
+        Fsk fsk = dataRate.fsk();
         return (fsk != null) && (fsk.bitRate() > 0) ? "FSK" : "LORA";
     }
 
