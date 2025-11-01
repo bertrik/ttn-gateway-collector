@@ -1,5 +1,5 @@
 [versions]
-errorprone = "2.42.0"
+errorprone = "2.43.0"
 jackson = "2.20.1"
 junit = "6.0.1"
 retrofit = "3.0.0"

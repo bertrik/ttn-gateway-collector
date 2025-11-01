@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.16_8-jre-alpine
+FROM eclipse-temurin:21.0.8_9-jre-alpine
 
 LABEL maintainer="Bertrik Sikken bertrik@gmail.com"
 LABEL org.opencontainers.image.source="https://github.com/bertrik/ttn-gateway-collector"
