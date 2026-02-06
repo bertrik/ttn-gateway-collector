@@ -1,7 +1,7 @@
 [versions]
-errorprone = "2.45.0"
-jackson = "2.20.1"
-junit = "6.0.1"
+errorprone = "2.47.0"
+jackson = "2.21.0"
+junit = "6.0.2"
 retrofit = "3.0.0"
 slf4j = "2.0.17"
 
@@ -33,5 +33,5 @@ retrofit = ["retrofit", "retrofit-jackson", "retrofit-scalars"]
 
 [plugins]
 dependencycheck = "org.owasp.dependencycheck:8.4.3"
-errorprone = "net.ltgt.errorprone:4.3.0"
+errorprone = "net.ltgt.errorprone:5.0.0"
 versions = "com.github.ben-manes.versions:0.53.0"
