@@ -1,6 +1,6 @@
 [versions]
 errorprone = "2.49.0"
-jackson = "2.21.2"
+jackson = "2.21.3"
 junit = "6.0.3"
 retrofit = "3.0.0"
 slf4j = "2.0.17"
